@@ -785,14 +785,14 @@ $r_rows = [];
 <html lang="en">
 
 <head>
-    <link rel="icon" type="image/x-icon" href="../assets/image/logo2.png">
+    <link rel="icon" type="image/x-icon" href="../assets/image/logo2.png?v=1">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">
     <meta name="referrer" content="no-referrer-when-downgrade">
     <title>Dashboard - Ateria</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="../assets/css/facilities-reservation.css?v=6">
+    <link rel="stylesheet" href="../assets/css/facilities-reservation.css?v=7">
     <link rel="stylesheet" href="../assets/css/Visitors.css?v=1.1">
     <style>
         /* Table responsive wrappers and base layouts managed by facilities-reservation.css */
@@ -810,20 +810,24 @@ $r_rows = [];
                 transition: transform 0.3s ease;
                 z-index: 1000;
             }
+
             .sidebar.active {
                 transform: translateX(0);
             }
+
             .mobile-menu-overlay {
                 display: none;
                 position: fixed;
                 inset: 0;
-                background: rgba(0,0,0,0.5);
+                background: rgba(0, 0, 0, 0.5);
                 backdrop-filter: blur(4px);
                 z-index: 999;
             }
+
             .mobile-menu-overlay.active {
                 display: block;
             }
+
             .main-content {
                 margin-left: 0 !important;
                 width: 100% !important;
@@ -832,36 +836,49 @@ $r_rows = [];
 
         /* Desktop Collapse Feature */
         @media (min-width: 1025px) {
-            .sidebar { transition: width 0.3s ease; }
-            .main-content { transition: margin-left 0.3s ease; }
-            
+            .sidebar {
+                transition: width 0.3s ease;
+            }
+
+            .main-content {
+                transition: margin-left 0.3s ease;
+            }
+
             body.collapsed-sidebar .sidebar {
                 width: 80px;
             }
+
             body.collapsed-sidebar .main-content {
                 margin-left: 80px;
             }
+
             body.collapsed-sidebar .sidebar .nav-title,
             body.collapsed-sidebar .sidebar .nav-links a span,
             body.collapsed-sidebar .sidebar .dropdown-arrow {
                 display: none !important;
             }
+
             body.collapsed-sidebar .sidebar .nav-links a {
                 justify-content: center;
                 padding: 1rem 0;
             }
+
             body.collapsed-sidebar .sidebar .logo-area {
                 padding: 1rem 0;
             }
+
             body.collapsed-sidebar .sidebar .logo-area .full-logo {
                 display: none !important;
             }
+
             body.collapsed-sidebar .sidebar .logo-area .mini-logo {
                 display: block !important;
             }
+
             body.collapsed-sidebar .sidebar .logo-area .admin-badge {
                 display: none !important;
             }
+
             body.collapsed-sidebar .sidebar .nav-links a i {
                 font-size: 1.5rem;
                 margin: 0;
@@ -1061,7 +1078,8 @@ $r_rows = [];
                 <div class="header-inner"
                     style="max-width: 1600px; margin: 0 auto; padding: 0 3rem; display: flex; justify-content: space-between; align-items: center; width: 100%;">
                     <div class="header-title">
-                        <button class="mobile-menu-btn" onclick="toggleSidebar()" style="background: none; border: none; font-size: 1.25rem; color: #64748b; cursor: pointer; align-items: center; justify-content: center; width: 40px; height: 40px; border-radius: 10px; transition: all 0.2s; margin-right: 15px;">
+                        <button class="mobile-menu-btn" onclick="toggleSidebar()"
+                            style="background: none; border: none; font-size: 1.25rem; color: #64748b; cursor: pointer; align-items: center; justify-content: center; width: 40px; height: 40px; border-radius: 10px; transition: all 0.2s; margin-right: 15px;">
                             <i class="fas fa-bars"></i>
                         </button>
                         <h1 id="page-title"
@@ -1098,15 +1116,19 @@ $r_rows = [];
                             <?php endif;
                         }
                         ?>
-                        
+
                         <!-- Admin Profile Display -->
-                        <div class="admin-profile-header" style="display: flex; align-items: center; gap: 12px; padding: 6px 14px; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 10px;">
-                            <div style="width: 35px; height: 35px; background: linear-gradient(135deg, #1e293b, #0f172a); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: #d4af37; font-size: 14px; box-shadow: 0 2px 5px rgba(0,0,0,0.1);">
+                        <div class="admin-profile-header"
+                            style="display: flex; align-items: center; gap: 12px; padding: 6px 14px; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 10px;">
+                            <div
+                                style="width: 35px; height: 35px; background: linear-gradient(135deg, #1e293b, #0f172a); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: #d4af37; font-size: 14px; box-shadow: 0 2px 5px rgba(0,0,0,0.1);">
                                 <i class="fa-solid fa-user-shield"></i>
                             </div>
                             <div style="display: flex; flex-direction: column;">
-                                <span style="font-size: 0.75rem; color: #64748b; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; line-height: 1;">Administrator</span>
-                                <span style="font-size: 0.85rem; color: #1e293b; font-weight: 600;">admin41001@gmail.com</span>
+                                <span
+                                    style="font-size: 0.75rem; color: #64748b; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; line-height: 1;">Administrator</span>
+                                <span
+                                    style="font-size: 0.85rem; color: #1e293b; font-weight: 600;">admin41001@gmail.com</span>
                             </div>
                         </div>
 
@@ -1652,15 +1674,18 @@ $r_rows = [];
                             ];
                             if ($q_from) {
                                 $r_rows = array_filter($r_rows, function ($e) use ($q_from) {
-                                    return date('Y-m-d', strtotime($e['created_at'])) >= $q_from; });
+                                    return date('Y-m-d', strtotime($e['created_at'])) >= $q_from;
+                                });
                             }
                             if ($q_to) {
                                 $r_rows = array_filter($r_rows, function ($e) use ($q_to) {
-                                    return date('Y-m-d', strtotime($e['created_at'])) <= $q_to; });
+                                    return date('Y-m-d', strtotime($e['created_at'])) <= $q_to;
+                                });
                             }
                             if ($r_status !== 'all') {
                                 $r_rows = array_filter($r_rows, function ($e) use ($r_status) {
-                                    return strtolower($e['status']) === strtolower($r_status); });
+                                    return strtolower($e['status']) === strtolower($r_status);
+                                });
                             }
                         }
                         break;
@@ -1685,11 +1710,13 @@ $r_rows = [];
                             ];
                             if ($q_from) {
                                 $r_rows = array_filter($r_rows, function ($e) use ($q_from) {
-                                    return date('Y-m-d', strtotime($e['uploaded_at'])) >= $q_from; });
+                                    return date('Y-m-d', strtotime($e['uploaded_at'])) >= $q_from;
+                                });
                             }
                             if ($q_to) {
                                 $r_rows = array_filter($r_rows, function ($e) use ($q_to) {
-                                    return date('Y-m-d', strtotime($e['uploaded_at'])) <= $q_to; });
+                                    return date('Y-m-d', strtotime($e['uploaded_at'])) <= $q_to;
+                                });
                             }
                         }
                         break;
@@ -2862,7 +2889,9 @@ $r_rows = [];
                                                         </div>
                                                     </td>
                                                     <td style="text-align: center !important;">
-                                                        <button class="btn-action-view" onclick="event.preventDefault(); window.viewMaintenanceDetails(<?= htmlspecialchars(json_encode($log)) ?>)" title="View Details">
+                                                        <button class="btn-action-view"
+                                                            onclick="event.preventDefault(); window.viewMaintenanceDetails(<?= htmlspecialchars(json_encode($log)) ?>)"
+                                                            title="View Details">
                                                             <i class="fa-solid fa-eye"></i>
                                                         </button>
                                                     </td>
@@ -3572,29 +3601,29 @@ $r_rows = [];
             if (loader) {
                 loader.style.display = 'block';
                 loader.style.opacity = '1';
-        // Sidebar Toggle Functions
-        window.toggleSidebar = function() {
-            const width = window.innerWidth;
-            if (width > 1024) {
-                // Desktop: Toggle collapsed state
-                document.body.classList.toggle('collapsed-sidebar');
-            } else {
-                // Mobile: Toggle active state
-                const sidebar = document.querySelector('.sidebar');
-                const overlay = document.querySelector('.mobile-menu-overlay');
-                if (sidebar) sidebar.classList.toggle('active');
-                if (overlay) overlay.classList.toggle('active');
-            }
-        };
+                // Sidebar Toggle Functions
+                window.toggleSidebar = function () {
+                    const width = window.innerWidth;
+                    if (width > 1024) {
+                        // Desktop: Toggle collapsed state
+                        document.body.classList.toggle('collapsed-sidebar');
+                    } else {
+                        // Mobile: Toggle active state
+                        const sidebar = document.querySelector('.sidebar');
+                        const overlay = document.querySelector('.mobile-menu-overlay');
+                        if (sidebar) sidebar.classList.toggle('active');
+                        if (overlay) overlay.classList.toggle('active');
+                    }
+                };
 
-        window.closeSidebar = function() {
-            const sidebar = document.querySelector('.sidebar');
-            const overlay = document.querySelector('.mobile-menu-overlay');
-            if (sidebar) sidebar.classList.remove('active');
-            if (overlay) overlay.classList.remove('active');
-        };
+                window.closeSidebar = function () {
+                    const sidebar = document.querySelector('.sidebar');
+                    const overlay = document.querySelector('.mobile-menu-overlay');
+                    if (sidebar) sidebar.classList.remove('active');
+                    if (overlay) overlay.classList.remove('active');
+                };
 
-        const iframe = loader.querySelector('iframe');
+                const iframe = loader.querySelector('iframe');
                 if (iframe) iframe.src = iframe.src;
 
                 setTimeout(() => {
@@ -3942,12 +3971,12 @@ $r_rows = [];
             const dateEl = document.getElementById('current-date');
             const timeEl = document.getElementById('current-time');
             const now = new Date();
-            
+
             if (dateEl) {
                 const options = { month: 'long', day: '2-digit', year: 'numeric' };
                 dateEl.textContent = now.toLocaleDateString('en-US', options);
             }
-            
+
             if (timeEl) {
                 const timeStr = now.toLocaleTimeString('en-US', { hour12: true, hour: '2-digit', minute: '2-digit', second: '2-digit' });
                 timeEl.textContent = timeStr;

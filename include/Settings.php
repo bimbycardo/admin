@@ -87,10 +87,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     $hashed_password = password_hash($password, PASSWORD_DEFAULT);
                     $stmt->execute([$username, $email, $full_name, $hashed_password, $id]);
 
-                        // Send notification email using robust helper
-                        $emailSettings = getEmailSettings($pdo);
-                        $subject = $emailSettings['password_subject'];
-                        $body = "
+                    // Send notification email using robust helper
+                    $emailSettings = getEmailSettings($pdo);
+                    $subject = $emailSettings['password_subject'];
+                    $body = "
                             <div style=\"font-family: sans-serif; padding: 20px; color: #1e293b; max-width: 500px; margin: auto; border: 1px solid #e2e8f0; border-radius: 12px;\">
                                 <h2 style=\"color: #0f172a;\">Password Changed</h2>
                                 <p>Hello " . htmlspecialchars($full_name) . ",</p>
@@ -100,7 +100,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                 </div>
                             </div>
                         ";
-                        sendEmail($email, $full_name, $subject, $body);
+                    sendEmail($email, $full_name, $subject, $body);
                 } else {
                     // Update without password
                     $stmt = $pdo->prepare("UPDATE users SET username=?, email=?, full_name=? WHERE id=?");
@@ -362,7 +362,7 @@ $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
     <title>Account Settings - Admin</title>
     <link rel="icon" type="image/x-icon" href="../assets/image/logo2.png">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="../assets/css/facilities-reservation.css?v=6">
+    <link rel="stylesheet" href="../assets/css/facilities-reservation.css?v=7">
     <style>
         :root {
             --primary-blue: #1e3a8a;
@@ -791,20 +791,24 @@ $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
                 transition: transform 0.3s ease;
                 z-index: 1000;
             }
+
             .sidebar.active {
                 transform: translateX(0);
             }
+
             .mobile-menu-overlay {
                 display: none;
                 position: fixed;
                 inset: 0;
-                background: rgba(0,0,0,0.5);
+                background: rgba(0, 0, 0, 0.5);
                 backdrop-filter: blur(4px);
                 z-index: 999;
             }
+
             .mobile-menu-overlay.active {
                 display: block;
             }
+
             .main-content {
                 margin-left: 0 !important;
                 width: 100% !important;
@@ -813,36 +817,49 @@ $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
         /* Desktop Collapse Feature */
         @media (min-width: 1025px) {
-            .sidebar { transition: width 0.3s ease; }
-            .main-content { transition: margin-left 0.3s ease; }
-            
+            .sidebar {
+                transition: width 0.3s ease;
+            }
+
+            .main-content {
+                transition: margin-left 0.3s ease;
+            }
+
             body.collapsed-sidebar .sidebar {
                 width: 80px;
             }
+
             body.collapsed-sidebar .main-content {
                 margin-left: 80px;
             }
+
             body.collapsed-sidebar .sidebar .nav-title,
             body.collapsed-sidebar .sidebar .nav-links a span,
             body.collapsed-sidebar .sidebar .dropdown-arrow {
                 display: none !important;
             }
+
             body.collapsed-sidebar .sidebar .nav-links a {
                 justify-content: center;
                 padding: 1rem 0;
             }
+
             body.collapsed-sidebar .sidebar .logo-area {
                 padding: 1rem 0;
             }
+
             body.collapsed-sidebar .sidebar .logo-area .full-logo {
                 display: none !important;
             }
+
             body.collapsed-sidebar .sidebar .logo-area .mini-logo {
                 display: block !important;
             }
+
             body.collapsed-sidebar .sidebar .logo-area .admin-badge {
                 display: none !important;
             }
+
             body.collapsed-sidebar .sidebar .nav-links a i {
                 font-size: 1.5rem;
                 margin: 0;
@@ -890,14 +907,17 @@ $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
 <body class="dashboard-layout">
     <div class="container">
         <!-- Mobile Menu Overlay -->
-        <div class="mobile-menu-overlay" onclick="closeSidebar()" style="display:none; position:fixed; inset:0; z-index:999; background:rgba(0,0,0,0.5); backdrop-filter:blur(4px);"></div>
-        
+        <div class="mobile-menu-overlay" onclick="closeSidebar()"
+            style="display:none; position:fixed; inset:0; z-index:999; background:rgba(0,0,0,0.5); backdrop-filter:blur(4px);">
+        </div>
+
         <?php include 'sidebar.php'; ?>
 
         <main class="main-content">
             <header class="top-header">
                 <div class="header-title">
-                    <button class="mobile-menu-btn" onclick="toggleSidebar()" style="background: none; border: none; font-size: 1.25rem; color: #64748b; cursor: pointer; align-items: center; justify-content: center; width: 40px; height: 40px; border-radius: 10px; transition: all 0.2s; margin-right: 15px;">
+                    <button class="mobile-menu-btn" onclick="toggleSidebar()"
+                        style="background: none; border: none; font-size: 1.25rem; color: #64748b; cursor: pointer; align-items: center; justify-content: center; width: 40px; height: 40px; border-radius: 10px; transition: all 0.2s; margin-right: 15px;">
                         <i class="fas fa-bars"></i>
                     </button>
                     <h1>Account Settings</h1>
@@ -905,20 +925,25 @@ $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
                 <nav class="menu-bar-nav">
                     <a href="#" class="menu-item active"><i class="fas fa-user-shield"></i> Profile</a>
-                    <a href="#" class="menu-item" onclick="switchTab('security')"><i class="fas fa-shield-halved"></i> Security</a>
+                    <a href="#" class="menu-item" onclick="switchTab('security')"><i class="fas fa-shield-halved"></i>
+                        Security</a>
                     <a href="#" class="menu-item"><i class="fas fa-envelope"></i> Notifications</a>
                     <a href="#" class="menu-item"><i class="fas fa-gear"></i> Preferences</a>
                 </nav>
 
                 <div class="header-actions" style="display: flex; align-items: center; gap: 20px;">
                     <!-- Admin Profile Display -->
-                    <div class="admin-profile-header" style="display: flex; align-items: center; gap: 12px; padding: 6px 14px; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 10px;">
-                        <div style="width: 35px; height: 35px; background: linear-gradient(135deg, #1e293b, #0f172a); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: #d4af37; font-size: 14px; box-shadow: 0 2px 5px rgba(0,0,0,0.1);">
+                    <div class="admin-profile-header"
+                        style="display: flex; align-items: center; gap: 12px; padding: 6px 14px; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 10px;">
+                        <div
+                            style="width: 35px; height: 35px; background: linear-gradient(135deg, #1e293b, #0f172a); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: #d4af37; font-size: 14px; box-shadow: 0 2px 5px rgba(0,0,0,0.1);">
                             <i class="fa-solid fa-user-shield"></i>
                         </div>
                         <div style="display: flex; flex-direction: column;">
-                            <span style="font-size: 0.75rem; color: #64748b; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; line-height: 1;">Administrator</span>
-                            <span style="font-size: 0.85rem; color: #1e293b; font-weight: 600;">admin41001@gmail.com</span>
+                            <span
+                                style="font-size: 0.75rem; color: #64748b; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; line-height: 1;">Administrator</span>
+                            <span
+                                style="font-size: 0.85rem; color: #1e293b; font-weight: 600;">admin41001@gmail.com</span>
                         </div>
                     </div>
 
@@ -976,10 +1001,12 @@ $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
                     <div class="content-card">
                         <div
                             style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1.5rem;">
-                            <h3 style="font-size: 1.25rem; font-weight: 700; color: #1e293b; display: flex; align-items: center; gap: 10px; margin: 0;">
+                            <h3
+                                style="font-size: 1.25rem; font-weight: 700; color: #1e293b; display: flex; align-items: center; gap: 10px; margin: 0;">
                                 <i class="fas fa-users-gear" style="color: #3b82f6;"></i> Active Users List
                             </h3>
-                            <button class="btn btn-primary security-only" onclick="openCreateModal()" style="padding: 10px 20px; border-radius: 12px; font-weight: 700; box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);">
+                            <button class="btn btn-primary security-only" onclick="openCreateModal()"
+                                style="padding: 10px 20px; border-radius: 12px; font-weight: 700; box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);">
                                 <i class="fas fa-user-plus"></i> Add New User
                             </button>
                         </div>
@@ -999,12 +1026,15 @@ $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        <?php $count = 1; foreach ($users as $user): ?>
+                                        <?php $count = 1;
+                                        foreach ($users as $user): ?>
                                             <tr>
                                                 <td style="font-weight: 700; color: #3b82f6;">#<?= $count++ ?></td>
-                                                <td style="font-weight: 500;"><?= htmlspecialchars($user['full_name']) ?></td>
+                                                <td style="font-weight: 500;"><?= htmlspecialchars($user['full_name']) ?>
+                                                </td>
                                                 <td style="color: #64748b;"><?= htmlspecialchars($user['username']) ?></td>
-                                                <td style="color: #1e3a8a; font-weight: 500;"><?= htmlspecialchars($user['email']) ?></td>
+                                                <td style="color: #1e3a8a; font-weight: 500;">
+                                                    <?= htmlspecialchars($user['email']) ?></td>
                                             </tr>
                                         <?php endforeach; ?>
                                     </tbody>
@@ -1563,7 +1593,7 @@ You have been added as an administrator. To complete your account setup, please 
         if (viewingBadge) viewingBadge.style.display = 'block';
 
         // Sidebar Toggle Functions
-        window.toggleSidebar = function() {
+        window.toggleSidebar = function () {
             const width = window.innerWidth;
             if (width > 1024) {
                 // Desktop: Toggle collapsed state
@@ -1577,7 +1607,7 @@ You have been added as an administrator. To complete your account setup, please 
             }
         };
 
-        window.closeSidebar = function() {
+        window.closeSidebar = function () {
             const sidebar = document.querySelector('.sidebar');
             const overlay = document.querySelector('.mobile-menu-overlay');
             if (sidebar) sidebar.classList.remove('active');

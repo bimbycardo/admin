@@ -21,10 +21,10 @@ function get_nav_link($tab, $is_dashboard, $isSuperAdmin)
             <div class="logo-area">
                 <div class="logo" style="display: flex; flex-direction: column; align-items: center; gap: 10px;">
                     <!-- Full Logo (Open) -->
-                    <img src="../assets/image/logo.png" alt="Atiéra Logo" class="full-logo"
+                    <img src="../assets/image/logo.png?v=1" alt="Atiéra Logo" class="full-logo"
                         style="height:60px; width:auto; display:block; margin:0 auto; transition: all 0.3s; filter: drop-shadow(0 4px 6px rgba(0,0,0,0.1));">
                     <!-- Mini Logo (Collapsed) -->
-                    <img src="../assets/image/logo2.png" alt="Atiéra Logo" class="mini-logo"
+                    <img src="../assets/image/logo2.png?v=1" alt="Atiéra Logo" class="mini-logo"
                         style="height:40px; width:auto; display:none; margin:0 auto; transition: all 0.3s; filter: drop-shadow(0 4px 6px rgba(0,0,0,0.1));">
                     <?php if ($isSuperAdmin): ?>
                         <div class="admin-badge"
