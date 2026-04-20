@@ -1068,7 +1068,7 @@ $r_rows = [];
                             style="margin: 0; font-size: 1.5rem; font-weight: 800; color: #0f172a; letter-spacing: -0.5px;">
                             <?php
                             $tab_titles = [
-                                'dashboard' => 'Homepage',
+                                'dashboard' => 'Dashboard',
                                 'facilities' => 'Hotel Facilities',
                                 'reservations' => 'Reservation Management',
                                 'calendar' => 'Reservation Calendar',
@@ -1078,7 +1078,7 @@ $r_rows = [];
                                 'reports_dates' => 'Reports Dates'
                             ];
                             $current_tab = $_GET['tab'] ?? 'dashboard';
-                            echo $tab_titles[$current_tab] ?? 'Homepage';
+                            echo $tab_titles[$current_tab] ?? 'Dashboard';
                             ?>
                         </h1>
                     </div>
