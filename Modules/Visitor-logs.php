@@ -168,51 +168,67 @@ function getLastInsertId()
 </head>
 
 <body>
-    <header>
-        <div class="container">
-            <div class="header-content">
-                <div class="logo" style="display: flex; align-items: center; gap: 15px;">
-                    <img src="../assets/image/logo2.png" alt="Ateria Logo" style="height: 40px; width: auto;">
-                    <span style="font-size: 1.25rem; font-weight: 700; letter-spacing: 0.5px;">Hotel &
-                        Restaurant Visitor Management</span>
+    <div class="layout-wrapper" style="display: flex; min-height: 100vh; background: #f8fafc;">
+        <!-- SIDEBAR from unified design -->
+        <?php require_once __DIR__ . '/../include/sidebar.php'; ?>
+
+        <!-- MAIN CONTENT -->
+        <main class="main-content" style="flex: 1; display: flex; flex-direction: column; height: 100vh; overflow: hidden; position: relative;">
+            
+            <!-- Top Header -->
+            <header class="top-header" style="flex-shrink: 0; background: #fff; padding: 15px 30px; border-bottom: 1px solid #e2e8f0; display: flex; justify-content: space-between; align-items: center; z-index: 10; box-shadow: 0 4px 12px rgba(0,0,0,0.02);">
+                <div class="header-breadcrumb" style="display: flex; align-items: center; gap: 10px;">
+                    <div style="display: flex; align-items: center; gap: 15px;">
+                        <div style="width: 40px; height: 40px; background: #eff6ff; border-radius: 10px; display: flex; align-items: center; justify-content: center; color: #3b82f6;">
+                            <i class="fa-solid fa-id-card-clip" style="font-size: 1.2rem;"></i>
+                        </div>
+                        <h2 style="margin: 0; font-size: 1.4rem; color: #1e293b; font-weight: 800; letter-spacing: -0.5px;">Hotel & Restaurant Visitor Management</h2>
+                    </div>
                 </div>
-                <nav>
-                    <ul>
-                        <li><a href="#" class="nav-link active" data-page="dashboard">Dashboard</a></li>
-                        <li><a href="#" class="nav-link" data-page="hotel-visitors">Hotel</a></li>
-                        <li><a href="#" class="nav-link" data-page="restaurant-visitors">Restaurant</a></li>
-                        <li><a href="#" class="nav-link" data-page="reports">Reports</a></li>
-                        <li><a href="dashboard.php" class="nav-item-back">Back</a></li>
-                    </ul>
-                </nav>
-            </div>
-        </div>
-    </header>
+            </header>
 
-    <div class="container">
-        <div class="main-content">
-            <aside class="sidebar">
-                <ul class="sidebar-menu">
-                    <li><a href="#" class="sidebar-link active" data-page="dashboard"><i class="fas fa-chart-line"
-                                style="margin-right: 12px;"></i>Dashboard</a></li>
-                    <li><a href="#" class="sidebar-link" data-page="hotel"><i class="fas fa-hotel"
-                                style="margin-right: 12px;"></i>Hotel Management</a></li>
-                    <li><a href="#" class="sidebar-link" data-page="restaurant"><i class="fas fa-utensils"
-                                style="margin-right: 12px;"></i>Restaurant Management</a></li>
-                    <li><a href="#" class="sidebar-link" data-page="reports"><i class="fas fa-file-invoice"
-                                style="margin-right: 12px;"></i>Reports</a></li>
-                    <li><a href="#" class="sidebar-link" data-page="maintenance"><i class="fas fa-tools"
-                                style="margin-right: 12px;"></i>Maintenance</a></li>
-                </ul>
-            </aside>
+            <!-- Scrollable Content Area -->
+            <div class="dashboard-content" style="flex: 1; overflow-y: auto; overflow-x: hidden; padding: 30px;">
+                
+                <!-- Main Horizontal Navigation Tabs inside content area -->
+                <div class="main-module-tabs" style="display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 25px; background: #fff; padding: 10px; border-radius: 14px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); border: 1px solid #e2e8f0;">
+                    <button class="nav-btn active" data-target="dashboard" onclick="showPage('dashboard')"><i class="fas fa-chart-line"></i> Dashboard</button>
+                    <button class="nav-btn" data-target="hotel" onclick="showPage('hotel')"><i class="fas fa-hotel"></i> Hotel Management</button>
+                    <button class="nav-btn" data-target="restaurant" onclick="showPage('restaurant')"><i class="fas fa-utensils"></i> Restaurant</button>
+                    <button class="nav-btn" data-target="reports" onclick="showPage('reports')"><i class="fas fa-file-invoice"></i> Reports</button>
+                    <button class="nav-btn" data-target="maintenance" onclick="showPage('maintenance')"><i class="fas fa-tools"></i> Maintenance</button>
+                </div>
 
-            <main class="content">
+                <style>
+                .nav-btn {
+                    padding: 12px 20px;
+                    background: transparent;
+                    border: none;
+                    border-radius: 10px;
+                    font-weight: 600;
+                    color: #64748b;
+                    cursor: pointer;
+                    transition: all 0.2s;
+                    font-size: 0.95rem;
+                    display: flex;
+                    align-items: center;
+                    gap: 8px;
+                }
+                .nav-btn:hover {
+                    background: #f1f5f9;
+                    color: #1e293b;
+                }
+                .nav-btn.active {
+                    background: #eff6ff;
+                    color: #3b82f6;
+                    font-weight: 700;
+                }
+                /* Hide sidebar toggle if implemented generically */
+                .container { width: 100% !important; max-width: none !important; padding: 0 !important; }
+                </style>
+
                 <!-- Dashboard Page -->
                 <div id="dashboard" class="page active">
-                    <div style="display: flex; align-items: center; gap: 15px; margin-bottom: 2rem;">
-                        <img src="../assets/image/logo2.png" alt="Logo" style="height: 50px; width: auto;">
-                        <h1 style="margin-bottom: 0;">Dashboard</h1>
-                    </div>
                     <div class="stats-container">
                         <div class="stat-card">
                             <i class="fas fa-concierge-bell"></i>
@@ -603,8 +619,8 @@ function getLastInsertId()
                         </div>
                     </div>
                 </div>
-            </main>
-        </div>
+            </div>
+        </main>
     </div>
 
     <!-- Confirmation Modal -->
@@ -777,12 +793,12 @@ function getLastInsertId()
             const page = document.getElementById(pageId);
             if (page) page.classList.add('active');
 
-            // update active state for any element with data-page
-            document.querySelectorAll('[data-page]').forEach(function (el) {
-                if (el.getAttribute('data-page') === pageId || el.getAttribute('data-page') === pageId + '-checkin' || el.getAttribute('data-page') === pageId + '-visitors') {
-                    el.classList.add('active');
+            // update active state for the nav buttons
+            document.querySelectorAll('.nav-btn').forEach(function (btn) {
+                if (btn.getAttribute('data-target') === pageId) {
+                    btn.classList.add('active');
                 } else {
-                    el.classList.remove('active');
+                    btn.classList.remove('active');
                 }
             });
         }
