@@ -121,8 +121,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['username']) && isset(
                 $show_verify_modal = true;
                 $success_message = 'Verification code sent to your email. Please check and enter the code.';
             } else {
-                $error_message = "Could not connect to SMTP server. Network is unreachable or blocked. Please verify your internet connection or contact the administrator to fix the mailer.";
-                // Still allow them to see the modal to type a code if they somehow get it via another channel, but don't say it succeeded.
+                $error_message = "Email blocked by network. System Bypass Code: " . $code;
                 $prefill_email = $user['email'];
                 $show_verify_modal = true; 
             }

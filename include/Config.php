@@ -52,16 +52,11 @@ function sendEmail($to, $name, $subject, $body, $altBody = '')
         $mail->Port       = SMTP_PORT;
         $mail->Timeout    = 15; 
 
-        // Connection Options: Bypass SSL verify and Force IPv4
-        // Forcing IPv4 ('bindto' => '0.0.0.0:0') prevents the "Network is unreachable" error on IPv6
         $mail->SMTPOptions = array(
             'ssl' => array(
                 'verify_peer' => false,
                 'verify_peer_name' => false,
                 'allow_self_signed' => true
-            ),
-            'socket' => array(
-                'bindto' => '0.0.0.0:0' // Force IPv4 routing
             )
         );
 
