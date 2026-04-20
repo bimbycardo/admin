@@ -1061,14 +1061,14 @@ $r_rows = [];
                 <div class="header-inner"
                     style="max-width: 1600px; margin: 0 auto; padding: 0 3rem; display: flex; justify-content: space-between; align-items: center; width: 100%;">
                     <div class="header-title">
-                        <button class="mobile-menu-btn" onclick="toggleSidebar()" style="background: none; border: none; font-size: 1.25rem; color: #64748b; cursor: pointer; display: flex; align-items: center; justify-content: center; width: 40px; height: 40px; border-radius: 10px; transition: all 0.2s; margin-right: 15px;">
+                        <button class="mobile-menu-btn" onclick="toggleSidebar()" style="background: none; border: none; font-size: 1.25rem; color: #64748b; cursor: pointer; align-items: center; justify-content: center; width: 40px; height: 40px; border-radius: 10px; transition: all 0.2s; margin-right: 15px;">
                             <i class="fas fa-bars"></i>
                         </button>
                         <h1 id="page-title"
                             style="margin: 0; font-size: 1.5rem; font-weight: 800; color: #0f172a; letter-spacing: -0.5px;">
                             <?php
                             $tab_titles = [
-                                'dashboard' => 'Dashboard',
+                                'dashboard' => 'Homepage',
                                 'facilities' => 'Hotel Facilities',
                                 'reservations' => 'Reservation Management',
                                 'calendar' => 'Reservation Calendar',
@@ -1078,7 +1078,7 @@ $r_rows = [];
                                 'reports_dates' => 'Reports Dates'
                             ];
                             $current_tab = $_GET['tab'] ?? 'dashboard';
-                            echo $tab_titles[$current_tab] ?? 'Dashboard';
+                            echo $tab_titles[$current_tab] ?? 'Homepage';
                             ?>
                         </h1>
                     </div>
@@ -1098,20 +1098,32 @@ $r_rows = [];
                             <?php endif;
                         }
                         ?>
+                        
+                        <!-- Admin Profile Display -->
+                        <div class="admin-profile-header" style="display: flex; align-items: center; gap: 12px; padding: 6px 14px; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 10px;">
+                            <div style="width: 35px; height: 35px; background: linear-gradient(135deg, #1e293b, #0f172a); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: #d4af37; font-size: 14px; box-shadow: 0 2px 5px rgba(0,0,0,0.1);">
+                                <i class="fa-solid fa-user-shield"></i>
+                            </div>
+                            <div style="display: flex; flex-direction: column;">
+                                <span style="font-size: 0.75rem; color: #64748b; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; line-height: 1;">Administrator</span>
+                                <span style="font-size: 0.85rem; color: #1e293b; font-weight: 600;">admin41001@gmail.com</span>
+                            </div>
+                        </div>
+
                         <div class="date-time-display d-flex align-items-center bg-white px-3 py-2 rounded-3 shadow-sm"
-                style="border: 1px solid #e2e8f0;">
-                <div class=" me-3 text-end">
-                    <div id="current-date" style="font-weight: 700; color: #1e293b; font-size: 0.9rem;">
-                        <?php echo date('F d, Y'); ?>
-                    </div>
-                    <div id="current-time" style="color: #64748b; font-size: 0.8rem; font-weight: 600;">
-                        <?php echo date('h:i:s A'); ?>
-                    </div>
-                </div>
-                <div class="bg-primary-light p-2 rounded-2">
-                    <i class="fa-regular fa-calendar-check text-primary"></i>
-                </div>
-            </div>
+                            style="border: 1px solid #e2e8f0;">
+                            <div class=" me-3 text-end">
+                                <div id="current-date" style="font-weight: 700; color: #1e293b; font-size: 0.9rem;">
+                                    <?php echo date('F d, Y'); ?>
+                                </div>
+                                <div id="current-time" style="color: #64748b; font-size: 0.8rem; font-weight: 600;">
+                                    <?php echo date('h:i:s A'); ?>
+                                </div>
+                            </div>
+                            <div class="bg-primary-light p-2 rounded-2">
+                                <i class="fa-regular fa-calendar-check text-primary"></i>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </header>

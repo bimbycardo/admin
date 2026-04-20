@@ -897,7 +897,7 @@ $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
         <main class="main-content">
             <header class="top-header">
                 <div class="header-title">
-                    <button class="mobile-menu-btn" onclick="toggleSidebar()" style="background: none; border: none; font-size: 1.25rem; color: #64748b; cursor: pointer; display: flex; align-items: center; justify-content: center; width: 40px; height: 40px; border-radius: 10px; transition: all 0.2s; margin-right: 15px;">
+                    <button class="mobile-menu-btn" onclick="toggleSidebar()" style="background: none; border: none; font-size: 1.25rem; color: #64748b; cursor: pointer; align-items: center; justify-content: center; width: 40px; height: 40px; border-radius: 10px; transition: all 0.2s; margin-right: 15px;">
                         <i class="fas fa-bars"></i>
                     </button>
                     <h1>Account Settings</h1>
@@ -911,6 +911,17 @@ $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
                 </nav>
 
                 <div class="header-actions" style="display: flex; align-items: center; gap: 20px;">
+                    <!-- Admin Profile Display -->
+                    <div class="admin-profile-header" style="display: flex; align-items: center; gap: 12px; padding: 6px 14px; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 10px;">
+                        <div style="width: 35px; height: 35px; background: linear-gradient(135deg, #1e293b, #0f172a); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: #d4af37; font-size: 14px; box-shadow: 0 2px 5px rgba(0,0,0,0.1);">
+                            <i class="fa-solid fa-user-shield"></i>
+                        </div>
+                        <div style="display: flex; flex-direction: column;">
+                            <span style="font-size: 0.75rem; color: #64748b; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; line-height: 1;">Administrator</span>
+                            <span style="font-size: 0.85rem; color: #1e293b; font-weight: 600;">admin41001@gmail.com</span>
+                        </div>
+                    </div>
+
                     <div class="current-date-header" id="real-time-container"
                         style="display: flex; align-items: center; gap: 10px; background: #f8fafc; padding: 8px 16px; border-radius: 12px; border: 1px solid #e2e8f0;">
                         <i class="fa-regular fa-calendar-check" style="color: #3b82f6; font-size: 1.1rem;"></i>

@@ -10,7 +10,13 @@ function get_nav_link($tab, $is_dashboard, $isSuperAdmin)
     if ($isSuperAdmin && $tab === 'dashboard') {
         return "../Super-admin/Dashboard.php";
     }
-    // Always return a direct link for reliability
+    
+    // For Dashboard, link directly to the homepage (Dashboard root)
+    if ($tab === 'dashboard') {
+        return "../Modules/dashboard.php";
+    }
+    
+    // Always return a direct link for reliability for other modules
     return "../Modules/dashboard.php?tab=$tab";
 }
 ?>
