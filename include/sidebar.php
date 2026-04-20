@@ -74,7 +74,7 @@ function get_nav_link($tab, $is_dashboard, $isSuperAdmin)
             ));
             ?>
             <li class="has-dropdown">
-                <a href="#" class="dropdown-toggle <?= $mgr_active ? 'active' : '' ?>"
+                <a href="javascript:void(0);" class="dropdown-toggle <?= $mgr_active ? 'active' : '' ?>"
                     onclick="toggleSidebarFolder(event, this)">
                     <div style="display: flex; align-items: center; gap: 12px;">
                         <i class="fa-solid fa-list-check"></i> <span>Management</span>
@@ -106,7 +106,7 @@ function get_nav_link($tab, $is_dashboard, $isSuperAdmin)
                 </ul>
             </li>
 
-            <li><a href="#" onclick="checkVaultPin(event, '../Modules/document management(archiving).php')"
+            <li><a href="javascript:void(0);" onclick="checkVaultPin(event, '../Modules/document management(archiving).php')"
                     class="<?= ($current_page == 'document management(archiving).php') ? 'active' : '' ?>"
                     style="white-space: nowrap;">
                     <i class="fa-solid fa-vault"></i> <span>Document Archiving</span>
@@ -140,7 +140,7 @@ function get_nav_link($tab, $is_dashboard, $isSuperAdmin)
         style="margin-top: auto; padding-top: 20px; border-top: 1px solid rgba(255, 255, 255, 0.05);">
         <ul class="nav-links">
             <li>
-                <a href="#" onclick="openLogoutModal()" style="color: #fda4af;">
+                <a href="javascript:void(0);" onclick="openLogoutModal()" style="color: #fda4af;">
                     <i class="fa-solid fa-right-from-bracket"></i> <span>Logout</span>
                 </a>
             </li>
@@ -465,7 +465,7 @@ function get_nav_link($tab, $is_dashboard, $isSuperAdmin)
         <i class="fa-solid fa-id-badge"></i>
         <span>Visitors</span>
     </a>
-    <a href="#" onclick="checkVaultPin(event, '../Modules/document management(archiving).php')" class="<?= ($current_page == 'document management(archiving).php') ? 'active' : '' ?>">
+    <a href="javascript:void(0);" onclick="checkVaultPin(event, '../Modules/document management(archiving).php')" class="<?= ($current_page == 'document management(archiving).php') ? 'active' : '' ?>">
         <i class="fa-solid fa-vault"></i>
         <span>Vault</span>
     </a>
