@@ -140,7 +140,7 @@ function get_nav_link($tab, $is_dashboard, $isSuperAdmin)
         style="margin-top: auto; padding-top: 20px; border-top: 1px solid rgba(255, 255, 255, 0.05);">
         <ul class="nav-links">
             <li>
-                <a href="#" onclick="openLogoutModal()" style="color: #fda4af;">
+                <a href="#" onclick="openLogoutModal()" style="color: #fda4af; justify-content: center; padding-left: 0;">
                     <i class="fa-solid fa-right-from-bracket"></i> <span>Logout</span>
                 </a>
             </li>
@@ -357,3 +357,106 @@ function get_nav_link($tab, $is_dashboard, $isSuperAdmin)
         }
     });
 </script>
+
+<style>
+/* Mobile Bottom Navigation */
+.mobile-bottom-nav {
+    display: none;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    background: #ffffff;
+    box-shadow: 0 -4px 12px rgba(0,0,0,0.05);
+    z-index: 10000;
+    padding: 8px 10px;
+    padding-bottom: env(safe-area-inset-bottom, 8px);
+    justify-content: space-around;
+    align-items: center;
+    border-top: 1px solid #e2e8f0;
+}
+
+@media (max-width: 768px) {
+    .mobile-bottom-nav {
+        display: flex;
+    }
+}
+
+.mobile-bottom-nav a {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-decoration: none;
+    color: #94a3b8;
+    font-size: 0.70rem;
+    font-weight: 600;
+    gap: 4px;
+    position: relative;
+    padding: 4px 6px;
+    border-radius: 8px;
+    transition: all 0.2s;
+}
+
+.mobile-bottom-nav a.active {
+    color: #d4af37;
+}
+
+.mobile-bottom-nav a i {
+    font-size: 1.1rem;
+    padding: 6px;
+    border-radius: 10px;
+    background: transparent;
+    transition: all 0.2s;
+}
+
+.mobile-bottom-nav a.active i {
+    background: rgba(212, 175, 55, 0.15);
+}
+
+.badge-management {
+    position: absolute;
+    top: 0px;
+    right: 2px;
+    background: #ef4444;
+    color: white;
+    font-size: 0.6rem;
+    font-weight: bold;
+    padding: 2px 5px;
+    border-radius: 10px;
+    border: 2px solid white;
+}
+</style>
+
+<div class="mobile-bottom-nav">
+    <a href="<?= $isSuperAdmin ? '../Super-admin/Dashboard.php' : '../Modules/dashboard.php?tab=dashboard' ?>" class="<?= ($is_dashboard && (!isset($_GET['tab']) || $_GET['tab'] == 'dashboard')) ? 'active' : '' ?>">
+        <i class="fa-solid fa-gauge-high"></i>
+        <span>Dashboard</span>
+    </a>
+    <a href="../Modules/Visitor-logs.php" class="<?= ($current_page == 'Visitor-logs.php') ? 'active' : '' ?>">
+        <i class="fa-solid fa-id-badge"></i>
+        <span>Visitors</span>
+    </a>
+    <a href="#" onclick="checkVaultPin(event, '../Modules/document management(archiving).php')" class="<?= ($current_page == 'document management(archiving).php') ? 'active' : '' ?>">
+        <i class="fa-solid fa-vault"></i>
+        <span>Vault</span>
+    </a>
+    <a href="../Modules/legalmanagement.php" class="<?= ($current_page == 'legalmanagement.php') ? 'active' : '' ?>">
+        <i class="fa-solid fa-scale-balanced"></i>
+        <span>Legal</span>
+    </a>
+    <?php
+        $mgr_active = (isset($_GET['tab']) && ($_GET['tab'] == 'management' || $_GET['tab'] == 'maintenance' || $_GET['tab'] == 'facilities' || $_GET['tab'] == 'reservations' || $_GET['tab'] == 'calendar'));
+        // Pull pending notifications safely if db is loaded
+        $maintenance_notifs = 0;
+        if(function_exists('get_pdo')) {
+            try { $maintenance_notifs = get_pdo()->query("SELECT COUNT(*) FROM maintenance_logs WHERE status != 'completed' AND is_deleted = 0")->fetchColumn(); } catch(Exception $e) {}
+        }
+    ?>
+    <a href="<?= get_nav_link('management', $is_dashboard, $isSuperAdmin) ?>" class="<?= $mgr_active ? 'active' : '' ?>">
+        <i class="fa-solid fa-list-check"></i>
+        <span>Management</span>
+        <?php if($maintenance_notifs > 0): ?>
+            <div class="badge-management"><?= $maintenance_notifs ?></div>
+        <?php endif; ?>
+    </a>
+</div>
