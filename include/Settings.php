@@ -362,7 +362,7 @@ $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
     <title>Account Settings - Admin</title>
     <link rel="icon" type="image/x-icon" href="../assets/image/logo2.png">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="../assets/css/facilities-reservation.css?v=19">
+    <link rel="stylesheet" href="../assets/css/facilities-reservation.css?v=20">
     <style>
         .container {
             width: 100% !important;
@@ -1034,7 +1034,8 @@ $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
                                             <th style="width: 80px;"># NO.</th>
                                             <th>Full Name</th>
                                             <th>Username</th>
-                                            <th>Email</th>
+                                             <th>Email</th>
+                                             <th style="width: 120px;">ACTION</th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -1047,6 +1048,18 @@ $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
                                                 <td style="color: #64748b;"><?= htmlspecialchars($user['username']) ?></td>
                                                 <td style="color: #1e3a8a; font-weight: 500;">
                                                     <?= htmlspecialchars($user['email']) ?></td>
+                                                <td class="security-only">
+                                                    <div style="display: flex; gap: 8px; justify-content: center; align-items: center;">
+                                                        <button class="btn btn-icon" onclick="location.reload()" title="Retrieve Account" 
+                                                            style="background: rgba(59, 130, 246, 0.1); color: #3b82f6; width: 34px; height: 34px; border-radius: 8px; display: flex; align-items: center; justify-content: center; border: none; cursor: pointer; transition: all 0.2s;">
+                                                            <i class="fas fa-rotate-left" style="font-size: 14px;"></i>
+                                                        </button>
+                                                        <button class="btn btn-icon" onclick="openDeleteModal(<?= $user['id'] ?>)" title="Delete User"
+                                                            style="background: rgba(239, 68, 68, 0.1); color: #ef4444; width: 34px; height: 34px; border-radius: 8px; display: flex; align-items: center; justify-content: center; border: none; cursor: pointer; transition: all 0.2s;">
+                                                            <i class="fas fa-trash-can" style="font-size: 14px;"></i>
+                                                        </button>
+                                                    </div>
+                                                </td>
                                             </tr>
                                         <?php endforeach; ?>
                                     </tbody>
