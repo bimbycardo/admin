@@ -112,7 +112,7 @@ body {
 
 .nav-links {
     list-style: none;
-    padding: 0 1rem; /* Added padding to contain hover states */
+    padding: 0; /* Remove 1rem padding to allow full-width active states */
 }
 
 .nav-links li {
@@ -124,10 +124,11 @@ body {
     display: flex;
     align-items: center;
     gap: 14px;
-    padding: 0.85rem 1rem;
+    padding: 0.85rem 2rem; /* Increased padding */
     color: #94a3b8;
     text-decoration: none;
-    border-radius: var(--radius-sm);
+    border-radius: 0; /* Square edges for full-width link feel */
+    border-left: 4px solid transparent; /* Reserve space for gold indicator */
     transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
     font-weight: 500;
     cursor: pointer;
@@ -157,21 +158,12 @@ body {
     background: #0f172a;
     color: white;
     font-weight: 700;
-    border: 1px solid rgba(255, 255, 255, 0.06);
-    box-shadow: inset 0 2px 4px rgba(255, 255, 255, 0.02), 0 4px 15px rgba(0, 0, 0, 0.3);
+    border-left: 4px solid var(--gold); /* Gold indicator */
+    box-shadow: inset 5px 0 15px rgba(0,0,0,0.4);
 }
 
 .nav-links a.active::before {
-    content: '';
-    position: absolute;
-    left: -1rem; /* Push outside the padding */
-    top: 50%;
-    transform: translateY(-50%);
-    width: 4px;
-    height: 50%;
-    background: var(--gold);
-    border-radius: 0 4px 4px 0;
-    box-shadow: 0 0 10px rgba(212, 175, 55, 0.5);
+    display: none; /* Using border-left instead for a cleaner flush look */
 }
 
 .nav-links a.active i {
