@@ -797,18 +797,15 @@ $r_rows = [];
     <meta name="referrer" content="no-referrer-when-downgrade">
     <title>Dashboard - Ateria</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="../assets/css/facilities-reservation.css?v=15">
+    <link rel="stylesheet" href="../assets/css/facilities-reservation.css?v=17">
     <link rel="stylesheet" href="../assets/css/Visitors.css?v=1.1">
     <style>
-        /* Table responsive wrappers and base layouts managed by facilities-reservation.css */
-
         .dashboard-content {
-            padding: 2rem 1.5rem 2rem 0; /* Flush with sidebar */
+            padding: 2rem 1.5rem 2rem 0;
             max-width: 100%;
             margin: 0;
         }
 
-        /* Responsive Sidebar Styles */
         @media (max-width: 768px) {
             .sidebar {
                 transform: translateX(-100%);
@@ -839,7 +836,6 @@ $r_rows = [];
             }
         }
 
-        /* Desktop Collapse Feature */
         @media (min-width: 769px) {
             .sidebar {
                 transition: width 0.3s ease;
@@ -896,7 +892,6 @@ $r_rows = [];
             padding: 0 3rem;
         }
 
-        /* Gold Scrollbar Styles */
         ::-webkit-scrollbar {
             width: 8px;
             height: 8px;
@@ -917,7 +912,6 @@ $r_rows = [];
             background: #b8860b;
         }
 
-        /* Schedule Card Styling */
         .schedule-grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
@@ -968,7 +962,6 @@ $r_rows = [];
             width: 100%;
         }
 
-        /* Icon-only action buttons */
         .btn.btn-icon {
             display: inline-flex;
             align-items: center;
@@ -978,7 +971,6 @@ $r_rows = [];
             height: 34px;
             border-radius: 10px;
             font-size: 0;
-            /* hide any accidental text spacing */
             line-height: 0;
             gap: 0;
         }
@@ -998,7 +990,6 @@ $r_rows = [];
             text-transform: uppercase;
         }
 
-        /* View Switcher Enhancements */
         .btn-group button.active {
             color: var(--primary) !important;
             font-weight: 700 !important;
@@ -1008,7 +999,6 @@ $r_rows = [];
             background: rgba(255, 255, 255, 0.5) !important;
         }
 
-        /* Reports filters - improved visual and centered layout */
         #reports .filters {
             display: flex;
             align-items: center;
@@ -1041,7 +1031,6 @@ $r_rows = [];
             font-weight: 600;
         }
 
-        /* Export button centered under filters */
         #reports form[action=""][method="post"] button.btn,
         #reports form[method="post"] button.btn {
             display: inline-flex;
@@ -1051,7 +1040,6 @@ $r_rows = [];
             font-weight: 600;
         }
 
-        /* Small labels spacing */
         #reports .filters label,
         #reports .filters span {
             font-weight: 600;
@@ -1070,15 +1058,11 @@ $r_rows = [];
 
 <body>
     <div class="container">
-        <!-- Mobile Menu Overlay -->
         <div class="mobile-menu-overlay" onclick="closeSidebar()"></div>
 
-        <!-- Sidebar -->
         <?php require_once __DIR__ . '/../include/sidebar.php'; ?>
 
-        <!-- Main Content -->
         <main class="main-content">
-            <!-- Top Header -->
             <header class="top-header" style="background: white; border-bottom: 1px solid #e2e8f0; padding: 15px 0;">
                 <div class="header-inner"
                     style="max-width: 100%; margin: 0; padding: 0; display: flex; justify-content: space-between; align-items: center; width: 100%;">
@@ -1108,7 +1092,6 @@ $r_rows = [];
 
                     <div class="header-actions" style="display: flex; align-items: center; gap: 20px;">
                         <?php
-                        // Display Active Key if Super Admin
                         if (isset($_SESSION['role']) && $_SESSION['role'] === 'super_admin') {
                             $display_key = $_GET['bypass_key'] ?? $_SESSION['api_key'] ?? '';
                             if (!empty($display_key)): ?>
@@ -1122,7 +1105,6 @@ $r_rows = [];
                         }
                         ?>
 
-                        <!-- Admin Profile Display -->
                         <div class="admin-profile-header"
                             style="display: flex; align-items: center; gap: 12px; padding: 6px 14px; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 10px;">
                             <div
@@ -1155,9 +1137,7 @@ $r_rows = [];
                 </div>
             </header>
 
-            <!-- Dashboard Content -->
             <div class="dashboard-content">
-                <!-- Alert Messages -->
                 <?php
                 $success = $success_message ?? $_SESSION['success_message'] ?? null;
                 $error = $error_message ?? $_SESSION['error_message'] ?? null;
@@ -1176,10 +1156,8 @@ $r_rows = [];
                     </div>
                 <?php endif; ?>
 
-                <!-- Dashboard Tab -->
                 <?php require_once __DIR__ . '/../include/dashboard.php'; ?>
 
-                <!-- Facilities Tab -->
                 <div id="facilities"
                     class="tab-content <?= (isset($_GET['tab']) && $_GET['tab'] == 'facilities') ? 'active' : '' ?>">
                     <div class="d-flex justify-between align-center mb-2">
@@ -1203,14 +1181,12 @@ $r_rows = [];
                         </div>
                     </div>
 
-                    <!-- Grid View -->
                     <div id="facility-grid-view">
                         <div class="facilities-grid">
                             <?php foreach ($dashboard_data['facilities'] as $facility): ?>
                                 <div class="facility-card">
                                     <div class="facility-image">
                                         <?php
-                                        // Image Logic
                                         $clean_name = trim($facility['name']);
                                         $name_title_case = ucwords(strtolower($clean_name));
                                         $name_snake = str_replace(' ', '_', strtolower($clean_name));

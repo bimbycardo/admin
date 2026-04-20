@@ -11,12 +11,12 @@ function get_nav_link($tab, $is_dashboard, $isSuperAdmin)
         return "../Super-admin/Dashboard.php";
     }
     // Always return a direct link for reliability
-    return "../Modules/dashboard.php?tab=$tab";
+    return "../Modules/dashboard.php?tab=" . urlencode($tab);
 }
 ?>
-<nav class="sidebar">
+<nav class="sidebar" style="left: 0 !important; top: 0 !important; margin: 0 !important;">
     <div class="sidebar-header">
-        <a href="<?= $isSuperAdmin ? '../Super-admin/Dashboard.php' : '../Modules/dashboard.php' ?>" class="logo-link"
+        <a href="<?= $isSuperAdmin ? '../Super-admin/Dashboard.php?tab=dashboard' : '../Modules/dashboard.php?tab=dashboard' ?>" class="logo-link"
             title="Go to Dashboard">
                 <div class="logo-area">
                     <div class="logo" style="display: flex; flex-direction: column; align-items: center; gap: 10px;">
