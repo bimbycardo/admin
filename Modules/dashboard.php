@@ -1084,7 +1084,7 @@ $r_rows = [];
                     style="max-width: 1600px; margin: 0 auto; padding: 0 3rem; display: flex; justify-content: space-between; align-items: center; width: 100%;">
                     <div class="header-title">
                         <button class="mobile-menu-btn" onclick="toggleSidebar()"
-                            style="background: none; border: none; font-size: 1.25rem; color: #64748b; cursor: pointer; align-items: center; justify-content: center; width: 40px; height: 40px; border-radius: 10px; transition: all 0.2s; margin-right: 15px;">
+                            style="display: flex; background: none; border: none; font-size: 1.25rem; color: #64748b; cursor: pointer; align-items: center; justify-content: center; width: 40px; height: 40px; border-radius: 10px; transition: all 0.2s; margin-right: 15px;">
                             <i class="fas fa-bars"></i>
                         </button>
                         <h1 id="page-title"

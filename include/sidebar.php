@@ -18,28 +18,31 @@ function get_nav_link($tab, $is_dashboard, $isSuperAdmin)
     <div class="sidebar-header">
         <a href="<?= $isSuperAdmin ? '../Super-admin/Dashboard.php' : '../Modules/dashboard.php' ?>" class="logo-link"
             title="Go to Dashboard">
-            <div class="logo-area">
-                <div class="logo" style="display: flex; flex-direction: column; align-items: center; gap: 10px;">
-                    <?php 
-                    // Robust path detection
-                    $scriptDir = str_replace('\\', '/', dirname($_SERVER['SCRIPT_NAME']));
-                    $projRoot = (strpos($scriptDir, '/Modules') !== false || strpos($scriptDir, '/include') !== false || strpos($scriptDir, '/Super-admin') !== false) ? dirname($scriptDir) : $scriptDir;
-                    $projRoot = rtrim($projRoot, '/');
-                    ?>
-                    <!-- Full Logo (Open) -->
-                    <img src="<?= $projRoot ?>/assets/image/logo.png?v=2" alt="Atiéra Logo" class="full-logo"
-                        style="height:60px; width:auto; display:block; margin:0 auto; transition: all 0.3s; filter: drop-shadow(0 4px 6px rgba(0,0,0,0.1));">
-                    <!-- Mini Logo (Collapsed) -->
-                    <img src="<?= $projRoot ?>/assets/image/logo2.png?v=2" alt="Atiéra Logo" class="mini-logo"
-                        style="height:40px; width:auto; display:none; margin:0 auto; transition: all 0.3s; filter: drop-shadow(0 4px 6px rgba(0,0,0,0.1));">
-                    <?php if ($isSuperAdmin): ?>
-                        <div class="admin-badge"
-                            style="background: rgba(212, 175, 55, 0.15); color: #d4af37; padding: 4px 12px; border-radius: 20px; font-size: 11px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; border: 1px solid rgba(212, 175, 55, 0.3); display: inline-block;">
-                            Administrative
-                        </div>
-                    <?php endif; ?>
+                <div class="logo-area" style="display: flex; align-items: center; justify-content: space-between; padding: 2rem 1.5rem 1rem; width: 100%;">
+                    <div class="logo" style="display: flex; flex-direction: column; align-items: center; gap: 10px; flex: 1;">
+                        <?php 
+                        // Robust path detection
+                        $scriptDir = str_replace('\\', '/', dirname($_SERVER['SCRIPT_NAME']));
+                        $projRoot = (strpos($scriptDir, '/Modules') !== false || strpos($scriptDir, '/include') !== false || strpos($scriptDir, '/Super-admin') !== false) ? dirname($scriptDir) : $scriptDir;
+                        $projRoot = rtrim($projRoot, '/');
+                        ?>
+                        <!-- Full Logo (Open) -->
+                        <img src="<?= $projRoot ?>/assets/image/logo.png?v=2" alt="Atiéra Logo" class="full-logo"
+                            style="height:60px; width:auto; display:block; margin:0 auto; transition: all 0.3s; filter: drop-shadow(0 4px 6px rgba(0,0,0,0.1));">
+                        <!-- Mini Logo (Collapsed) -->
+                        <img src="<?= $projRoot ?>/assets/image/logo2.png?v=2" alt="Atiéra Logo" class="mini-logo"
+                            style="height:40px; width:auto; display:none; margin:0 auto; transition: all 0.3s; filter: drop-shadow(0 4px 6px rgba(0,0,0,0.1));">
+                        <?php if ($isSuperAdmin): ?>
+                            <div class="admin-badge"
+                                style="background: rgba(212, 175, 55, 0.15); color: #d4af37; padding: 4px 12px; border-radius: 20px; font-size: 11px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; border: 1px solid rgba(212, 175, 55, 0.3); display: inline-block;">
+                                Administrative
+                            </div>
+                        <?php endif; ?>
+                    </div>
+                    <button class="sidebar-burger-btn" onclick="event.preventDefault(); toggleSidebar();" style="background: none; border: none; color: white; cursor: pointer; padding: 8px; display: flex; align-items: center; justify-content: center; border-radius: 8px; transition: all 0.2s; opacity: 0.7;">
+                        <i class="fas fa-bars"></i>
+                    </button>
                 </div>
-            </div>
         </a>
     </div>
 
