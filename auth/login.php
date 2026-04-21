@@ -119,8 +119,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['username']) && isset(
             if ($email_sent === true) {
                 $success_message = 'Verification code sent to your email. Please check and enter the code.';
             } else {
-                // If email fails, we show the code in the alert so you can still log in while debugging
-                $success_message = "Email delivery failed (Host blocked). Your diagnostic code is: $code";
+                $success_message = 'Verification code sent. If you do not see it, please check your Spam folder.';
             }
 
           } catch (\Exception $e) {
@@ -726,37 +725,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['username']) && isset(
         
         const em = document.getElementById('vemail');
         if (em) em.value = "<?php echo addslashes($prefill_email); ?>";
-        
-        // --- DIAGNOSTIC BYPASS (10-SECOND TIMER) ---
-        // Trigger if email failed OR if we are in verify_new mode without an arrived email
-        <?php 
-          $is_fail = (isset($email_sent) && $email_sent !== true);
-          $is_new_invite = isset($_GET['verify_new']);
-          if ($is_fail || $is_new_invite): 
-        ?>
-        const msg = document.getElementById('verifyMsg');
-        if (msg) {
-            const displayCode = "<?php echo isset($code) ? $code : '000000'; ?>";
-            msg.innerHTML = `
-                <div id="bypassBox" class="mt-2 p-2 rounded-lg bg-blue-50 border border-blue-200 text-blue-700 animate-pulse">
-                    <span class="font-bold">Registration Bypass:</span> 
-                    <span id="theCode" class="font-mono text-lg bg-blue-600 text-white px-2 py-0.5 rounded shadow-sm">${displayCode}</span>
-                    <p class="text-[10px] mt-1 opacity-70 italic">This code will disappear in <span id="cd">10</span>s</p>
-                </div>`;
-            
-            let timeLeft = 10;
-            const timer = setInterval(() => {
-                timeLeft--;
-                const cdEl = document.getElementById('cd');
-                if (cdEl) cdEl.textContent = timeLeft;
-                if (timeLeft <= 0) {
-                    clearInterval(timer);
-                    const box = document.getElementById('bypassBox');
-                    if (box) box.innerHTML = "<p class='text-red-500 italic'>Key expired. Use Resend if needed.</p>";
-                }
-            }, 1000);
-        }
-        <?php endif; ?>
     });
   </script>
   <?php endif; ?>
@@ -991,30 +959,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['username']) && isset(
         });
         const data = await res.json();
         if (data?.ok) {
-          if (data.bypass) {
-            // ALWAYS SHOW BLUE BYPASS BOX IF CODE ARRIVES
-            verifyMsg.innerHTML = `
-                <div id="bypassBox" class="mt-2 p-2 rounded-lg bg-blue-50 border border-blue-200 text-blue-700 animate-pulse">
-                    <span class="font-bold">Bypass Key:</span> 
-                    <span id="theCode" class="font-mono text-lg bg-blue-600 text-white px-2 py-0.5 rounded shadow-sm">${data.bypass}</span>
-                    <p class="text-[10px] mt-1 opacity-70 italic">Code valid for 15 mins. Disappearing in <span id="cd_resend">10</span>s</p>
-                </div>`;
-            
-            let timeLeft = 10;
-            const timer = setInterval(() => {
-                timeLeft--;
-                const cdEl = document.getElementById('cd_resend');
-                if (cdEl) cdEl.textContent = timeLeft;
-                if (timeLeft <= 0) {
-                    clearInterval(timer);
-                    const box = document.getElementById('bypassBox');
-                    if (box) box.innerHTML = `<p class='text-xs text-green-600'>Code generated successfully. Check email or click resend again.</p>`;
-                }
-            }, 1000);
-          } else {
-            verifyMsg.textContent = data.message || 'Verification code sent to your email.';
-            verifyMsg.className = 'text-xs text-green-600';
-          }
+          verifyMsg.textContent = data.message || 'Verification code sent to your email.';
+          verifyMsg.className = 'text-xs text-green-600';
         } else {
           verifyMsg.textContent = data?.message || 'Failed to resend code.';
           verifyMsg.className = 'text-xs text-red-600';

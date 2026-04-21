@@ -3,10 +3,21 @@
  * ATIERA Hotel & Restaurant - Central Configuration
  */
 
-// Central Email Function (PHPMailer)
+// SMTP Settings (Gayahin ang details sa screenshot mo)
+define('SMTP_HOST', 'smtp.gmail.com');
+define('SMTP_PORT', 465);
+define('SMTP_USER', 'linbilcelestre31@gmail.com');
+define('SMTP_PASS', 'potivsjcwfthdzks');
+define('SMTP_FROM_EMAIL', 'linbilcelestre31@gmail.com');
+define('SMTP_FROM_NAME', 'ATIERA Hotel');
+
+/**
+ * Central Email Function (PHPMailer)
+ * This is the ONLY place that handles sending emails.
+ */
 function sendEmail($to, $name, $subject, $body)
 {
-    $root = dirname(__DIR__);
+    $root = dirname(__DIR__); 
     @include_once $root . '/PHPMailer/src/Exception.php';
     @include_once $root . '/PHPMailer/src/PHPMailer.php';
     @include_once $root . '/PHPMailer/src/SMTP.php';
@@ -18,23 +29,22 @@ function sendEmail($to, $name, $subject, $body)
     $mail = new PHPMailer\PHPMailer\PHPMailer(true);
 
     try {
-        // Attempt SMTP (Gmail)
+        // --- SMTP Engine ---
         $mail->isSMTP();
-        $mail->Host = 'smtp.gmail.com';
-        $mail->SMTPAuth = true;
-        // Ginamit ang credentials mula sa screenshot mo
-        $mail->Username = 'linbilcelestre31@gmail.com';
-        $mail->Password = 'potivsjcwfthdzks';
+        $mail->Host       = SMTP_HOST;
+        $mail->SMTPAuth   = true;
+        $mail->Username   = SMTP_USER;
+        $mail->Password   = SMTP_PASS;
         $mail->SMTPSecure = 'ssl';
-        $mail->Port = 465;
+        $mail->Port       = SMTP_PORT;
+        $mail->Timeout    = 5;
 
-
-        $mail->setFrom('linbilcelestre31@gmail.com', 'ATIERA Hotel');
+        $mail->setFrom(SMTP_FROM_EMAIL, SMTP_FROM_NAME);
         $mail->addAddress($to, $name);
         $mail->isHTML(true);
         $mail->Subject = $subject;
-        $mail->Body = $body;
-
+        $mail->Body    = $body;
+        
         $mail->SMTPOptions = [
             'ssl' => ['verify_peer' => false, 'verify_peer_name' => false, 'allow_self_signed' => true]
         ];
@@ -43,8 +53,8 @@ function sendEmail($to, $name, $subject, $body)
 
     } catch (Exception $e) {
         /**
-         * STAGE 2: OFFICIAL DOMAIN MAIL FALLBACK
-         * We use the server's own official domain to pass anti-spoofing filters.
+         * FALLBACK: OFFICIAL DOMAIN MAIL
+         * If Gmail is blocked by the host, we use native mail with domain identity.
          */
         $officialEmail = 'admin@atierahotelandrestaurant.com';
         $headers = "MIME-Version: 1.0\r\n";
@@ -52,15 +62,13 @@ function sendEmail($to, $name, $subject, $body)
         $headers .= "From: ATIERA Hotel <$officialEmail>\r\n";
         $headers .= "Reply-To: $officialEmail\r\n";
         $headers .= "Return-Path: $officialEmail\r\n";
-        $headers .= "X-Priority: 1 (Highest)\r\n";
         $headers .= "X-Mailer: PHP/" . phpversion();
         
-        // Using double quotes for the -f flag to be safe
-        return @mail($to, $subject, $body, $headers, "-f$officialEmail");
+        return @mail($to, $subject, rtrim($body), $headers, "-f$officialEmail");
     }
 }
 
-// Base URL detection
+// Base URL detection helper
 function getBaseUrl()
 {
     $protocol = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? "https" : "http");
