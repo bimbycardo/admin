@@ -1,24 +1,19 @@
 <?php
 /**
- * ATIERA Hotel & Restaurant - Email Configuration (GMAIL APP PASSWORD VERSION)
- * Uses Port 587 (STARTTLS) which is typically whitelisted on strict shared hosts.
+ * ATIERA Hotel & Restaurant - Email Configuration (THE HOLY GRAIL FIX)
+ * Resolves Error 101 (IPv6 Network Unreachable) AND Error 111 (Port 465 Block)
  */
 
 define('SMTP_HOST', 'smtp.gmail.com');
-define('SMTP_PORT', 587); // Crucial: 587 is usually open when 465 is blocked
+define('SMTP_PORT', 587); // STARTTLS Port
 define('SMTP_USER', 'linbilcelestre31@gmail.com');
-define('SMTP_PASS', 'potivsjcwfthdzks'); // The Google App Password 
+define('SMTP_PASS', 'potivsjcwfthdzks'); 
 define('SMTP_FROM_EMAIL', 'linbilcelestre31@gmail.com');
 define('SMTP_FROM_NAME', 'ATIERA Security');
 
 function sendEmail($to, $name, $subject, $body)
 {
     $root = dirname(__DIR__);
-    $logFile = $root . '/em_log.txt';
-    $time = date('Y-m-d H:i:s');
-    
-    file_put_contents($logFile, "[$time] Attempting SMTP to $to...\n", FILE_APPEND);
-
     $paths = [$root.'/PHPMailer/src/', $root.'/phpmailer/src/'];
     $src = '';
     foreach($paths as $p) if(file_exists($p.'PHPMailer.php')) { $src = $p; break; }
@@ -31,14 +26,19 @@ function sendEmail($to, $name, $subject, $body)
     
     try {
         $mail->isSMTP(); 
-        $mail->Host       = SMTP_HOST;
+        
+        // CRITICAL FIX FOR ERROR 101: Force IPv4 resolution
+        // Bypasses the broken IPv6 network routing on Hostinger
+        $mail->Host       = gethostbyname(SMTP_HOST); 
+        
         $mail->SMTPAuth   = true;
         $mail->Username   = SMTP_USER;
         $mail->Password   = SMTP_PASS;
-        $mail->SMTPSecure = \PHPMailer\PHPMailer\PHPMailer::ENCRYPTION_STARTTLS; // TLS for 587
+        $mail->SMTPSecure = \PHPMailer\PHPMailer\PHPMailer::ENCRYPTION_STARTTLS; // Port 587 Must use TLS
         $mail->Port       = SMTP_PORT;
         $mail->Timeout    = 20;
 
+        // Bypasses certificate mismatch when connecting via direct IP Address
         $mail->SMTPOptions = [
             'ssl' => ['verify_peer' => false, 'verify_peer_name' => false, 'allow_self_signed' => true]
         ];
@@ -50,13 +50,11 @@ function sendEmail($to, $name, $subject, $body)
         $mail->Body    = $body;
 
         if ($mail->send()) {
-            file_put_contents($logFile, "[$time] ✅ SUCCESS: Verified Gmail SMTP delivery.\n", FILE_APPEND);
             return true;
         }
 
     } catch (\Exception $e) {
         $err = $mail->ErrorInfo;
-        file_put_contents($logFile, "[$time] ❌ ERROR: Gmail SMTP Blocked - $err\n", FILE_APPEND);
         return "SMTP Blocked: $err";
     }
 }
