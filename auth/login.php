@@ -654,11 +654,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['username']) && isset(
       <p class="text-sm text-slate-600 dark:text-slate-400 mb-3">Enter the 6-digit code sent to your email.</p>
       <form id="verifyForm" method="POST" class="space-y-3" novalidate>
         <input type="hidden" name="action" value="verify">
-        <div>
-          <label for="vemail" class="block text-sm font-medium mb-1 text-slate-700 dark:text-slate-300">Email</label>
-          <input id="vemail" name="email" type="email" required class="input" placeholder="you@example.com"
-            value="<?php echo htmlspecialchars($prefill_email); ?>" readonly>
-        </div>
+              <!-- Stylish Email Display -->
+              <div class="mb-5 text-center">
+                <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-[0.2em] mb-2">Code sent to</label>
+                <div class="inline-flex items-center gap-2 px-4 py-2 bg-slate-50 border border-slate-200 rounded-full shadow-sm">
+                  <i class="fa-solid fa-envelope text-slate-400 text-xs"></i>
+                  <span id="displayEmail" class="text-sm font-semibold text-slate-600 italic"></span>
+                </div>
+                <input type="hidden" id="vemail" name="email">
+              </div>
         <div>
           <label for="vcode" class="block text-sm font-medium mb-1 text-slate-700 dark:text-slate-300">Verification
             code</label>
@@ -944,7 +948,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['username']) && isset(
       if (serverShowVerify && typeof openVerify === 'function') {
         if (prefillEmail) {
           const vemail = document.getElementById('vemail');
+          const displayEmail = document.getElementById('displayEmail');
           if (vemail) vemail.value = prefillEmail;
+          if (displayEmail) displayEmail.textContent = prefillEmail;
         }
         openVerify();
       }
