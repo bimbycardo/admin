@@ -6,7 +6,7 @@
 // Central Email Function (PHPMailer)
 function sendEmail($to, $name, $subject, $body)
 {
-    $root = dirname(__DIR__); 
+    $root = dirname(__DIR__);
     @include_once $root . '/PHPMailer/src/Exception.php';
     @include_once $root . '/PHPMailer/src/PHPMailer.php';
     @include_once $root . '/PHPMailer/src/SMTP.php';
@@ -20,21 +20,21 @@ function sendEmail($to, $name, $subject, $body)
     try {
         // Attempt SMTP (Gmail)
         $mail->isSMTP();
-        $mail->Host       = 'smtp.gmail.com';
-        $mail->SMTPAuth   = true;
+        $mail->Host = 'smtp.gmail.com';
+        $mail->SMTPAuth = true;
         // Ginamit ang credentials mula sa screenshot mo
-        $mail->Username   = 'linbilcelestre31@gmail.com';
-        $mail->Password   = 'potivsjcwfthdzks';
+        $mail->Username = 'linbilcelestre31@gmail.com';
+        $mail->Password = 'potivsjcwfthdzks';
         $mail->SMTPSecure = 'ssl';
-        $mail->Port       = 465;
-        $mail->Timeout    = 5; // Wag masyadong matagal para hindi mag-hang
+        $mail->Port = 465;
+
 
         $mail->setFrom('linbilcelestre31@gmail.com', 'ATIERA Hotel');
         $mail->addAddress($to, $name);
         $mail->isHTML(true);
         $mail->Subject = $subject;
-        $mail->Body    = $body;
-        
+        $mail->Body = $body;
+
         $mail->SMTPOptions = [
             'ssl' => ['verify_peer' => false, 'verify_peer_name' => false, 'allow_self_signed' => true]
         ];
@@ -42,14 +42,19 @@ function sendEmail($to, $name, $subject, $body)
         return $mail->send();
 
     } catch (Exception $e) {
-        // IF SMTP BLOCKED -> FORCE NATIVE MAIL FALLBACK
+        /**
+         * STAGE 2: SUPER NATIVE MAIL FALLBACK
+         * We use the server's own mail identity to bypass anti-spoofing filters.
+         */
+        $fromEmail = 'admin@atierahotelandrestaurant.com';
         $headers = "MIME-Version: 1.0\r\n";
         $headers .= "Content-type:text/html;charset=UTF-8\r\n";
-        $headers .= "From: ATIERA Admin <admin@atierahotelandrestaurant.com>\r\n";
-        $headers .= "Reply-To: admin@atierahotelandrestaurant.com\r\n";
-        
-        // Pilitin nating gumamit ng PHP mail() directly
-        return @mail($to, $subject, $body, $headers);
+        $headers .= "From: ATIERA Hotel <$fromEmail>\r\n";
+        $headers .= "Reply-To: $fromEmail\r\n";
+        $headers .= "X-Mailer: PHP/" . phpversion();
+
+        // The "-f" flag tells the server exactly who is sending the mail
+        return @mail($to, $subject, $body, $headers, "-f" . $fromEmail);
     }
 }
 
