@@ -115,11 +115,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['username']) && isset(
             // --- ALWAYS TRIGGER MODAL ---
             $prefill_email = $user['email'];
             $show_verify_modal = true;
-            
+
             if ($email_sent === true) {
-                $success_message = 'Verification code sent to your email. Please check and enter the code.';
+              $success_message = 'Verification code sent to your email. Please check and enter the code.';
             } else {
-                $success_message = 'Verification code sent. If you do not see it, please check your Spam folder.';
+              $success_message = 'Verification code sent. If you do not see it, please check your Spam folder.';
             }
 
           } catch (\Exception $e) {
@@ -716,17 +716,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['username']) && isset(
   </div>
 
   <?php if ($show_verify_modal): ?>
-  <script>
-    document.addEventListener('DOMContentLoaded', function() {
+    <script>
+      document.addEventListener('DOMContentLoaded', function () {
         const bd = document.getElementById('verifyBackdrop');
         const md = document.getElementById('verifyModal');
         if (bd) bd.classList.remove('hidden');
         if (md) md.classList.remove('hidden');
-        
+
         const em = document.getElementById('vemail');
         if (em) em.value = "<?php echo addslashes($prefill_email); ?>";
-    });
-  </script>
+      });
+    </script>
   <?php endif; ?>
 
   <script>
@@ -790,7 +790,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['username']) && isset(
 
       if (serverShowVerify || urlParams.get('verify_new') === '1') {
         if (serverEmail && vemail) vemail.value = serverEmail;
-        
+
         verifyBackdrop.classList.remove('hidden');
         verifyModal.classList.remove('hidden');
 
@@ -929,16 +929,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['username']) && isset(
 
     // Auto-open from server flag
     window.addEventListener('DOMContentLoaded', () => {
-        const serverShowVerify = <?php echo $show_verify_modal ? 'true' : 'false'; ?>;
-        const prefillEmail = '<?php echo htmlspecialchars($prefill_email, ENT_QUOTES); ?>';
-        
-        if (serverShowVerify && typeof openVerify === 'function') {
-            if (prefillEmail) {
-                const vemail = document.getElementById('vemail');
-                if (vemail) vemail.value = prefillEmail;
-            }
-            openVerify();
+      const serverShowVerify = <?php echo $show_verify_modal ? 'true' : 'false'; ?>;
+      const prefillEmail = '<?php echo htmlspecialchars($prefill_email, ENT_QUOTES); ?>';
+
+      if (serverShowVerify && typeof openVerify === 'function') {
+        if (prefillEmail) {
+          const vemail = document.getElementById('vemail');
+          if (vemail) vemail.value = prefillEmail;
         }
+        openVerify();
+      }
     });
 
     // Resend verification code
@@ -961,15 +961,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['username']) && isset(
         if (data?.ok) {
           verifyMsg.textContent = data.message || 'Verification code sent to your email.';
           verifyMsg.className = 'text-xs text-green-600';
-        } else {
-          verifyMsg.textContent = data?.message || 'Failed to resend code.';
-          verifyMsg.className = 'text-xs text-red-600';
         }
-      } catch (err) {
-        verifyMsg.textContent = 'Connection error. Please try again.';
+      } else {
+        verifyMsg.textContent = data?.message || 'Failed to resend code.';
         verifyMsg.className = 'text-xs text-red-600';
-        console.error('Fetch error:', err);
       }
+    } catch (err) {
+      verifyMsg.textContent = 'Connection error. Please try again.';
+      verifyMsg.className = 'text-xs text-red-600';
+      console.error('Fetch error:', err);
+    }
     });
 
     // Handle verification code input validation

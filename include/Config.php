@@ -1,30 +1,25 @@
 <?php
 /**
  * ATIERA Hotel & Restaurant - Central Configuration
+ * ULTIMATE STABILITY VERSION
  */
 
-// SMTP Settings (Gayahin ang details sa screenshot mo)
+// SMTP Settings
 define('SMTP_HOST', 'smtp.gmail.com');
-define('SMTP_PORT', 465);
+define('SMTP_PORT', 587); // Testing 587 with TLS for better firewall penetration
 define('SMTP_USER', 'linbilcelestre31@gmail.com');
-define('SMTP_PASS', 'potivsjcwfthdzks');
+define('SMTP_PASS', 'potivsjcwfthdzks'); // App Password (Ensure no spaces)
 define('SMTP_FROM_EMAIL', 'linbilcelestre31@gmail.com');
 define('SMTP_FROM_NAME', 'ATIERA Hotel');
 
-/**
- * Central Email Function (PHPMailer)
- * This is the ONLY place that handles sending emails.
- */
 function sendEmail($to, $name, $subject, $body)
 {
     $root = dirname(__DIR__); 
-    @include_once $root . '/PHPMailer/src/Exception.php';
-    @include_once $root . '/PHPMailer/src/PHPMailer.php';
-    @include_once $root . '/PHPMailer/src/SMTP.php';
-
-    if (!class_exists('PHPMailer\PHPMailer\PHPMailer')) {
-        return "PHPMailer Load Error.";
-    }
+    
+    // Explicit Loading
+    require_once $root . '/PHPMailer/src/Exception.php';
+    require_once $root . '/PHPMailer/src/PHPMailer.php';
+    require_once $root . '/PHPMailer/src/SMTP.php';
 
     $mail = new PHPMailer\PHPMailer\PHPMailer(true);
 
@@ -35,9 +30,11 @@ function sendEmail($to, $name, $subject, $body)
         $mail->SMTPAuth   = true;
         $mail->Username   = SMTP_USER;
         $mail->Password   = SMTP_PASS;
-        $mail->SMTPSecure = 'ssl';
+        
+        // Auto-detect secure mode
+        $mail->SMTPSecure = (SMTP_PORT == 465) ? 'ssl' : 'tls'; 
         $mail->Port       = SMTP_PORT;
-        $mail->Timeout    = 5;
+        $mail->Timeout    = 10; // Medium timeout
 
         $mail->setFrom(SMTP_FROM_EMAIL, SMTP_FROM_NAME);
         $mail->addAddress($to, $name);
@@ -51,10 +48,10 @@ function sendEmail($to, $name, $subject, $body)
 
         return $mail->send();
 
-    } catch (Exception $e) {
+    } catch (\Exception $e) {
         /**
          * FALLBACK: OFFICIAL DOMAIN MAIL
-         * If Gmail is blocked by the host, we use native mail with domain identity.
+         * If Gmail is blocked, we force a high-priority native mail delivery.
          */
         $officialEmail = 'admin@atierahotelandrestaurant.com';
         $headers = "MIME-Version: 1.0\r\n";
@@ -62,9 +59,13 @@ function sendEmail($to, $name, $subject, $body)
         $headers .= "From: ATIERA Hotel <$officialEmail>\r\n";
         $headers .= "Reply-To: $officialEmail\r\n";
         $headers .= "Return-Path: $officialEmail\r\n";
-        $headers .= "X-Mailer: PHP/" . phpversion();
+        $headers .= "X-Priority: 1 (Highest)\r\n";
         
-        return @mail($to, $subject, rtrim($body), $headers, "-f$officialEmail");
+        // Return error message on real failure to help debugging
+        if (!@mail($to, $subject, $body, $headers, "-f$officialEmail")) {
+            return "SMTP/Native Error: " . $mail->ErrorInfo;
+        }
+        return true;
     }
 }
 
