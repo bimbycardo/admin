@@ -93,14 +93,10 @@ function sendEmail($to, $name, $subject, $body, $altBody = '')
         }
     }
 
-    // --- TRY INTERNAL SENDMAIL (Highest bypass chance for PHPMailer) ---
+    // --- TRY INTERNAL MAIL (Bypassing open_basedir issues) ---
     try {
         $mail = new PHPMailer\PHPMailer\PHPMailer(true);
-        if (file_exists('/usr/sbin/sendmail')) {
-            $mail->isSendmail();
-        } else {
-            $mail->isMail();
-        }
+        $mail->isMail(); // Use standard PHP mail engine within PHPMailer
 
         $domain = $_SERVER['HTTP_HOST'] ?? 'atierahotelandrestaurant.com';
         $mail->setFrom('admin@' . $domain, SMTP_FROM_NAME);
@@ -113,7 +109,7 @@ function sendEmail($to, $name, $subject, $body, $altBody = '')
         $mail->send();
         return true; 
     } catch (Exception $e) {
-        $lastError = "Sendmail/Mail: " . $mail->ErrorInfo;
+        $lastError = "PHPMailer Mail: " . $mail->ErrorInfo;
     }
 
     // --- TRY SMTP PORTS AS LAST RESORT ---
