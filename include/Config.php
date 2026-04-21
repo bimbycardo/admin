@@ -1,40 +1,43 @@
 <?php
 /**
  * ATIERA Hotel & Restaurant - Central Configuration
- * ULTIMATE STABILITY VERSION
+ * FIREWALL BREAKER VERSION
  */
 
-// SMTP Settings
-define('SMTP_HOST', 'smtp.gmail.com');
-define('SMTP_PORT', 587); // Testing 587 with TLS for better firewall penetration
-define('SMTP_USER', 'linbilcelestre31@gmail.com');
-define('SMTP_PASS', 'potivsjcwfthdzks'); // App Password (Ensure no spaces)
-define('SMTP_FROM_EMAIL', 'linbilcelestre31@gmail.com');
-define('SMTP_FROM_NAME', 'ATIERA Hotel');
+// SMTP Settings (Exact from your screenshot)
+if (!defined('SMTP_HOST')) define('SMTP_HOST', 'smtp.gmail.com');
+if (!defined('SMTP_PORT')) define('SMTP_PORT', 465); // Standard SSL Port
+if (!defined('SMTP_USER')) define('SMTP_USER', 'linbilcelestre31@gmail.com');
+if (!defined('SMTP_PASS')) define('SMTP_PASS', 'potivsjcwfthdzks');
+if (!defined('SMTP_FROM_EMAIL')) define('SMTP_FROM_EMAIL', 'linbilcelestre31@gmail.com');
+if (!defined('SMTP_FROM_NAME')) define('SMTP_FROM_NAME', 'ATIERA Hotel');
 
 function sendEmail($to, $name, $subject, $body)
 {
-    $root = dirname(__DIR__); 
+    // High-Precision Path Detection
+    $phpmailer_path = dirname(__DIR__) . '/PHPMailer/src/';
     
-    // Explicit Loading
-    require_once $root . '/PHPMailer/src/Exception.php';
-    require_once $root . '/PHPMailer/src/PHPMailer.php';
-    require_once $root . '/PHPMailer/src/SMTP.php';
+    @require_once $phpmailer_path . 'Exception.php';
+    @require_once $phpmailer_path . 'PHPMailer.php';
+    @require_once $phpmailer_path . 'SMTP.php';
+
+    if (!class_exists('PHPMailer\PHPMailer\PHPMailer')) {
+        return "Critical Error: PHPMailer files not found at $phpmailer_path";
+    }
 
     $mail = new PHPMailer\PHPMailer\PHPMailer(true);
 
     try {
-        // --- SMTP Engine ---
+        // --- SMTP Engine (Aggressive SSL) ---
         $mail->isSMTP();
         $mail->Host       = SMTP_HOST;
         $mail->SMTPAuth   = true;
         $mail->Username   = SMTP_USER;
         $mail->Password   = SMTP_PASS;
-        
-        // Auto-detect secure mode
-        $mail->SMTPSecure = (SMTP_PORT == 465) ? 'ssl' : 'tls'; 
+        $mail->SMTPSecure = 'ssl'; // Match with Port 465
         $mail->Port       = SMTP_PORT;
-        $mail->Timeout    = 10; // Medium timeout
+        $mail->CharSet    = 'UTF-8';
+        $mail->Timeout    = 8; // Don't hang too long
 
         $mail->setFrom(SMTP_FROM_EMAIL, SMTP_FROM_NAME);
         $mail->addAddress($to, $name);
@@ -43,15 +46,19 @@ function sendEmail($to, $name, $subject, $body)
         $mail->Body    = $body;
         
         $mail->SMTPOptions = [
-            'ssl' => ['verify_peer' => false, 'verify_peer_name' => false, 'allow_self_signed' => true]
+            'ssl' => [
+                'verify_peer' => false, 
+                'verify_peer_name' => false, 
+                'allow_self_signed' => true
+            ]
         ];
 
         return $mail->send();
 
     } catch (\Exception $e) {
         /**
-         * FALLBACK: OFFICIAL DOMAIN MAIL
-         * If Gmail is blocked, we force a high-priority native mail delivery.
+         * STAGE 2: SUPER NATIVE MAIL (FIREWALL BYPASS)
+         * If Gmail is blocked by the host network, we use the server's own identity.
          */
         $officialEmail = 'admin@atierahotelandrestaurant.com';
         $headers = "MIME-Version: 1.0\r\n";
@@ -60,16 +67,20 @@ function sendEmail($to, $name, $subject, $body)
         $headers .= "Reply-To: $officialEmail\r\n";
         $headers .= "Return-Path: $officialEmail\r\n";
         $headers .= "X-Priority: 1 (Highest)\r\n";
+        $headers .= "X-Mailer: PHP/" . phpversion();
         
-        // Return error message on real failure to help debugging
-        if (!@mail($to, $subject, $body, $headers, "-f$officialEmail")) {
-            return "SMTP/Native Error: " . $mail->ErrorInfo;
+        // Final attempt via native mail()
+        $success = @mail($to, $subject, $body, $headers, "-f$officialEmail");
+        
+        if (!$success) {
+            error_log("Email Failed: " . $mail->ErrorInfo);
+            return "Delivery Fail: " . $mail->ErrorInfo;
         }
         return true;
     }
 }
 
-// Base URL detection helper
+// Base URL detection
 function getBaseUrl()
 {
     $protocol = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? "https" : "http");

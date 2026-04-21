@@ -31,16 +31,17 @@ function send_email($to, $name, $code)
 {
     $subject = '🔐 ATIERA Verification Code';
     $body = "
-            <div style='font-family: Arial, sans-serif; max-width: 500px; margin: 0 auto; padding: 20px; border: 1px solid #e1e1e1; border-radius: 12px; background-color: #ffffff;'>
-                <div style='text-align: center; margin-bottom: 25px;'>
-                    <h2 style='color: #1b2f73; margin: 0;'>Verification Required</h2>
-                    <p style='color: #64748b;'>Secure Login Access</p>
+            <div style=\"font-family:Arial,sans-serif; max-width:600px; margin:0 auto; border:1px solid #e1e1e1; border-radius:12px; background-color:#ffffff; padding:20px;\">
+                <div style=\"text-align:center; padding-bottom:20px;\">
+                     <h2 style=\"color:#1b2f73; margin:0;\">Email Verification</h2>
+                     <p style=\"color:#64748b; font-size:14px;\">Use the new code below to complete your login.</p>
                 </div>
-                <div style='padding: 30px; background-color: #f8fafc; border-radius: 10px; text-align: center;'>
-                    <p style='font-size: 14px; color: #334155; margin-bottom: 20px;'>Hello <strong>$name</strong>, use the code below to verify your account:</p>
-                    <div style='font-size: 36px; font-weight: 800; letter-spacing: 12px; color: #1b2f73; background: #fff; padding: 15px; border: 2px solid #d4af37; border-radius: 8px; display: inline-block;'>
-                        $code
-                    </div>
+                <div style=\"background-color:#f8fafc; border-radius:10px; padding:30px; text-align:center; border:1px solid #f1f5f9;\">
+                     <p style=\"font-size:14px; color:#334155; margin-bottom:10px;\">Your new verification code:</p>
+                     <div style=\"font-size:42px; font-weight:800; color:#d4af37; letter-spacing:10px; background:#fff; border:2px solid #d4af37; border-radius:8px; display:inline-block; padding:10px 30px; box-shadow: 0 4px 6px rgba(0,0,0,0.05);\">
+                         " . $code . "
+                     </div>
+                     <p style=\"font-size:12px; color:#b91c1c; margin-top:20px;\">This code will expire in 15 minutes.</p>
                 </div>
             </div>";
     

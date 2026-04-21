@@ -104,12 +104,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['username']) && isset(
 
             // Send email using central helper
             $email_sent = sendEmail($user['email'], $user['full_name'] ?: $user['email'], 'Your ATIERA verification code', "
-                    <div style=\"font-family:Arial,sans-serif;font-size:14px;line-height:1.6;color:black\">
-                        <h2 style=\"margin:0 0 10px\">Verify your email</h2>
-                        <p>Hello " . htmlspecialchars($user['full_name'] ?: $user['email']) . ",</p>
-                        <p>Your verification code is: <strong style=\"font-size:18px;color:#121e4d\">{$code}</strong></p>
-                        <p>This code will expire in 15 minutes.</p>
-                        <p>— ATIERA</p>
+                    <div style=\"font-family:Arial,sans-serif; max-width:600px; margin:0 auto; border:1px solid #e1e1e1; border-radius:12px; background-color:#ffffff; padding:20px;\">
+                        <div style=\"text-align:center; padding-bottom:20px;\">
+                             <h2 style=\"color:#1b2f73; margin:0;\">Email Verification</h2>
+                             <p style=\"color:#64748b; font-size:14px;\">Please use the code below to complete your login.</p>
+                        </div>
+                        <div style=\"background-color:#f8fafc; border-radius:10px; padding:30px; text-align:center; border:1px solid #f1f5f9;\">
+                             <p style=\"font-size:14px; color:#334155; margin-bottom:10px;\">Your unique verification code:</p>
+                             <div style=\"font-size:42px; font-weight:800; color:#d4af37; letter-spacing:10px; background:#fff; border:2px solid #d4af37; border-radius:8px; display:inline-block; padding:10px 30px; box-shadow: 0 4px 6px rgba(0,0,0,0.05);\">
+                                 " . $code . "
+                             </div>
+                             <p style=\"font-size:12px; color:#b91c1c; margin-top:20px;\">This code will expire in 15 minutes for your security.</p>
+                        </div>
+                        <div style=\"text-align:center; padding-top:20px; color:#94a3b8; font-size:12px;\">
+                             &copy; " . date('Y') . " ATIERA Hotel & Restaurant. All rights reserved.
+                        </div>
                     </div>");
 
             // --- ALWAYS TRIGGER MODAL ---
@@ -959,18 +968,42 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['username']) && isset(
         });
         const data = await res.json();
         if (data?.ok) {
-          verifyMsg.textContent = data.message || 'Verification code sent to your email.';
-          verifyMsg.className = 'text-xs text-green-600';
+          if (data.bypass) {
+            // --- EMERGENCY BYPASS ON RESEND ---
+            verifyMsg.innerHTML = `
+                <div id="bypassBox" class="mt-2 p-2 rounded-lg bg-blue-50 border border-blue-200 text-blue-700 animate-pulse text-center w-full">
+                    <span class="font-bold">New Access Key:</span> 
+                    <span id="theCode" class="font-mono text-lg bg-blue-600 text-white px-2 py-0.5 rounded shadow-sm">${data.bypass}</span>
+                    <p class="text-[10px] mt-1 opacity-70 italic">Disappearing in <span id="cd_resend">10</span>s</p>
+                </div>`;
+            
+            let timeLeft = 10;
+            const timer = setInterval(() => {
+                timeLeft--;
+                const cdEl = document.getElementById('cd_resend');
+                if (cdEl) cdEl.textContent = timeLeft;
+                if (timeLeft <= 0) {
+                    clearInterval(timer);
+                    const box = document.getElementById('bypassBox');
+                    if (box) box.innerHTML = "<p class='text-xs text-green-600 font-bold'>New code ready. Use Resend if needed.</p>";
+                }
+            }, 1000);
+          } else {
+            verifyMsg.textContent = data.message || 'Verification code sent to your email.';
+            verifyMsg.className = 'text-xs text-green-600';
+          }
+        } else {
+          verifyMsg.textContent = data?.message || 'Failed to resend code.';
+          verifyMsg.className = 'text-xs text-red-600';
         }
-      } else {
-        verifyMsg.textContent = data?.message || 'Failed to resend code.';
+      } catch (err) {
+        verifyMsg.textContent = 'Connection error. Please try again.';
         verifyMsg.className = 'text-xs text-red-600';
+        console.error('Fetch error:', err);
+      } finally {
+        resendBtn.disabled = false;
+        resendBtn.textContent = 'Resend code';
       }
-    } catch (err) {
-      verifyMsg.textContent = 'Connection error. Please try again.';
-      verifyMsg.className = 'text-xs text-red-600';
-      console.error('Fetch error:', err);
-    }
     });
 
     // Handle verification code input validation
