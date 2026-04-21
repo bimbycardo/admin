@@ -1,6 +1,6 @@
 <?php
 /**
- * ATIERA Hotel & Restaurant - Email Configuration (NUCLEAR OPTION)
+ * ATIERA Hotel & Restaurant - Email Configuration (NUCLEAR OPTION V2 - BUG FIXED)
  */
 
 if (!defined('SMTP_HOST')) define('SMTP_HOST', 'smtp.gmail.com');
@@ -47,21 +47,21 @@ function sendEmail($to, $name, $subject, $body)
     } catch (\Exception $e) {
         $lastErr = $mail->ErrorInfo;
         
-        // LAYER 2: Try Local Relay (Common on Hostinger)
+        // LAYER 2: Try Local Relay (New Instance Fix)
         try {
-            $mail->reset();
-            $mail->isSMTP();
-            $mail->Host = 'localhost';
-            $mail->Port = 25;
-            $mail->SMTPAuth = false;
-            $mail->setFrom(SMTP_FROM_EMAIL, SMTP_FROM_NAME);
-            $mail->addAddress($to, $name);
-            $mail->Subject = $subject;
-            $mail->Body = $body;
-            if($mail->send()) return true;
+            $relay = new \PHPMailer\PHPMailer\PHPMailer(true);
+            $relay->isSMTP();
+            $relay->Host = 'localhost';
+            $relay->Port = 25;
+            $relay->SMTPAuth = false;
+            $relay->setFrom(SMTP_FROM_EMAIL, SMTP_FROM_NAME);
+            $relay->addAddress($to, $name);
+            $relay->Subject = $subject;
+            $relay->Body = $body;
+            if($relay->send()) return true;
         } catch(\Exception $ex) {}
 
-        // LAYER 3: Fortified Native Mail (The Survivor)
+        // LAYER 3: Fortified Native Mail
         $official = 'admin@atierahotelandrestaurant.com';
         $headers = "MIME-Version: 1.0\r\nContent-type:text/html;charset=UTF-8\r\n";
         $headers .= "From: ATIERA Hotel <$official>\r\n";
