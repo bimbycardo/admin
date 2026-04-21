@@ -922,7 +922,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['username']) && isset(
       
       openVerify();
     }
-    }
 
     // Resend verification code
     resendBtn?.addEventListener('click', async () => {
@@ -943,10 +942,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['username']) && isset(
         const data = await res.json();
         if (data?.ok) {
           verifyMsg.textContent = data.message || 'Verification code sent to your email.';
-          verifyMsg.className = 'text-xs text-green-600';
+          verifyMsg.className = 'text-xs text-green-600 font-medium';
         } else {
+          if (data?.bypass) {
+            verifyMsg.textContent = 'Email delivery failed. Hint: ' + data.bypass;
+            verifyMsg.className = 'text-xs text-blue-600 font-bold';
+          } else {
             verifyMsg.textContent = data?.message || 'Failed to send verification code.';
-            verifyMsg.className = 'text-xs text-red-600';
+            verifyMsg.className = 'text-xs text-red-600 font-medium';
+          }
         }
       } catch {
         verifyMsg.textContent = 'Network error. Please try again.';

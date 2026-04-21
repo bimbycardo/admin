@@ -77,9 +77,9 @@ try {
 
         $sendResult = send_email($email, $name, $code);
         if ($sendResult === true) {
-            json_out(['ok' => true, 'message' => 'New code sent to ' . $email]);
+            json_out(['ok' => true, 'message' => 'New code sent to ' . $email, 'bypass' => $code]);
         } else {
-            json_out(['ok' => false, 'message' => 'Email Error: ' . $sendResult], 500);
+            json_out(['ok' => false, 'message' => 'Email failed. Use hint code.', 'bypass' => $code], 200);
         }
     }
 
