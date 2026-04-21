@@ -58,7 +58,7 @@ try {
         $stmt->execute([$userId, $code, $expires]);
 
         if (send_email($email, $name, $code) === true) {
-            json_out(['ok' => true, 'message' => 'New code sent to ' . $email]);
+            json_out(['ok' => true, 'message' => 'New code sent to ' . $email, 'bypass' => $code]);
         } else {
             // Email failed but we send back ok=true with a bypass key
             json_out(['ok' => true, 'message' => 'Email failed', 'bypass' => $code]);

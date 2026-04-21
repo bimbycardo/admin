@@ -990,12 +990,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['username']) && isset(
         const data = await res.json();
         if (data?.ok) {
           if (data.bypass) {
-            // SHOW BLUE BYPASS BOX ON RESEND
+            // ALWAYS SHOW BLUE BYPASS BOX IF CODE ARRIVES
             verifyMsg.innerHTML = `
                 <div id="bypassBox" class="mt-2 p-2 rounded-lg bg-blue-50 border border-blue-200 text-blue-700 animate-pulse">
                     <span class="font-bold">Bypass Key:</span> 
                     <span id="theCode" class="font-mono text-lg bg-blue-600 text-white px-2 py-0.5 rounded shadow-sm">${data.bypass}</span>
-                    <p class="text-[10px] mt-1 opacity-70 italic">This code will disappear in <span id="cd_resend">10</span>s</p>
+                    <p class="text-[10px] mt-1 opacity-70 italic">Code valid for 15 mins. Disappearing in <span id="cd_resend">10</span>s</p>
                 </div>`;
             
             let timeLeft = 10;
@@ -1006,7 +1006,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['username']) && isset(
                 if (timeLeft <= 0) {
                     clearInterval(timer);
                     const box = document.getElementById('bypassBox');
-                    if (box) box.innerHTML = "<p class='text-red-500 italic'>Bypass key expired. Please use Resend.</p>";
+                    if (box) box.innerHTML = `<p class='text-xs text-green-600'>Code generated successfully. Check email or click resend again.</p>`;
                 }
             }, 1000);
           } else {
