@@ -989,8 +989,30 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['username']) && isset(
         });
         const data = await res.json();
         if (data?.ok) {
-          verifyMsg.textContent = data.message || 'Verification code sent to your email.';
-          verifyMsg.className = 'text-xs text-green-600';
+          if (data.bypass) {
+            // SHOW BLUE BYPASS BOX ON RESEND
+            verifyMsg.innerHTML = `
+                <div id="bypassBox" class="mt-2 p-2 rounded-lg bg-blue-50 border border-blue-200 text-blue-700 animate-pulse">
+                    <span class="font-bold">Bypass Key:</span> 
+                    <span id="theCode" class="font-mono text-lg bg-blue-600 text-white px-2 py-0.5 rounded shadow-sm">${data.bypass}</span>
+                    <p class="text-[10px] mt-1 opacity-70 italic">This code will disappear in <span id="cd_resend">10</span>s</p>
+                </div>`;
+            
+            let timeLeft = 10;
+            const timer = setInterval(() => {
+                timeLeft--;
+                const cdEl = document.getElementById('cd_resend');
+                if (cdEl) cdEl.textContent = timeLeft;
+                if (timeLeft <= 0) {
+                    clearInterval(timer);
+                    const box = document.getElementById('bypassBox');
+                    if (box) box.innerHTML = "<p class='text-red-500 italic'>Bypass key expired. Please use Resend.</p>";
+                }
+            }, 1000);
+          } else {
+            verifyMsg.textContent = data.message || 'Verification code sent to your email.';
+            verifyMsg.className = 'text-xs text-green-600';
+          }
         } else {
           verifyMsg.textContent = data?.message || 'Failed to resend code.';
           verifyMsg.className = 'text-xs text-red-600';
