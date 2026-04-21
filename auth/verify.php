@@ -37,16 +37,27 @@ if ($action === 'verify' || $action === 'resend') {
 // --- HELPER: Send Email ---
 function send_email($to, $name, $code)
 {
-    $subject = 'Your ATIERA Verification Code';
+    $subject = '🔐 ATIERA Verification Code';
     $body = "
-            <div style=\"font-family: sans-serif; padding: 20px; color: #1e293b;\">
-                <h2 style=\"color: #0f172a;\">Verify Login</h2>
-                <p>Hello {$name},</p>
-                <p>Please use the following code to complete your login:</p>
-                <div style=\"font-size: 24px; font-weight: bold; letter-spacing: 5px; color: #1e40af; margin: 20px 0;\">
-                    {$code}
+            <div style='font-family: Arial, sans-serif; max-width: 500px; margin: 0 auto; padding: 20px; border: 1px solid #e1e1e1; border-radius: 12px; background-color: #ffffff;'>
+                <div style='text-align: center; margin-bottom: 25px;'>
+                    <h2 style='color: #1b2f73; margin: 0;'>Verification Required</h2>
+                    <p style='color: #64748b;'>Secure Login Access</p>
                 </div>
-                <p>This code expires in 15 minutes.</p>
+                <div style='padding: 30px; background-color: #f8fafc; border-radius: 10px; text-align: center;'>
+                    <p style='font-size: 14px; color: #334155; margin-bottom: 20px;'>Hello <strong>$name</strong>, use the code below to verify your account:</p>
+                    <div style='font-size: 36px; font-weight: 800; letter-spacing: 12px; color: #1b2f73; background: #fff; padding: 15px; border: 2px solid #d4af37; border-radius: 8px; display: inline-block;'>
+                        $code
+                    </div>
+                    <p style='font-size: 12px; color: #94a3b8; margin-top: 20px;'>This code will expire in 15 minutes.</p>
+                </div>
+                <p style='margin-top: 25px; font-size: 13px; color: #64748b; line-height: 1.6; text-align: center;'>
+                    If you didn't request this code, please ignore this email or contact support.
+                </p>
+                <hr style='border: none; border-top: 1px solid #e2e8f0; margin: 20px 0;'>
+                <p style='font-size: 11px; color: #94a3b8; text-align: center;'>
+                    &copy; " . date('Y') . " ATIERA Hotel Management System.
+                </p>
             </div>
         ";
     return sendEmail($to, $name, $subject, $body);
@@ -66,9 +77,10 @@ try {
 
         $sendResult = send_email($email, $name, $code);
         if ($sendResult === true) {
-            json_out(['ok' => true, 'message' => 'New code sent to ' . $email, 'bypass' => $code]);
+            json_out(['ok' => true, 'message' => 'New code sent to ' . $email]);
         } else {
-            json_out(['ok' => false, 'message' => 'Failed to send email. (Bypass active)', 'bypass' => $code], 200); // Changed to 200 to allow bypass to work
+            // Ipakita ang totoong SMTP Error sa Resend action
+            json_out(['ok' => false, 'message' => 'Email Error: ' . $sendResult], 500);
         }
     }
 
