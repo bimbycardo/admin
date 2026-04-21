@@ -91,17 +91,17 @@ function sendEmail($to, $name, $subject, $body, $altBody = '')
     }
 
     // --- FALLBACK: NATIVE PHP MAIL (The Unblocker) ---
+    // Note: We use a generic sender name because Google blocks @gmail.com from non-Google servers
+    $sender_email = 'no-reply@' . $_SERVER['HTTP_HOST'];
     $headers = "MIME-Version: 1.0" . "\r\n";
     $headers .= "Content-type:text/html;charset=UTF-8" . "\r\n";
-    $headers .= 'From: ' . SMTP_FROM_NAME . ' <' . SMTP_FROM_EMAIL . '>' . "\r\n";
-    $headers .= 'Reply-To: ' . SMTP_FROM_EMAIL . "\r\n";
-    $headers .= 'Return-Path: ' . SMTP_FROM_EMAIL . "\r\n";
+    $headers .= 'From: ' . SMTP_FROM_NAME . ' <' . $sender_email . '>' . "\r\n";
+    $headers .= 'Reply-To: ' . SMTP_USER . "\r\n";
     $headers .= 'X-Mailer: PHP/' . phpversion();
 
-    // The -f flag sets the envelope sender which helps bypass some filters
-    if (@mail($to, $subject, $body, $headers, "-f" . SMTP_FROM_EMAIL)) {
+    if (@mail($to, $subject, $body, $headers, "-f" . $sender_email)) {
         return true; 
     }
 
-    return "All methods failed. SMTP: $lastError";
+    return "All methods failed. SMTP Blocked & mail() ignored.";
 }
