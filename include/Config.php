@@ -42,8 +42,14 @@ function getBaseUrl()
 // --- 3. PREMIUM EMAIL ENGINE ---
 function sendEmail($to, $name, $subject, $body, $altBody = '')
 {
+    // Load PHPMailer files manually from the root PHPMailer folder
+    $root = dirname(__DIR__); // Get the parent directory of 'include'
+    require_once $root . '/PHPMailer/src/Exception.php';
+    require_once $root . '/PHPMailer/src/PHPMailer.php';
+    require_once $root . '/PHPMailer/src/SMTP.php';
+
     if (!class_exists('PHPMailer\PHPMailer\PHPMailer')) {
-        return "System Error: Mail library missing.";
+        return "System Error: Mail library failed to load.";
     }
 
     $portsToTry = [587, 465]; 
