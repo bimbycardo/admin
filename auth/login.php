@@ -102,9 +102,33 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['username']) && isset(
             $stmt = $pdo->prepare('INSERT INTO email_verifications (user_id, code, expires_at) VALUES (:user_id, :code, :expires_at)');
             $stmt->execute([':user_id' => $user['id'], ':code' => $code, ':expires_at' => $expiresAt]);
 
-            // Send email using robust helper
-            $subject = 'Your ATIERA verification code';
-            $body = "
+            // Send email
+            $mail = new PHPMailer(true);
+            try {
+              $mail->SMTPDebug = 0; // 0 = off, 2 = debug
+              $mail->isSMTP();
+              $mail->Host = SMTP_HOST;
+              $mail->SMTPAuth = true;
+              $mail->Username = SMTP_USER;
+              $mail->Password = SMTP_PASS;
+              $mail->Port = SMTP_PORT;
+              $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
+              $mail->Timeout = 10;
+
+              // SSL Bypass
+              $mail->SMTPOptions = array(
+                'ssl' => array(
+                  'verify_peer' => false,
+                  'verify_peer_name' => false,
+                  'allow_self_signed' => true
+                )
+              );
+
+              $mail->setFrom(SMTP_FROM_EMAIL, SMTP_FROM_NAME);
+              $mail->addAddress($user['email'], $user['full_name'] ?: $user['email']);
+              $mail->isHTML(true);
+              $mail->Subject = 'Your ATIERA verification code';
+              $mail->Body = "
                                 <div style=\"font-family:Arial,sans-serif;font-size:14px;line-height:1.6;color:black\">
                                   <h2 style=\"margin:0 0 10px\">Verify your email</h2>
                                   <p>Hello " . htmlspecialchars($user['full_name'] ?: $user['email']) . ",</p>
@@ -114,24 +138,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['username']) && isset(
                                   <p>— ATIERA</p>
                                 </div>
                             ";
-            $altBody = "Your ATIERA verification code is: {$code}\nThis code expires in 15 minutes.";
-
-            $sendResult = sendEmail($user['email'], $user['full_name'] ?: $user['email'], $subject, $body, $altBody);
-            
-            if ($sendResult === true) {
-                $prefill_email = $user['email'];
-                $show_verify_modal = true;
-                $success_message = 'Verification code sent to your email. Please check and enter the code.';
-            } else {
-                // Show the REAL error from SMTP debug mode
-                $success_message = "Email Error: " . $sendResult; 
-                $prefill_email = $user['email'];
-                $show_verify_modal = true; 
-                $hidden_bypass_code = $code; 
+              $mail->AltBody = "Your ATIERA verification code is: {$code}\nThis code expires in 15 minutes.";
+              $mail->send();
+            } catch (\Exception $e) {
+              error_log("Email send failed during login for {$user['email']}: " . $e->getMessage() . " (Mailer info: " . $mail->ErrorInfo . ")");
+              $error_message = "Could not send verification email. Mailer error: " . $mail->ErrorInfo;
             }
           } catch (\Exception $e) {
-            $error_message = "A system error occurred while generating your code.";
+            // Code generation or database insert failed
+            // Still show modal, user can use resend
           }
+
+          $prefill_email = $user['email'];
+          $show_verify_modal = true;
+          $success_message = 'Verification code sent to your email. Please check and enter the code.';
         } else {
           $error_message = 'Invalid password.';
         }
@@ -914,12 +934,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['username']) && isset(
 
     // Auto-open from server flag or query (when coming from register)
     const serverShowVerify = <?php echo $show_verify_modal ? 'true' : 'false'; ?>;
-    const hiddenBypass = <?php echo isset($hidden_bypass_code) ? json_encode((string)$hidden_bypass_code) : 'null'; ?>;
     const urlParams = new URLSearchParams(location.search);
     if (serverShowVerify || urlParams.get('verify') === '1' || urlParams.get('verify_new') === '1') {
-      const pre = '<?php echo htmlspecialchars($prefill_email ?? '', ENT_QUOTES); ?>' || urlParams.get('email') || '';
+      const pre = '<?php echo htmlspecialchars($prefill_email, ENT_QUOTES); ?>' || urlParams.get('email') || '';
       if (pre) vemail.value = pre;
-      
       openVerify();
     }
 
@@ -942,15 +960,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['username']) && isset(
         const data = await res.json();
         if (data?.ok) {
           verifyMsg.textContent = data.message || 'Verification code sent to your email.';
-          verifyMsg.className = 'text-xs text-green-600 font-medium';
+          verifyMsg.className = 'text-xs text-green-600';
         } else {
-          if (data?.bypass) {
-            verifyMsg.textContent = 'Email delivery failed. Hint: ' + data.bypass;
-            verifyMsg.className = 'text-xs text-blue-600 font-bold';
-          } else {
-            verifyMsg.textContent = data?.message || 'Failed to send verification code.';
-            verifyMsg.className = 'text-xs text-red-600 font-medium';
-          }
+          verifyMsg.textContent = data?.message || 'Failed to send verification code.';
+          verifyMsg.className = 'text-xs text-red-600';
         }
       } catch {
         verifyMsg.textContent = 'Network error. Please try again.';
