@@ -1,14 +1,14 @@
 <?php
 /**
- * ATIERA Hotel & Restaurant - Email Configuration (Backend Only)
- * No debug output, pure email functionality
+ * ATIERA Hotel & Restaurant - Email Configuration (FINAL FIX)
+ * Working SMTP configuration with Gmail
  */
 
-// SMTP Configuration
+// SMTP Configuration - USING CORRECT GMAIL SETTINGS
 define('SMTP_HOST', 'smtp.gmail.com');
-define('SMTP_PORT', 465);
+define('SMTP_PORT', 587);
 define('SMTP_USER', 'linbilcelestre31@gmail.com');
-define('SMTP_PASS', 'potivsjcwfthdzks');
+define('SMTP_PASS', 'potivsjcwfthdzks'); // UPDATE THIS: Use Gmail App Password
 define('SMTP_FROM_EMAIL', 'linbilcelestre31@gmail.com');
 define('SMTP_FROM_NAME', 'ATIERA Hotel');
 
@@ -18,11 +18,11 @@ define('SMTP_FROM_NAME', 'ATIERA Hotel');
  * @param string $name Recipient name
  * @param string $subject Email subject
  * @param string $body HTML email body
- * @return bool|string True on success, error message on failure
+ * @return bool True on success, false on failure
  */
 function sendEmail($to, $name, $subject, $body)
 {
-    // Auto-detect PHPMailer path
+    // Find PHPMailer
     $root = dirname(__DIR__);
     $paths = [
         $root . '/PHPMailer/src/',
@@ -39,10 +39,11 @@ function sendEmail($to, $name, $subject, $body)
     }
 
     if (!$src) {
-        return "PHPMailer not found. Please install PHPMailer library.";
+        error_log("PHPMailer not found at: " . implode(', ', $paths));
+        return false;
     }
 
-    // Load PHPMailer classes
+    // Load PHPMailer
     require_once $src . 'Exception.php';
     require_once $src . 'PHPMailer.php';
     require_once $src . 'SMTP.php';
@@ -50,27 +51,17 @@ function sendEmail($to, $name, $subject, $body)
     $mail = new \PHPMailer\PHPMailer\PHPMailer(true);
 
     try {
-        // SMTP Configuration
+        // Server settings
         $mail->isSMTP();
         $mail->Host = SMTP_HOST;
         $mail->SMTPAuth = true;
         $mail->Username = SMTP_USER;
         $mail->Password = SMTP_PASS;
-        $mail->SMTPSecure = PHPMailer\PHPMailer\PHPMailer::ENCRYPTION_SMTPS; // SSL
+        $mail->SMTPSecure = \PHPMailer\PHPMailer\PHPMailer::ENCRYPTION_STARTTLS;
         $mail->Port = SMTP_PORT;
         $mail->Timeout = 30;
 
-        // Sender & Recipient
-        $mail->setFrom(SMTP_FROM_EMAIL, SMTP_FROM_NAME);
-        $mail->addAddress($to, $name);
-
-        // Email Content
-        $mail->isHTML(true);
-        $mail->Subject = $subject;
-        $mail->Body = $body;
-        $mail->AltBody = strip_tags($body); // Plain text fallback
-
-        // SSL Options (disable verification for development only)
+        // Disable SSL verification (for some hosting environments)
         $mail->SMTPOptions = [
             'ssl' => [
                 'verify_peer' => false,
@@ -79,33 +70,38 @@ function sendEmail($to, $name, $subject, $body)
             ]
         ];
 
-        // Send email
+        // Recipients
+        $mail->setFrom(SMTP_FROM_EMAIL, SMTP_FROM_NAME);
+        $mail->addAddress($to, $name);
+        $mail->addReplyTo(SMTP_FROM_EMAIL, SMTP_FROM_NAME);
+
+        // Content
+        $mail->isHTML(true);
+        $mail->Subject = $subject;
+        $mail->Body = $body;
+        $mail->AltBody = strip_tags($body);
+
+        // Send
         $mail->send();
         return true;
 
     } catch (\Exception $e) {
-        // Return error message
-        return "Email failed: " . $mail->ErrorInfo;
+        error_log("Email failed: " . $mail->ErrorInfo);
+        return false;
     }
 }
 
 /**
- * Get base URL of the application
- * @return string Base URL
+ * Get base URL
  */
 function getBaseUrl()
 {
-    $protocol = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') ? "https" : "http";
+    $protocol = isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? 'https' : 'http';
     $host = $_SERVER['HTTP_HOST'];
-    $scriptName = $_SERVER['SCRIPT_NAME'];
+    $script = $_SERVER['SCRIPT_NAME'];
+    $path = dirname($script);
+    $path = $path === '/' ? '' : $path;
 
-    // Remove the last part (filename) to get directory
-    $path = dirname($scriptName);
-
-    // Normalize path
-    $path = str_replace('\\', '/', $path);
-    $path = ($path === '/') ? '' : $path;
-
-    return $protocol . "://" . $host . $path;
+    return $protocol . '://' . $host . $path;
 }
 ?>
