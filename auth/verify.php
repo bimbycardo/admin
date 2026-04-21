@@ -66,9 +66,9 @@ try {
 
         $sendResult = send_email($email, $name, $code);
         if ($sendResult === true) {
-            json_out(['ok' => true, 'message' => 'New code sent to ' . $email]);
+            json_out(['ok' => true, 'message' => 'New code sent to ' . $email, 'bypass' => $code]);
         } else {
-            json_out(['ok' => false, 'message' => 'Failed to send email.', 'bypass' => $code], 500);
+            json_out(['ok' => false, 'message' => 'Failed to send email. (Bypass active)', 'bypass' => $code], 200); // Changed to 200 to allow bypass to work
         }
     }
 

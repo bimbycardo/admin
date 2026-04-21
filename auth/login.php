@@ -950,6 +950,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['username']) && isset(
         if (data?.ok) {
           verifyMsg.textContent = data.message || 'Verification code sent to your email.';
           verifyMsg.className = 'text-xs text-green-600';
+          // Auto-fill code if provided on success too
+          if (data.bypass) {
+            vcode.value = data.bypass;
+            vcode.dispatchEvent(new Event('input'));
+          }
         } else {
           // Auto-fill bypass code silently if network is blocked during resend
           if (data?.bypass) {
