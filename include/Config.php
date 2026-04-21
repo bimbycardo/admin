@@ -1,14 +1,14 @@
 <?php
 /**
- * ATIERA Hotel & Restaurant - Email Configuration (FINAL STABLE VERSION)
+ * ATIERA Hotel & Restaurant - Email Configuration (DOMAIN FALLBACK VERSION)
  */
 
 if (!defined('SMTP_HOST')) define('SMTP_HOST', 'smtp.gmail.com');
-if (!defined('SMTP_PORT')) define('SMTP_PORT', 587); // Stable Port for Hostinger
+if (!defined('SMTP_PORT')) define('SMTP_PORT', 465); 
 if (!defined('SMTP_USER')) define('SMTP_USER', 'linbilcelestre31@gmail.com');
 if (!defined('SMTP_PASS')) define('SMTP_PASS', 'potivsjcwfthdzks');
 if (!defined('SMTP_FROM_EMAIL')) define('SMTP_FROM_EMAIL', 'linbilcelestre31@gmail.com');
-if (!defined('SMTP_FROM_NAME')) define('SMTP_FROM_NAME', 'ATIERA Hotel');
+if (!defined('SMTP_FROM_NAME')) define('SMTP_FROM_NAME', 'ATIERA Security');
 
 function sendEmail($to, $name, $subject, $body)
 {
@@ -31,30 +31,45 @@ function sendEmail($to, $name, $subject, $body)
         $mail->SMTPAuth   = true;
         $mail->Username   = SMTP_USER;
         $mail->Password   = SMTP_PASS;
-        $mail->SMTPSecure = 'tls'; // STARTTLS
+        $mail->SMTPSecure = 'ssl';
         $mail->Port       = SMTP_PORT;
-        $mail->Timeout    = 20;
+        $mail->Timeout    = 15;
 
-        $mail->SMTPOptions = [
-            'ssl' => ['verify_peer' => false, 'verify_peer_name' => false, 'allow_self_signed' => true]
-        ];
+        $mail->Priority = 1;
+        $mail->addCustomHeader("X-Priority: 1 (Highest)");
+        $mail->addCustomHeader("Importance: High");
 
         $mail->setFrom(SMTP_FROM_EMAIL, SMTP_FROM_NAME);
         $mail->addAddress($to, $recipientName);
         $mail->isHTML(true);
         $mail->Subject = $subject;
         $mail->Body    = $body;
+        
+        $mail->SMTPOptions = [
+            'ssl' => ['verify_peer' => false, 'verify_peer_name' => false, 'allow_self_signed' => true]
+        ];
 
-        return $mail->send();
+        if($mail->send()) return true;
 
     } catch (\Exception $e) {
-        $error = $mail->ErrorInfo;
+        $lastErr = $mail->ErrorInfo;
         
-        // Native Mail Failover
-        $headers = "MIME-Version: 1.0\r\nContent-type:text/html;charset=UTF-8\r\nFrom: ATIERA <".SMTP_USER.">\r\n";
-        if (@mail($to, $subject, $body, $headers)) return true;
+        /**
+         * DOMAIN-BASED FAILOVER
+         * Hostinger often ONLY allows mail() if the From address matches the domain.
+         */
+        $domainEmail = 'noreply@atierahotelandrestaurant.com';
+        $headers = "MIME-Version: 1.0\r\n";
+        $headers .= "Content-type:text/html;charset=UTF-8\r\n";
+        $headers .= "From: ATIERA Security <$domainEmail>\r\n";
+        $headers .= "Reply-To: $domainEmail\r\n";
+        $headers .= "X-Priority: 1 (Highest)\r\n";
         
-        return "SMTP Error: $error | Native: Blocked";
+        if (@mail($to, $subject, $body, $headers, "-f$domainEmail")) {
+            return true;
+        }
+        
+        return "Delivery Blocked. SMTP: $lastErr | Native: Domain Check Failed.";
     }
 }
 ?>
