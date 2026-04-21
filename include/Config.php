@@ -1,62 +1,41 @@
 <?php
 /**
- * ATIERA Hotel & Restaurant - Email Configuration (HOSTINGER INTERNAL RELY)
- * PROOF: External SMTP is blocked (Error 101), so we use Internal Relay.
+ * ATIERA Hotel & Restaurant - Email Configuration (PURE NATIVE MODE)
+ * PROOF: All SMTP ports (465, 587, 25) are CLOSED on this server.
+ * Only native mail() reports success.
  */
 
-if (!defined('SMTP_HOST')) define('SMTP_HOST', 'localhost'); // Hostinger internal relay
-if (!defined('SMTP_PORT')) define('SMTP_PORT', 25);
-if (!defined('SMTP_USER')) define('SMTP_USER', ''); // Internal often doesn't need auth
-if (!defined('SMTP_PASS')) define('SMTP_PASS', ''); 
 if (!defined('SMTP_FROM_EMAIL')) define('SMTP_FROM_EMAIL', 'noreply@atierahotelandrestaurant.com');
 if (!defined('SMTP_FROM_NAME')) define('SMTP_FROM_NAME', 'ATIERA Security');
 
+/**
+ * Send email using Native PHP Mail (The only working method on this host)
+ */
 function sendEmail($to, $name, $subject, $body)
 {
-    $root = dirname(__DIR__);
-    $paths = [$root.'/PHPMailer/src/', $root.'/phpmailer/src/'];
-    $src = '';
-    foreach($paths as $p) if(file_exists($p.'PHPMailer.php')) { $src = $p; break; }
-    if(!$src) return "PHPMailer Missing.";
+    // Use the official domain-based email to survive spam filters
+    $from = SMTP_FROM_EMAIL;
+    $fromName = SMTP_FROM_NAME;
+    
+    // Fortified Headers for Gmail Delivery
+    $headers = "MIME-Version: 1.0" . "\r\n";
+    $headers .= "Content-type:text/html;charset=UTF-8" . "\r\n";
+    $headers .= "From: $fromName <$from>" . "\r\n";
+    $headers .= "Reply-To: $from" . "\r\n";
+    $headers .= "X-Mailer: PHP/" . phpversion() . "\r\n";
+    $headers .= "X-Priority: 1 (Highest)" . "\r\n";
+    $headers .= "Importance: High" . "\r\n";
 
-    require_once $src.'Exception.php';
-    require_once $src.'PHPMailer.php';
-    require_once $src.'SMTP.php';
-
-    $mail = new \PHPMailer\PHPMailer\PHPMailer(true);
-    $recipientName = !empty($name) ? $name : 'Administrator';
-
-    try {
-        // --- STEP 1: ATTEMPT INTERNAL RELAY (THE BYPASS) ---
-        $mail->isSMTP();
-        $mail->Host       = 'localhost'; 
-        $mail->SMTPAuth   = false;
-        $mail->Port       = 25;
-        $mail->setFrom(SMTP_FROM_EMAIL, SMTP_FROM_NAME);
-        $mail->addAddress($to, $recipientName);
-        $mail->isHTML(true);
-        $mail->Subject = $subject;
-        $mail->Body    = $body;
-        
-        if($mail->send()) return true;
-
-    } catch (\Exception $e) {
-        // --- STEP 2: TOTAL FALLBACK TO NATIVE MAIL ---
-        $headers = "MIME-Version: 1.0\r\n";
-        $headers .= "Content-type:text/html;charset=UTF-8\r\n";
-        $headers .= "From: ATIERA Security <".SMTP_FROM_EMAIL.">\r\n";
-        $headers .= "Reply-To: ".SMTP_FROM_EMAIL."\r\n";
-        $headers .= "X-Priority: 1 (Highest)\r\n";
-        
-        if (@mail($to, $subject, $body, $headers, "-f".SMTP_FROM_EMAIL)) {
-            return true;
-        }
-        
-        return "Critical: All paths blocked by Hostinger Firewall.";
+    // Attempt to send
+    if (@mail($to, $subject, $body, $headers, "-f$from")) {
+        return true;
     }
+
+    return "Server Block: Native mail() returned false. Please contact Hostinger Support.";
 }
 
 function getBaseUrl() {
-    return (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? "https" : "http") . "://" . $_SERVER['HTTP_HOST'];
+    $protocol = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? "https" : "http");
+    return $protocol . "://" . $_SERVER['HTTP_HOST'];
 }
 ?>
