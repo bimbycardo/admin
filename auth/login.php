@@ -529,8 +529,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['username']) && isset(
 
       <!-- Error and success messages -->
       <?php if (!empty($error_message)): ?>
-        <div class="alert alert-error mb-2" role="alert">
-          <?php echo htmlspecialchars($error_message); ?>
+        <div class="alert alert-error mb-2 text-xs font-mono whitespace-pre-wrap overflow-x-auto leading-tight" role="alert" style="background:#fff1f2; color:#be123c; border:1px solid #fecdd3; padding:10px; border-radius:8px;">
+          <strong>Diagnostic Report:</strong><br>
+          <?php echo $error_message; ?>
         </div>
       <?php endif; ?>
 

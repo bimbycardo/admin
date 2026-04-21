@@ -1,96 +1,111 @@
 <?php
 /**
- * ATIERA Hotel & Restaurant - Central Configuration
- * LINUX COMPATIBILITY VERSION (Case-Insensitive Path Detection)
+ * ATIERA Hotel & Restaurant - Email Configuration (Backend Only)
+ * No debug output, pure email functionality
  */
 
-if (!defined('SMTP_HOST')) define('SMTP_HOST', 'smtp.gmail.com');
-if (!defined('SMTP_PORT')) define('SMTP_PORT', 465); 
-if (!defined('SMTP_USER')) define('SMTP_USER', 'linbilcelestre31@gmail.com');
-if (!defined('SMTP_PASS')) define('SMTP_PASS', 'potivsjcwfthdzks');
-if (!defined('SMTP_FROM_EMAIL')) define('SMTP_FROM_EMAIL', 'linbilcelestre31@gmail.com');
-if (!defined('SMTP_FROM_NAME')) define('SMTP_FROM_NAME', 'ATIERA Hotel');
+// SMTP Configuration
+define('SMTP_HOST', 'smtp.gmail.com');
+define('SMTP_PORT', 465);
+define('SMTP_USER', 'linbilcelestre31@gmail.com');
+define('SMTP_PASS', 'potivsjcwfthdzks');
+define('SMTP_FROM_EMAIL', 'linbilcelestre31@gmail.com');
+define('SMTP_FROM_NAME', 'ATIERA Hotel');
 
+/**
+ * Send email using SMTP
+ * @param string $to Recipient email
+ * @param string $name Recipient name
+ * @param string $subject Email subject
+ * @param string $body HTML email body
+ * @return bool|string True on success, error message on failure
+ */
 function sendEmail($to, $name, $subject, $body)
 {
-    $root = dirname(__DIR__); 
-    
-    // SMART FOLDER DETECTION (Fixes Linux Case-Sensitivity Issues)
-    $possible_paths = [
+    // Auto-detect PHPMailer path
+    $root = dirname(__DIR__);
+    $paths = [
         $root . '/PHPMailer/src/',
         $root . '/phpmailer/src/',
-        $root . '/PHPMailer/PHPMailer/src/',
         $root . '/vendor/phpmailer/phpmailer/src/'
     ];
 
-    $found_path = '';
-    foreach ($possible_paths as $path) {
+    $src = '';
+    foreach ($paths as $path) {
         if (file_exists($path . 'PHPMailer.php')) {
-            $found_path = $path;
+            $src = $path;
             break;
         }
     }
 
-    if (empty($found_path)) {
-        return "Critical Error: PHPMailer folder structure not detected on server. Checked: " . implode(', ', $possible_paths);
+    if (!$src) {
+        return "PHPMailer not found. Please install PHPMailer library.";
     }
 
-    require_once $found_path . 'Exception.php';
-    require_once $found_path . 'PHPMailer.php';
-    require_once $found_path . 'SMTP.php';
+    // Load PHPMailer classes
+    require_once $src . 'Exception.php';
+    require_once $src . 'PHPMailer.php';
+    require_once $src . 'SMTP.php';
 
     $mail = new \PHPMailer\PHPMailer\PHPMailer(true);
 
     try {
+        // SMTP Configuration
         $mail->isSMTP();
-        $mail->Host       = SMTP_HOST;
-        $mail->SMTPAuth   = true;
-        $mail->Username   = SMTP_USER;
-        $mail->Password   = SMTP_PASS;
-        $mail->SMTPSecure = \PHPMailer\PHPMailer\PHPMailer::ENCRYPTION_SMTPS;
-        $mail->Port       = SMTP_PORT;
-        $mail->CharSet    = 'UTF-8';
-        $mail->Timeout    = 20;
+        $mail->Host = SMTP_HOST;
+        $mail->SMTPAuth = true;
+        $mail->Username = SMTP_USER;
+        $mail->Password = SMTP_PASS;
+        $mail->SMTPSecure = PHPMailer\PHPMailer\PHPMailer::ENCRYPTION_SMTPS; // SSL
+        $mail->Port = SMTP_PORT;
+        $mail->Timeout = 30;
 
+        // Sender & Recipient
         $mail->setFrom(SMTP_FROM_EMAIL, SMTP_FROM_NAME);
         $mail->addAddress($to, $name);
+
+        // Email Content
         $mail->isHTML(true);
         $mail->Subject = $subject;
-        $mail->Body    = $body;
-        
+        $mail->Body = $body;
+        $mail->AltBody = strip_tags($body); // Plain text fallback
+
+        // SSL Options (disable verification for development only)
         $mail->SMTPOptions = [
-            'ssl' => ['verify_peer' => false, 'verify_peer_name' => false, 'allow_self_signed' => true]
+            'ssl' => [
+                'verify_peer' => false,
+                'verify_peer_name' => false,
+                'allow_self_signed' => true
+            ]
         ];
 
-        return $mail->send();
+        // Send email
+        $mail->send();
+        return true;
 
     } catch (\Exception $e) {
-        // ULTIMATE FAILOVER: Native Mail
-        $officialEmail = 'admin@atierahotelandrestaurant.com';
-        $headers = "MIME-Version: 1.0\r\n";
-        $headers .= "Content-type:text/html;charset=UTF-8\r\n";
-        $headers .= "From: ATIERA Hotel <$officialEmail>\r\n";
-        $headers .= "Reply-To: $officialEmail\r\n";
-        
-        $success = @mail($to, $subject, $body, $headers, "-f$officialEmail");
-        return $success ? true : "Final Dispatch Failed: " . $mail->ErrorInfo;
+        // Return error message
+        return "Email failed: " . $mail->ErrorInfo;
     }
 }
 
-// Base URL detection
+/**
+ * Get base URL of the application
+ * @return string Base URL
+ */
 function getBaseUrl()
 {
-    $protocol = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? "https" : "http");
+    $protocol = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') ? "https" : "http";
     $host = $_SERVER['HTTP_HOST'];
-    $currentDir = str_replace('\\', '/', dirname($_SERVER['SCRIPT_NAME']));
-    $parts = explode('/', trim($currentDir, '/'));
-    if (in_array('include', $parts)) {
-        $projectRoot = '/' . implode('/', array_slice($parts, 0, array_search('include', $parts)));
-    } elseif (in_array('auth', $parts)) {
-        $projectRoot = '/' . implode('/', array_slice($parts, 0, array_search('auth', $parts)));
-    } else {
-        $projectRoot = $currentDir;
-    }
-    return $protocol . "://" . $host . rtrim($projectRoot, '/');
+    $scriptName = $_SERVER['SCRIPT_NAME'];
+
+    // Remove the last part (filename) to get directory
+    $path = dirname($scriptName);
+
+    // Normalize path
+    $path = str_replace('\\', '/', $path);
+    $path = ($path === '/') ? '' : $path;
+
+    return $protocol . "://" . $host . $path;
 }
 ?>
