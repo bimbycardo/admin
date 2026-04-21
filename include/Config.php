@@ -16,7 +16,7 @@ define('SMTP_USER', 'linbilcelestre31@gmail.com');
  */
 define('SMTP_PASS', 'poti vsjc wfth dzks'); // <--- PALITAN MO ITO NG BAGO
 
-define('SMTP_FROM_EMAIL', 'atiera41001@gmail.com');
+define('SMTP_FROM_EMAIL', 'linbilcelestre31@gmail.com');
 define('SMTP_FROM_NAME', 'ATIERA Hotel & Restaurant');
 
 
