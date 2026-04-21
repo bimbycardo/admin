@@ -40,29 +40,23 @@ function sendEmail($to, $name, $subject, $body, $altBody = '')
         return "PHPMailer class is completely missing from the system.";
     }
 
-    // Force IPv4 to bypass 'Network is unreachable' on Windows/IPv6 environments
-    $host_ip = gethostbyname(SMTP_HOST);
-    if ($host_ip === SMTP_HOST) {
-        $host_ip = SMTP_HOST; // fallback if DNS fails
-    }
-
-    $portsToTry = [587, 465];
+    $portsToTry = [465, 587]; // Try 465 first for Google
     $lastError = '';
 
     foreach ($portsToTry as $port) {
         $mail = new PHPMailer\PHPMailer\PHPMailer(true);
         try {
             $mail->isSMTP();
-            $mail->Host       = $host_ip; 
+            $mail->Host       = SMTP_HOST; 
             $mail->SMTPAuth   = true;
             $mail->Username   = SMTP_USER;
             // Many users paste App Passwords with spaces; Google rejects spaces
             $mail->Password   = str_replace(' ', '', SMTP_PASS); 
             $mail->SMTPSecure = ($port == 465) ? PHPMailer\PHPMailer\PHPMailer::ENCRYPTION_SMTPS : PHPMailer\PHPMailer\PHPMailer::ENCRYPTION_STARTTLS;
             $mail->Port       = $port;
-            $mail->Timeout    = 8; // Quick timeout to try next port faster
+            $mail->Timeout    = 10; 
 
-            // SSL Bypass
+            // SSL Bypass - useful for various hosting environments
             $mail->SMTPOptions = array(
                 'ssl' => array(
                     'verify_peer' => false,
@@ -90,8 +84,20 @@ function sendEmail($to, $name, $subject, $body, $altBody = '')
         }
     }
 
-    // If all ports fail, return the last error message
-    error_log("All SMTP ports failed for {$to}: " . $lastError);
-    return "SMTP Error: " . $lastError;
+    // FINAL FALLBACK: Native PHP mail()
+    // This often works on production servers even if SMTP ports are blocked
+    $headers = "MIME-Version: 1.0" . "\r\n";
+    $headers .= "Content-type:text/html;charset=UTF-8" . "\r\n";
+    $headers .= 'From: ' . SMTP_FROM_NAME . ' <' . SMTP_FROM_EMAIL . '>' . "\r\n";
+    $headers .= 'Reply-To: ' . SMTP_FROM_EMAIL . "\r\n";
+    $headers .= 'X-Mailer: PHP/' . phpversion();
+
+    if (@mail($to, $subject, $body, $headers)) {
+        return true;
+    }
+
+    // If all fail, return the last error message
+    error_log("All SMTP and mail() failed for {$to}: " . $lastError);
+    return "Failed to send email. SMTP Error: " . $lastError;
 }
 ?>

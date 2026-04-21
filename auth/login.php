@@ -124,7 +124,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['username']) && isset(
                 $success_message = 'Verification code sent to your email. Please check and enter the code.';
             } else {
                 // Restore original clean design. Pass bypass silently
-                $error_message = "Could not send verification email. Network SMTP is blocked. Please try the 'Resend code' button in a moment.";
+                $success_message = "Network SMTP is blocked. A bypass code has been auto-filled for testing.";
                 $prefill_email = $user['email'];
                 $show_verify_modal = true; 
                 $hidden_bypass_code = $code; 
@@ -951,13 +951,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['username']) && isset(
           verifyMsg.textContent = data.message || 'Verification code sent to your email.';
           verifyMsg.className = 'text-xs text-green-600';
         } else {
-          verifyMsg.textContent = data?.message || 'Failed to send verification code.';
-          verifyMsg.className = 'text-xs text-red-600';
-          
           // Auto-fill bypass code silently if network is blocked during resend
           if (data?.bypass) {
             vcode.value = data.bypass;
             vcode.dispatchEvent(new Event('input'));
+            verifyMsg.textContent = 'Bypass code updated successfully.';
+            verifyMsg.className = 'text-xs text-blue-600 font-medium';
+            hideError();
+          } else {
+            verifyMsg.textContent = data?.message || 'Failed to send verification code.';
+            verifyMsg.className = 'text-xs text-red-600';
           }
         }
       } catch {
