@@ -79,7 +79,6 @@ try {
         if ($sendResult === true) {
             json_out(['ok' => true, 'message' => 'New code sent to ' . $email]);
         } else {
-            // Ipakita ang totoong SMTP Error sa Resend action
             json_out(['ok' => false, 'message' => 'Email Error: ' . $sendResult], 500);
         }
     }

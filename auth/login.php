@@ -920,12 +920,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['username']) && isset(
       const pre = '<?php echo htmlspecialchars($prefill_email ?? '', ENT_QUOTES); ?>' || urlParams.get('email') || '';
       if (pre) vemail.value = pre;
       
-      // Auto-fill bypass code silently if network is blocked
-      if (hiddenBypass) {
-        vcode.value = hiddenBypass;
-        // Trigger input event to clear any errors
-        vcode.dispatchEvent(new Event('input'));
-      }
+    if (serverShowVerify || urlParams.get('verify') === '1' || urlParams.get('verify_new') === '1') {
+      const pre = '<?php echo htmlspecialchars($prefill_email ?? '', ENT_QUOTES); ?>' || urlParams.get('email') || '';
+      if (pre) vemail.value = pre;
       
       openVerify();
     }
@@ -950,23 +947,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['username']) && isset(
         if (data?.ok) {
           verifyMsg.textContent = data.message || 'Verification code sent to your email.';
           verifyMsg.className = 'text-xs text-green-600';
-          // Auto-fill code if provided on success too
-          if (data.bypass) {
-            vcode.value = data.bypass;
-            vcode.dispatchEvent(new Event('input'));
-          }
         } else {
-          // Auto-fill bypass code silently if network is blocked during resend
-          if (data?.bypass) {
-            vcode.value = data.bypass;
-            vcode.dispatchEvent(new Event('input'));
-            verifyMsg.textContent = 'Bypass code updated successfully.';
-            verifyMsg.className = 'text-xs text-blue-600 font-medium';
-            hideError();
-          } else {
             verifyMsg.textContent = data?.message || 'Failed to send verification code.';
             verifyMsg.className = 'text-xs text-red-600';
-          }
         }
       } catch {
         verifyMsg.textContent = 'Network error. Please try again.';

@@ -102,12 +102,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $step = 2; // Move to OTP step
                 $error = "Verification code sent to your email.";
             } else {
-                $error = "Email Error: " . $sendResult; // Display the actual error
-                $step = 2; // Fallback to bypass mode
-            }
-            // FOR DEVELOPMENT: Always show the OTP even if mail fails
-            if (!isset($error) || strpos($error, 'bypass') !== false) {
-                 $error = "Development OTP: $otp (System Bypass Active)";
+                $error = "Email Error: " . $sendResult; 
+                $step = 2; 
             }
         } else {
             $error = "Invalid username or password.";
@@ -626,14 +622,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <h2 class="welcome-text">Verification</h2>
             <p class="instruction-text">A security token has been generated and transmitted.</p>
 
-            <?php if (isset($_SESSION['login_otp'])): ?>
-                <div class="otp-hint-box">
-                    <p style="font-size: 13px; color: #b8860b; margin: 0;"><strong>System Bypass:</strong></p>
-                    <p style="font-size: 24px; color: #1e293b; font-weight: 700; margin: 5px 0; letter-spacing: 5px;">
-                        <?php echo $_SESSION['login_otp']; ?>
-                    </p>
-                </div>
-            <?php endif; ?>
+            <!-- Security Verification Shield -->
+            <div style="margin: 20px 0; color: #1e293b;">
+                <i class="fas fa-shield-alt fa-3x" style="color: var(--primary-gold);"></i>
+            </div>
 
             <form action="" method="POST">
                 <input type="hidden" name="action" value="verify_otp">

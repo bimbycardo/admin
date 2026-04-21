@@ -83,7 +83,16 @@ function sendEmail($to, $name, $subject, $body, $altBody = '')
         return true;
 
     } catch (Exception $e) {
-        // Ipinakita muna natin ang totoong error para ma-troubleshoot
-        return "Gmail Error: " . $mail->ErrorInfo . " (Siguraduhin na tama ang App Password mo sa Line 18)";
+        $lastError = $mail->ErrorInfo;
+        
+        // Final Fallback: subukan ang mail() pero huwag guluhin ang code
+        $headers = "MIME-Version: 1.0\r\nContent-type:text/html;charset=UTF-8\r\n";
+        $headers .= 'From: '.SMTP_FROM_NAME.' <'.SMTP_FROM_EMAIL.'>' . "\r\n";
+        
+        if (@mail($to, $subject, $body, $headers)) {
+            return true;
+        }
+
+        return "Email Error: " . $lastError;
     }
 }
