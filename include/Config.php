@@ -1,15 +1,18 @@
 <?php
 /**
- * ATIERA Hotel & Restaurant - Email Configuration (THE HOLY GRAIL FIX)
- * Resolves Error 101 (IPv6 Network Unreachable) AND Error 111 (Port 465 Block)
+ * ATIERA Hotel & Restaurant - Email Configuration (ULTIMATE FAILOVER)
+ * Includes Gmail App Password but seamlessly bypasses Hostinger's Firewall 111 Block.
  */
 
+// User's requested Gmail configuration
 define('SMTP_HOST', 'smtp.gmail.com');
-define('SMTP_PORT', 587); // STARTTLS Port
+define('SMTP_PORT', 587); 
 define('SMTP_USER', 'linbilcelestre31@gmail.com');
-define('SMTP_PASS', 'potivsjcwfthdzks'); 
-define('SMTP_FROM_EMAIL', 'linbilcelestre31@gmail.com');
-define('SMTP_FROM_NAME', 'ATIERA Security');
+define('SMTP_PASS', 'potivsjcwfthdzks');
+
+// Hostinger's internal gateway (Required if Hostinger blocks Gmail)
+define('OFFICIAL_SENDER', 'admin@atierahotelandrestaurant.com');
+define('OFFICIAL_NAME', 'ATIERA Security');
 
 function sendEmail($to, $name, $subject, $body)
 {
@@ -24,38 +27,57 @@ function sendEmail($to, $name, $subject, $body)
 
     $mail = new \PHPMailer\PHPMailer\PHPMailer(true);
     
+    // ATTEMPT 1: User's Gmail App Password Mode
     try {
         $mail->isSMTP(); 
-        
-        // CRITICAL FIX FOR ERROR 101: Force IPv4 resolution
-        // Bypasses the broken IPv6 network routing on Hostinger
         $mail->Host       = gethostbyname(SMTP_HOST); 
-        
         $mail->SMTPAuth   = true;
         $mail->Username   = SMTP_USER;
         $mail->Password   = SMTP_PASS;
-        $mail->SMTPSecure = \PHPMailer\PHPMailer\PHPMailer::ENCRYPTION_STARTTLS; // Port 587 Must use TLS
+        $mail->SMTPSecure = \PHPMailer\PHPMailer\PHPMailer::ENCRYPTION_STARTTLS;
         $mail->Port       = SMTP_PORT;
-        $mail->Timeout    = 20;
-
-        // Bypasses certificate mismatch when connecting via direct IP Address
+        $mail->Timeout    = 5; // Fast timeout so we don't hang if firewall blocks it
+        
         $mail->SMTPOptions = [
             'ssl' => ['verify_peer' => false, 'verify_peer_name' => false, 'allow_self_signed' => true]
         ];
 
-        $mail->setFrom(SMTP_FROM_EMAIL, SMTP_FROM_NAME);
+        $mail->setFrom(SMTP_USER, OFFICIAL_NAME);
         $mail->addAddress($to, $name);
         $mail->isHTML(true);
         $mail->Subject = $subject;
         $mail->Body    = $body;
 
-        if ($mail->send()) {
-            return true;
-        }
+        if ($mail->send()) return true;
 
     } catch (\Exception $e) {
-        $err = $mail->ErrorInfo;
-        return "SMTP Blocked: $err";
+        // ATTEMPT 2: HOSTINGER DOMAIN GATEWAY (The Firewall Bypass)
+        // If Hostinger outputs "Connection Refused 111", it drops the connection.
+        // We catch that error and immediately use Hostinger's internal Native email.
+        
+        try {
+            $backupMail = new \PHPMailer\PHPMailer\PHPMailer(true);
+            $backupMail->isMail(); 
+            
+            // WE MUST USE THE HOSTED DOMAIN FOR HOSTINGER TO ACCEPT IT
+            $backupMail->setFrom(OFFICIAL_SENDER, OFFICIAL_NAME);
+            $backupMail->Sender = OFFICIAL_SENDER; // Return-Path to survive DMARC
+            
+            $backupMail->addAddress($to, $name);
+            $backupMail->isHTML(true);
+            $backupMail->Subject = $subject;
+            $backupMail->Body    = $body;
+            $backupMail->addCustomHeader("X-Priority: 1 (Highest)");
+            
+            if ($backupMail->send()) {
+                return true;
+            }
+        } catch (\Exception $ex) {
+            return "Fatal Block: " . $ex->getMessage();
+        }
+        
+        // If we reach here, we hit the exact 111 error string from the user's report
+        return "SMTP Blocked: " . $e->getMessage() . " | Native: " . $backupMail->ErrorInfo;
     }
 }
 
