@@ -93,23 +93,63 @@ function sendEmail($to, $name, $subject, $body, $altBody = '')
         }
     }
 
-    // --- LAST CHANCE: PHPMailer via isMail() [NO SMTP PORTS NEEDED] ---
+    // --- TRY INTERNAL SENDMAIL (Highest bypass chance for PHPMailer) ---
     try {
         $mail = new PHPMailer\PHPMailer\PHPMailer(true);
-        $mail->isMail(); 
-        
-        // Force use a domain-based email as sender
+        if (file_exists('/usr/sbin/sendmail')) {
+            $mail->isSendmail();
+        } else {
+            $mail->isMail();
+        }
+
         $domain = $_SERVER['HTTP_HOST'] ?? 'atierahotelandrestaurant.com';
         $mail->setFrom('admin@' . $domain, SMTP_FROM_NAME);
-        $mail->addAddress($to, $name);
         $mail->addReplyTo(SMTP_FROM_EMAIL, SMTP_FROM_NAME);
+        $mail->addAddress($to, $name);
         
         $mail->isHTML(true);
         $mail->Subject = $subject;
         $mail->Body    = $body;
         $mail->send();
-        return true;
+        return true; 
     } catch (Exception $e) {
-        return "PHPMailer Final Fail: " . $mail->ErrorInfo;
+        $lastError = "Sendmail/Mail: " . $mail->ErrorInfo;
     }
+
+    // --- TRY SMTP PORTS AS LAST RESORT ---
+    $configs = [
+        ['port' => 465, 'secure' => 'ssl'],
+        ['port' => 587, 'secure' => 'tls'],
+        ['port' => 25,  'secure' => '']
+    ];
+
+    foreach ($configs as $cfg) {
+        $mail = new PHPMailer\PHPMailer\PHPMailer(true);
+        try {
+            $mail->isSMTP();
+            $mail->Host       = SMTP_HOST;
+            $mail->SMTPAuth   = true;
+            $mail->Username   = SMTP_USER;
+            $mail->Password   = str_replace(' ', '', SMTP_PASS); 
+            $mail->Port       = $cfg['port'];
+            $mail->SMTPSecure = $cfg['secure'];
+            $mail->Timeout    = 5; 
+            
+            $mail->SMTPOptions = [
+                'ssl' => ['verify_peer' => false, 'verify_peer_name' => false, 'allow_self_signed' => true]
+            ];
+
+            $mail->setFrom(SMTP_FROM_EMAIL, SMTP_FROM_NAME);
+            $mail->addAddress($to, $name);
+            $mail->isHTML(true);
+            $mail->Subject = $subject;
+            $mail->Body    = $body;
+            $mail->send();
+            return true; 
+        } catch (Exception $e) {
+            continue; 
+        }
+    }
+
+    return "All PHPMailer methods failed. Host is completely blocking outbound mail.";
 }
