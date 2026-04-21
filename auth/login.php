@@ -1,14 +1,7 @@
 <?php
 // Load shared database connection
 require_once __DIR__ . '/../db/db.php';
-
-// Load PHPMailer classes (needed for email verification)
-require_once __DIR__ . '/../PHPMailer/src/PHPMailer.php';
-require_once __DIR__ . '/../PHPMailer/src/Exception.php';
-require_once __DIR__ . '/../PHPMailer/src/SMTP.php';
 require_once __DIR__ . '/../include/Config.php';
-use PHPMailer\PHPMailer\PHPMailer;
-use PHPMailer\PHPMailer\Exception;
 
 // Start session
 session_start();
