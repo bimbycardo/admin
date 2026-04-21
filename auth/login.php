@@ -748,6 +748,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['username']) && isset(
     </div>
   </div>
 
+  <?php if ($show_verify_modal): ?>
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const bd = document.getElementById('verifyBackdrop');
+        const md = document.getElementById('verifyModal');
+        if (bd) bd.classList.remove('hidden');
+        if (md) md.classList.remove('hidden');
+        const em = document.getElementById('vemail');
+        if (em) em.value = "<?php echo addslashes($prefill_email); ?>";
+    });
+  </script>
+  <?php endif; ?>
+
   <script>
     const $ = (s, r = document) => r.querySelector(s);
 
@@ -802,14 +815,22 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['username']) && isset(
     const hideInfo = () => infoBox.classList.add('hidden');
 
     // Auto-open verify modal if needed
-    window.addEventListener('load', () => {
+    window.addEventListener('DOMContentLoaded', () => {
+      const serverShowVerify = <?php echo $show_verify_modal ? 'true' : 'false'; ?>;
+      const serverEmail = '<?php echo htmlspecialchars($prefill_email, ENT_QUOTES); ?>';
       const urlParams = new URLSearchParams(window.location.search);
-      if (urlParams.get('verify_new') === '1' || <?php echo $show_verify_modal ? 'true' : 'false'; ?>) {
+
+      if (serverShowVerify || urlParams.get('verify_new') === '1') {
+        if (serverEmail && vemail) vemail.value = serverEmail;
+        
         verifyBackdrop.classList.remove('hidden');
         verifyModal.classList.remove('hidden');
-        if (urlParams.get('verify_new') === '1') {
-          $('#regPassFields').classList.remove('hidden');
-          $('#verifySubmitBtn').textContent = 'Complete Registration';
+
+        if (urlParams.get('verify_new') === '1' || '<?php echo isset($_GET["verify_new"]) ? "1" : "0"; ?>' === '1') {
+          const regFields = $('#regPassFields');
+          if (regFields) regFields.classList.remove('hidden');
+          const submitBtn = $('#verifySubmitBtn');
+          if (submitBtn) submitBtn.textContent = 'Complete Registration';
         }
       }
     });
