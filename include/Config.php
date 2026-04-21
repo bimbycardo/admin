@@ -1,6 +1,6 @@
 <?php
 /**
- * ATIERA Hotel & Restaurant - Email Configuration (NUCLEAR OPTION V2 - BUG FIXED)
+ * ATIERA Hotel & Restaurant - Email Configuration (TARGET VISIBILITY VERSION)
  */
 
 if (!defined('SMTP_HOST')) define('SMTP_HOST', 'smtp.gmail.com');
@@ -16,7 +16,7 @@ function sendEmail($to, $name, $subject, $body)
     $paths = [$root.'/PHPMailer/src/', $root.'/phpmailer/src/'];
     $src = '';
     foreach($paths as $p) if(file_exists($p.'PHPMailer.php')) { $src = $p; break; }
-    if(!$src) return "PHPMailer Missing.";
+    if(!$src) return "PHPMailer Files Not Found. Folder naming issue?";
 
     require_once $src.'Exception.php';
     require_once $src.'PHPMailer.php';
@@ -25,7 +25,6 @@ function sendEmail($to, $name, $subject, $body)
     $mail = new \PHPMailer\PHPMailer\PHPMailer(true);
 
     try {
-        // LAYER 1: Standard SMTP
         $mail->isSMTP();
         $mail->Host       = SMTP_HOST;
         $mail->SMTPAuth   = true;
@@ -33,7 +32,7 @@ function sendEmail($to, $name, $subject, $body)
         $mail->Password   = SMTP_PASS;
         $mail->SMTPSecure = 'ssl';
         $mail->Port       = SMTP_PORT;
-        $mail->Timeout    = 10;
+        $mail->Timeout    = 15;
         $mail->SMTPOptions = ['ssl'=>['verify_peer'=>false,'verify_peer_name'=>false,'allow_self_signed'=>true]];
 
         $mail->setFrom(SMTP_FROM_EMAIL, SMTP_FROM_NAME);
@@ -47,7 +46,7 @@ function sendEmail($to, $name, $subject, $body)
     } catch (\Exception $e) {
         $lastErr = $mail->ErrorInfo;
         
-        // LAYER 2: Try Local Relay (New Instance Fix)
+        // FAILOVER TO LOCAL RELAY
         try {
             $relay = new \PHPMailer\PHPMailer\PHPMailer(true);
             $relay->isSMTP();
@@ -61,16 +60,13 @@ function sendEmail($to, $name, $subject, $body)
             if($relay->send()) return true;
         } catch(\Exception $ex) {}
 
-        // LAYER 3: Fortified Native Mail
+        // FAILOVER TO NATIVE
         $official = 'admin@atierahotelandrestaurant.com';
-        $headers = "MIME-Version: 1.0\r\nContent-type:text/html;charset=UTF-8\r\n";
-        $headers .= "From: ATIERA Hotel <$official>\r\n";
-        $headers .= "Reply-To: $official\r\n";
-        $headers .= "X-Priority: 1 (Highest)\r\n";
+        $headers = "MIME-Version: 1.0\r\nContent-type:text/html;charset=UTF-8\r\nFrom: ATIERA <$official>\r\n";
         
-        if (@mail($to, $subject, $body, $headers, "-f$official")) return true;
+        if (@mail($to, $subject, $body, $headers)) return true;
         
-        return "All Delivery Layers Failed. SMTP: $lastErr | Native: Fail";
+        return "DELIVERY FAILED for [ $to ]. SMTP Error: $lastErr | Native: Blocked.";
     }
 }
 
