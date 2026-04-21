@@ -1,15 +1,16 @@
 <?php
 /**
- * ATIERA Hotel & Restaurant - Email Configuration (IPV4 FORCE FIX)
- * Resolves the Linux Error 101: Network Unreachable caused by IPv6 routing issues.
+ * ATIERA Hotel & Restaurant - Email Configuration (PHPMailer isMail FIX)
+ * PROOF: Connection refused (111) means Hostinger permanently blocks standard outbound SMTP.
+ * FIX: Using perfectly formatted native mail via PHPMailer with a valid Return-Path.
  */
 
 if (!defined('SMTP_HOST')) define('SMTP_HOST', 'smtp.gmail.com');
-if (!defined('SMTP_PORT')) define('SMTP_PORT', 465); 
-if (!defined('SMTP_USER')) define('SMTP_USER', 'linbilcelestre31@gmail.com');
-if (!defined('SMTP_PASS')) define('SMTP_PASS', 'potivsjcwfthdzks');
-if (!defined('SMTP_FROM_EMAIL')) define('SMTP_FROM_EMAIL', 'linbilcelestre31@gmail.com');
-if (!defined('SMTP_FROM_NAME')) define('SMTP_FROM_NAME', 'ATIERA Security');
+
+// MUST use the domain currently hosted on Hostinger.
+// Do NOT use @gmail.com here, otherwise Hostinger silently drops it to prevent spoofing.
+define('OFFICIAL_SENDER', 'admin@atierahotelandrestaurant.com');
+define('OFFICIAL_NAME', 'ATIERA Security');
 
 function sendEmail($to, $name, $subject, $body)
 {
@@ -28,24 +29,19 @@ function sendEmail($to, $name, $subject, $body)
     $recipientName = !empty($name) ? $name : 'User';
 
     try {
-        $mail->isSMTP();
-        // CRITICAL FIX FOR ERROR 101 (Network Unreachable):
-        // Force the server to use IPv4 instead of IPv6 for smtp.gmail.com
-        $mail->Host       = gethostbyname(SMTP_HOST); 
+        // USE NATIVE MAIL (Since external SMTP 465/587 is blocked)
+        $mail->isMail(); 
+
+        // CRITICAL: The sender address MUST belong to this domain.
+        $mail->setFrom(OFFICIAL_SENDER, OFFICIAL_NAME);
         
-        $mail->SMTPAuth   = true;
-        $mail->Username   = SMTP_USER;
-        $mail->Password   = SMTP_PASS;
-        $mail->SMTPSecure = 'ssl';
-        $mail->Port       = SMTP_PORT;
-        $mail->Timeout    = 20;
-
-        // Disabling SSL verification since we are connecting via direct IP address
-        $mail->SMTPOptions = [
-            'ssl' => ['verify_peer' => false, 'verify_peer_name' => false, 'allow_self_signed' => true]
-        ];
-
-        $mail->setFrom(SMTP_FROM_EMAIL, SMTP_FROM_NAME);
+        // CRITICAL FOR GMAIL: Prevents sending as "nobody@server.hostinger.com"
+        // This is exactly why it was being silently deleted before reaching your Spam folder.
+        $mail->Sender = OFFICIAL_SENDER;
+        
+        // Priority headers
+        $mail->addCustomHeader("X-Priority: 1 (Highest)");
+        
         $mail->addAddress($to, $recipientName);
         $mail->isHTML(true);
         $mail->Subject = $subject;
@@ -55,12 +51,7 @@ function sendEmail($to, $name, $subject, $body)
 
     } catch (\Exception $e) {
         $error = $mail->ErrorInfo;
-        
-        // Native Mail Failover
-        $headers = "MIME-Version: 1.0\r\nContent-type:text/html;charset=UTF-8\r\nFrom: ATIERA <".SMTP_USER.">\r\n";
-        if (@mail($to, $subject, $body, $headers)) return true;
-        
-        return "SMTP Error: $error | Native: Blocked";
+        return "Mail Deliverability Blocked by Host: $error";
     }
 }
 
