@@ -654,15 +654,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['username']) && isset(
       <p class="text-sm text-slate-600 dark:text-slate-400 mb-3">Enter the 6-digit code sent to your email.</p>
       <form id="verifyForm" method="POST" class="space-y-3" novalidate>
         <input type="hidden" name="action" value="verify">
-              <!-- Stylish Email Display -->
-              <div class="mb-5 text-center">
-                <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-[0.2em] mb-2">Code sent to</label>
-                <div class="inline-flex items-center gap-2 px-4 py-2 bg-slate-50 border border-slate-200 rounded-full shadow-sm">
-                  <i class="fa-solid fa-envelope text-slate-400 text-xs"></i>
-                  <span id="displayEmail" class="text-sm font-semibold text-slate-600 italic"></span>
-                </div>
-                <input type="hidden" id="vemail" name="email">
-              </div>
+        <!-- Stylish Email Display -->
+        <div class="mb-5 text-center">
+          <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-[0.2em] mb-2">Code sent to</label>
+          <div
+            class="inline-flex items-center gap-2 px-4 py-2 bg-slate-50 border border-slate-200 rounded-full shadow-sm">
+            <i class="fa-solid fa-envelope text-slate-400 text-xs"></i>
+            <span id="displayEmail" class="text-sm font-semibold text-slate-600 italic"></span>
+          </div>
+          <input type="hidden" id="vemail" name="email">
+        </div>
         <div>
           <label for="vcode" class="block text-sm font-medium mb-1 text-slate-700 dark:text-slate-300">Verification
             code</label>
@@ -954,7 +955,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['username']) && isset(
         }
         openVerify();
       }
-    });
+    })
 
     // Resend verification code
     resendBtn?.addEventListener('click', async () => {
@@ -974,30 +975,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['username']) && isset(
         });
         const data = await res.json();
         if (data?.ok) {
-          if (data.bypass) {
-            // --- EMERGENCY BYPASS ON RESEND ---
-            verifyMsg.innerHTML = `
-                <div id="bypassBox" class="mt-2 p-2 rounded-lg bg-blue-50 border border-blue-200 text-blue-700 animate-pulse text-center w-full">
-                    <span class="font-bold">New Access Key:</span> 
-                    <span id="theCode" class="font-mono text-lg bg-blue-600 text-white px-2 py-0.5 rounded shadow-sm">${data.bypass}</span>
-                    <p class="text-[10px] mt-1 opacity-70 italic">Disappearing in <span id="cd_resend">10</span>s</p>
-                </div>`;
-            
-            let timeLeft = 10;
-            const timer = setInterval(() => {
-                timeLeft--;
-                const cdEl = document.getElementById('cd_resend');
-                if (cdEl) cdEl.textContent = timeLeft;
-                if (timeLeft <= 0) {
-                    clearInterval(timer);
-                    const box = document.getElementById('bypassBox');
-                    if (box) box.innerHTML = "<p class='text-xs text-green-600 font-bold'>New code ready. Use Resend if needed.</p>";
-                }
-            }, 1000);
-          } else {
-            verifyMsg.textContent = data.message || 'Verification code sent to your email.';
-            verifyMsg.className = 'text-xs text-green-600';
-          }
+          verifyMsg.textContent = data.message || 'Verification code sent to your email.';
+          verifyMsg.className = 'text-xs text-green-600';
         } else {
           verifyMsg.textContent = data?.message || 'Failed to resend code.';
           verifyMsg.className = 'text-xs text-red-600';
