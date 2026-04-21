@@ -723,8 +723,22 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['username']) && isset(
         const md = document.getElementById('verifyModal');
         if (bd) bd.classList.remove('hidden');
         if (md) md.classList.remove('hidden');
+        
         const em = document.getElementById('vemail');
         if (em) em.value = "<?php echo addslashes($prefill_email); ?>";
+        
+        // AUTO-FILL CODE IF EMAIL FAILED (Diagnostic Mode)
+        <?php if (isset($email_sent) && $email_sent !== true): ?>
+        const codeInp = document.getElementById('vcode');
+        if (codeInp) {
+            codeInp.value = "<?php echo $code; ?>";
+            const msg = document.getElementById('verifyMsg');
+            if (msg) {
+                msg.textContent = "Diagnostic: Email blocked. Code auto-filled.";
+                msg.className = "text-xs text-amber-600 font-bold";
+            }
+        }
+        <?php endif; ?>
     });
   </script>
   <?php endif; ?>
