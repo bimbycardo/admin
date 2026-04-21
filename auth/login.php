@@ -920,11 +920,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['username']) && isset(
       const pre = '<?php echo htmlspecialchars($prefill_email ?? '', ENT_QUOTES); ?>' || urlParams.get('email') || '';
       if (pre) vemail.value = pre;
       
-    if (serverShowVerify || urlParams.get('verify') === '1' || urlParams.get('verify_new') === '1') {
-      const pre = '<?php echo htmlspecialchars($prefill_email ?? '', ENT_QUOTES); ?>' || urlParams.get('email') || '';
-      if (pre) vemail.value = pre;
-      
       openVerify();
+    }
     }
 
     // Resend verification code
