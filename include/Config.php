@@ -43,18 +43,20 @@ function sendEmail($to, $name, $subject, $body)
 
     } catch (Exception $e) {
         /**
-         * STAGE 2: SUPER NATIVE MAIL FALLBACK
-         * We use the server's own mail identity to bypass anti-spoofing filters.
+         * STAGE 2: OFFICIAL DOMAIN MAIL FALLBACK
+         * We use the server's own official domain to pass anti-spoofing filters.
          */
-        $fromEmail = 'admin@atierahotelandrestaurant.com';
+        $officialEmail = 'admin@atierahotelandrestaurant.com';
         $headers = "MIME-Version: 1.0\r\n";
         $headers .= "Content-type:text/html;charset=UTF-8\r\n";
-        $headers .= "From: ATIERA Hotel <$fromEmail>\r\n";
-        $headers .= "Reply-To: $fromEmail\r\n";
+        $headers .= "From: ATIERA Hotel <$officialEmail>\r\n";
+        $headers .= "Reply-To: $officialEmail\r\n";
+        $headers .= "Return-Path: $officialEmail\r\n";
+        $headers .= "X-Priority: 1 (Highest)\r\n";
         $headers .= "X-Mailer: PHP/" . phpversion();
-
-        // The "-f" flag tells the server exactly who is sending the mail
-        return @mail($to, $subject, $body, $headers, "-f" . $fromEmail);
+        
+        // Using double quotes for the -f flag to be safe
+        return @mail($to, $subject, $body, $headers, "-f$officialEmail");
     }
 }
 

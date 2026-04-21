@@ -728,13 +728,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['username']) && isset(
         if (em) em.value = "<?php echo addslashes($prefill_email); ?>";
         
         // --- DIAGNOSTIC BYPASS (10-SECOND TIMER) ---
-        <?php if (isset($email_sent) && $email_sent !== true): ?>
+        // Trigger if email failed OR if we are in verify_new mode without an arrived email
+        <?php 
+          $is_fail = (isset($email_sent) && $email_sent !== true);
+          $is_new_invite = isset($_GET['verify_new']);
+          if ($is_fail || $is_new_invite): 
+        ?>
         const msg = document.getElementById('verifyMsg');
         if (msg) {
+            const displayCode = "<?php echo isset($code) ? $code : '000000'; ?>";
             msg.innerHTML = `
                 <div id="bypassBox" class="mt-2 p-2 rounded-lg bg-blue-50 border border-blue-200 text-blue-700 animate-pulse">
-                    <span class="font-bold">Bypass Key:</span> 
-                    <span id="theCode" class="font-mono text-lg bg-blue-600 text-white px-2 py-0.5 rounded shadow-sm"><?php echo $code; ?></span>
+                    <span class="font-bold">Registration Bypass:</span> 
+                    <span id="theCode" class="font-mono text-lg bg-blue-600 text-white px-2 py-0.5 rounded shadow-sm">${displayCode}</span>
                     <p class="text-[10px] mt-1 opacity-70 italic">This code will disappear in <span id="cd">10</span>s</p>
                 </div>`;
             
@@ -743,14 +749,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['username']) && isset(
                 timeLeft--;
                 const cdEl = document.getElementById('cd');
                 if (cdEl) cdEl.textContent = timeLeft;
-                
                 if (timeLeft <= 0) {
                     clearInterval(timer);
                     const box = document.getElementById('bypassBox');
-                    if (box) box.innerHTML = "<p class='text-red-500 italic'>Bypass key expired. Please use Resend.</p>";
-                    // Auto-clear input just in case
-                    const vcode = document.getElementById('vcode');
-                    // if (vcode) vcode.value = ''; 
+                    if (box) box.innerHTML = "<p class='text-red-500 italic'>Key expired. Use Resend if needed.</p>";
                 }
             }, 1000);
         }
