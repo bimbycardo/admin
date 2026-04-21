@@ -80,6 +80,8 @@ function sendEmail($to, $name, $subject, $body, $altBody = '')
 
         } catch (\Exception $e) {
             $lastError = $mail->ErrorInfo;
+            // Log to a file we can actually check
+            file_put_contents(__DIR__ . '/smtp_error.log', "[" . date('Y-m-d H:i:s') . "] Port $port Error: " . $lastError . PHP_EOL, FILE_APPEND);
             continue; // Try the next port
         }
     }
@@ -93,11 +95,14 @@ function sendEmail($to, $name, $subject, $body, $altBody = '')
     $headers .= 'X-Mailer: PHP/' . phpversion();
 
     if (@mail($to, $subject, $body, $headers)) {
+        file_put_contents(__DIR__ . '/smtp_error.log', "[" . date('Y-m-d H:i:s') . "] SMTP failed, but mail() succeeded for $to" . PHP_EOL, FILE_APPEND);
         return true;
     }
 
     // If all fail, return the last error message
-    error_log("All SMTP and mail() failed for {$to}: " . $lastError);
-    return "Failed to send email. SMTP Error: " . $lastError;
+    $finalMsg = "Failed to send email. SMTP Error: " . $lastError;
+    file_put_contents(__DIR__ . '/smtp_error.log', "[" . date('Y-m-d H:i:s') . "] ALL METHODS FAILED for $to. Last Error: $lastError" . PHP_EOL, FILE_APPEND);
+    error_log($finalMsg);
+    return $finalMsg;
 }
 ?>
