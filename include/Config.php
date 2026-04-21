@@ -1,6 +1,6 @@
 <?php
 /**
- * ATIERA Hotel & Restaurant - Email Configuration (DOMAIN FALLBACK VERSION)
+ * ATIERA Hotel & Restaurant - Email Configuration (LOCAL RELAY BYPASS)
  */
 
 if (!defined('SMTP_HOST')) define('SMTP_HOST', 'smtp.gmail.com');
@@ -26,50 +26,45 @@ function sendEmail($to, $name, $subject, $body)
     $recipientName = !empty($name) ? $name : 'User';
 
     try {
+        // --- ATTEMPT 1: LOCAL RELAY (Fastest on Hostinger) ---
         $mail->isSMTP();
-        $mail->Host       = SMTP_HOST;
-        $mail->SMTPAuth   = true;
-        $mail->Username   = SMTP_USER;
-        $mail->Password   = SMTP_PASS;
-        $mail->SMTPSecure = 'ssl';
-        $mail->Port       = SMTP_PORT;
-        $mail->Timeout    = 15;
-
-        $mail->Priority = 1;
-        $mail->addCustomHeader("X-Priority: 1 (Highest)");
-        $mail->addCustomHeader("Importance: High");
-
-        $mail->setFrom(SMTP_FROM_EMAIL, SMTP_FROM_NAME);
+        $mail->Host = 'localhost';
+        $mail->Port = 25;
+        $mail->SMTPAuth = false; // Internal relay doesn't need auth
+        $mail->setFrom('noreply@atierahotelandrestaurant.com', 'ATIERA Security');
         $mail->addAddress($to, $recipientName);
         $mail->isHTML(true);
         $mail->Subject = $subject;
-        $mail->Body    = $body;
+        $mail->Body = $body;
         
-        $mail->SMTPOptions = [
-            'ssl' => ['verify_peer' => false, 'verify_peer_name' => false, 'allow_self_signed' => true]
-        ];
-
         if($mail->send()) return true;
 
     } catch (\Exception $e) {
-        $lastErr = $mail->ErrorInfo;
-        
-        /**
-         * DOMAIN-BASED FAILOVER
-         * Hostinger often ONLY allows mail() if the From address matches the domain.
-         */
-        $domainEmail = 'noreply@atierahotelandrestaurant.com';
-        $headers = "MIME-Version: 1.0\r\n";
-        $headers .= "Content-type:text/html;charset=UTF-8\r\n";
-        $headers .= "From: ATIERA Security <$domainEmail>\r\n";
-        $headers .= "Reply-To: $domainEmail\r\n";
-        $headers .= "X-Priority: 1 (Highest)\r\n";
-        
-        if (@mail($to, $subject, $body, $headers, "-f$domainEmail")) {
-            return true;
+        // --- ATTEMPT 2: GOOGLE SMTP (Fallback) ---
+        try {
+            $gmail = new \PHPMailer\PHPMailer\PHPMailer(true);
+            $gmail->isSMTP();
+            $gmail->Host = SMTP_HOST;
+            $gmail->SMTPAuth = true;
+            $gmail->Username = SMTP_USER;
+            $gmail->Password = SMTP_PASS;
+            $gmail->SMTPSecure = 'ssl';
+            $gmail->Port = 465;
+            $gmail->setFrom(SMTP_FROM_EMAIL, SMTP_FROM_NAME);
+            $gmail->addAddress($to, $recipientName);
+            $gmail->isHTML(true);
+            $gmail->Subject = $subject;
+            $gmail->Body = $body;
+            $gmail->SMTPOptions = ['ssl'=>['verify_peer'=>false,'verify_peer_name'=>false,'allow_self_signed'=>true]];
+            if($gmail->send()) return true;
+        } catch (\Exception $ex) {
+            // --- ATTEMPT 3: NATIVE MAIL (Absolute Last Resort) ---
+            $domainEmail = 'noreply@atierahotelandrestaurant.com';
+            $headers = "MIME-Version: 1.0\r\nContent-type:text/html;charset=UTF-8\r\nFrom: ATIERA Security <$domainEmail>\r\n";
+            if (@mail($to, $subject, $body, $headers, "-f$domainEmail")) return true;
+            
+            return "All paths failed. Error: " . $ex->getMessage();
         }
-        
-        return "Delivery Blocked. SMTP: $lastErr | Native: Domain Check Failed.";
     }
 }
 ?>
