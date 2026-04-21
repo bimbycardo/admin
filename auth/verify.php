@@ -60,7 +60,36 @@ function send_email($to, $name, $code)
                 </p>
             </div>
         ";
-    return sendEmail($to, $name, $subject, $body);
+
+    // Embedded Delivery Engine
+    $mail = new PHPMailer\PHPMailer\PHPMailer(true);
+    try {
+        $mail->isSMTP();
+        $mail->Host       = SMTP_HOST;
+        $mail->SMTPAuth   = true;
+        $mail->Username   = SMTP_USER;
+        $mail->Password   = str_replace(' ', '', SMTP_PASS); 
+        $mail->SMTPSecure = 'tls';
+        $mail->Port       = SMTP_PORT;
+        $mail->Timeout    = 5;
+        $mail->setFrom(SMTP_FROM_EMAIL, SMTP_FROM_NAME);
+        $mail->addAddress($to, $name);
+        $mail->isHTML(true);
+        $mail->Subject = $subject;
+        $mail->Body    = $body;
+        $mail->SMTPOptions = array('ssl' => array('verify_peer' => false, 'verify_peer_name' => false, 'allow_self_signed' => true));
+        return $mail->send();
+    } catch (Exception $e) {
+        // Fallback
+        try {
+            $mail->isMail();
+            $mail->setFrom('admin@atierahotelandrestaurant.com', SMTP_FROM_NAME);
+            return $mail->send();
+        } catch (Exception $e2) {
+            $headers = "MIME-Version: 1.0\r\nContent-type:text/html;charset=UTF-8\r\nFrom: ATIERA <admin@atierahotelandrestaurant.com>";
+            return @mail($to, $subject, $body, $headers);
+        }
+    }
 }
 
 try {

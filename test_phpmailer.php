@@ -1,3 +1,4 @@
+A
 <?php
 error_reporting(E_ALL);
 ini_set('display_errors', 1);
@@ -9,7 +10,7 @@ $name = "Test User";
 $subject = "PHPMailer Debug Test";
 $body = "<h1>It Works!</h1><p>This is a test email.</p>";
 
-$root = __DIR__; 
+$root = __DIR__;
 @include_once $root . '/PHPMailer/src/Exception.php';
 @include_once $root . '/PHPMailer/src/PHPMailer.php';
 @include_once $root . '/PHPMailer/src/SMTP.php';
@@ -25,24 +26,24 @@ try {
     $mail->SMTPDebug = 3;
     $mail->Debugoutput = 'echo';
     $mail->isSMTP();
-    $mail->Host       = 'smtp.gmail.com';
-    $mail->SMTPAuth   = true;
-    $mail->Username   = 'linbilcelestre31@gmail.com';
-    $mail->Password   = 'potivsjcwfthdzks';
+    $mail->Host = 'smtp.gmail.com';
+    $mail->SMTPAuth = true;
+    $mail->Username = 'linbilcelestre31@gmail.com';
+    $mail->Password = 'potivsjcwfthdzks';
     $mail->SMTPSecure = 'ssl';
-    $mail->Port       = 465;
-    
+    $mail->Port = 465;
+
     $mail->setFrom('linbilcelestre31@gmail.com', 'ATIERA Hotel');
     $mail->addAddress($to, $name);
     $mail->isHTML(true);
     $mail->Subject = $subject;
-    $mail->Body    = $body;
-    
+    $mail->Body = $body;
+
     $mail->send();
     echo "</pre><h4 style='color:green'>SUCCESS: SMTP Worked!</h4>";
 } catch (Exception $e) {
     echo "</pre><h4 style='color:red'>SMTP FAILED.</h4>";
-    
+
     // ATTEMPT 2: NATIVE MAIL
     try {
         echo "<h3>Attempting Fallback (isMail)...</h3><pre>";
@@ -54,7 +55,7 @@ try {
         $mail2->addAddress($to, $name);
         $mail2->isHTML(true);
         $mail2->Subject = "Fallback Test";
-        $mail2->Body    = "Fallback message";
+        $mail2->Body = "Fallback message";
         $mail2->send();
         echo "</pre><h4 style='color:blue'>SUCCESS: isMail() worked!</h4>";
     } catch (Exception $e2) {

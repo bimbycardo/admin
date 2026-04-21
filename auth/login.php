@@ -102,53 +102,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['username']) && isset(
             $stmt = $pdo->prepare('INSERT INTO email_verifications (user_id, code, expires_at) VALUES (:user_id, :code, :expires_at)');
             $stmt->execute([':user_id' => $user['id'], ':code' => $code, ':expires_at' => $expiresAt]);
 
-            // Send email
-            $mail = new PHPMailer(true);
-            try {
-              $mail->isSMTP();
-              $mail->Host = SMTP_HOST;
-              $mail->SMTPAuth = true;
-              $mail->Username = SMTP_USER;
-              $mail->Password = SMTP_PASS;
-              $mail->Port = SMTP_PORT;
-              $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
-              $mail->Timeout = 5; // Low timeout to prevent frontend hang
-              $mail->SMTPOptions = array('ssl' => array('verify_peer' => false, 'verify_peer_name' => false, 'allow_self_signed' => true));
-
-              // Variables for fallback
-              $to = $user['email'];
-              $subject = 'Your ATIERA verification code';
-              $body = "
+            // Send email using central helper
+            $email_sent = sendEmail($user['email'], $user['full_name'] ?: $user['email'], 'Your ATIERA verification code', "
                     <div style=\"font-family:Arial,sans-serif;font-size:14px;line-height:1.6;color:black\">
                         <h2 style=\"margin:0 0 10px\">Verify your email</h2>
                         <p>Hello " . htmlspecialchars($user['full_name'] ?: $user['email']) . ",</p>
                         <p>Your verification code is: <strong style=\"font-size:18px;color:#121e4d\">{$code}</strong></p>
                         <p>This code will expire in 15 minutes.</p>
                         <p>— ATIERA</p>
-                    </div>";
-
-              $mail->setFrom(SMTP_FROM_EMAIL, SMTP_FROM_NAME);
-              $mail->addAddress($to, $user['full_name'] ?: $to);
-              $mail->isHTML(true);
-              $mail->Subject = $subject;
-              $mail->Body = $body;
-              $mail->AltBody = "Your ATIERA verification code is: {$code}\nThis code expires in 15 minutes.";
-              
-              // TRY SMTP FIRST
-              $mail->send();
-            } catch (\Exception $e) {
-              // SMTP FAILED (Likely blocked firewall) -> TRY NATIVE MAIL FALLBACK
-              try {
-                  $mail->isMail();
-                  // Change from to domain email to avoid spam filters
-                  $mail->setFrom('admin@atierahotelandrestaurant.com', SMTP_FROM_NAME);
-                  $mail->send();
-              } catch (\Exception $e2) {
-                  // Final native mail fallback
-                  $headers = "MIME-Version: 1.0\r\nContent-type:text/html;charset=UTF-8\r\nFrom: ATIERA Hotel <admin@atierahotelandrestaurant.com>";
-                  @mail($to, $subject, $body, $headers);
-              }
-            }
+                    </div>");
 
             // --- ALWAYS TRIGGER MODAL ---
             $prefill_email = $user['email'];
@@ -993,8 +955,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['username']) && isset(
         if (data?.ok) {
           verifyMsg.textContent = data.message || 'Verification code sent to your email.';
           verifyMsg.className = 'text-xs text-green-600';
+        } else {
+          verifyMsg.textContent = data?.message || 'Failed to resend code.';
+          verifyMsg.className = 'text-xs text-red-600';
+        }
       } catch (err) {
-        verifyMsg.textContent = 'Connection error. Please check your internet or server status.';
+        verifyMsg.textContent = 'Connection error. Please try again.';
         verifyMsg.className = 'text-xs text-red-600';
         console.error('Fetch error:', err);
       }
