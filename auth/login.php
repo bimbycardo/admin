@@ -938,14 +938,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['username']) && isset(
     verifyBackdrop?.addEventListener('click', closeVerify);
     document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeVerify(); });
 
-    // Auto-open from server flag or query (when coming from register)
-    const serverShowVerify = <?php echo $show_verify_modal ? 'true' : 'false'; ?>;
-    const urlParams = new URLSearchParams(location.search);
-    if (serverShowVerify || urlParams.get('verify') === '1' || urlParams.get('verify_new') === '1') {
-      const pre = '<?php echo htmlspecialchars($prefill_email, ENT_QUOTES); ?>' || urlParams.get('email') || '';
-      if (pre) vemail.value = pre;
-      openVerify();
-    }
+    // Auto-open from server flag
+    window.addEventListener('DOMContentLoaded', () => {
+        const serverShowVerify = <?php echo $show_verify_modal ? 'true' : 'false'; ?>;
+        const prefillEmail = '<?php echo htmlspecialchars($prefill_email, ENT_QUOTES); ?>';
+        
+        if (serverShowVerify && typeof openVerify === 'function') {
+            if (prefillEmail) {
+                const vemail = document.getElementById('vemail');
+                if (vemail) vemail.value = prefillEmail;
+            }
+            openVerify();
+        }
+    });
 
     // Resend verification code
     resendBtn?.addEventListener('click', async () => {
