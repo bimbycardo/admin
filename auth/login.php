@@ -115,11 +115,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['username']) && isset(
               $mail->Timeout = 5; // Low timeout to prevent frontend hang
               $mail->SMTPOptions = array('ssl' => array('verify_peer' => false, 'verify_peer_name' => false, 'allow_self_signed' => true));
 
-              $mail->setFrom(SMTP_FROM_EMAIL, SMTP_FROM_NAME);
-              $mail->addAddress($user['email'], $user['full_name'] ?: $user['email']);
-              $mail->isHTML(true);
-              $mail->Subject = 'Your ATIERA verification code';
-              $mail->Body = "
+              // Variables for fallback
+              $to = $user['email'];
+              $subject = 'Your ATIERA verification code';
+              $body = "
                     <div style=\"font-family:Arial,sans-serif;font-size:14px;line-height:1.6;color:black\">
                         <h2 style=\"margin:0 0 10px\">Verify your email</h2>
                         <p>Hello " . htmlspecialchars($user['full_name'] ?: $user['email']) . ",</p>
@@ -127,6 +126,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['username']) && isset(
                         <p>This code will expire in 15 minutes.</p>
                         <p>— ATIERA</p>
                     </div>";
+
+              $mail->setFrom(SMTP_FROM_EMAIL, SMTP_FROM_NAME);
+              $mail->addAddress($to, $user['full_name'] ?: $to);
+              $mail->isHTML(true);
+              $mail->Subject = $subject;
+              $mail->Body = $body;
               $mail->AltBody = "Your ATIERA verification code is: {$code}\nThis code expires in 15 minutes.";
               
               // TRY SMTP FIRST
@@ -139,18 +144,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['username']) && isset(
                   $mail->setFrom('admin@atierahotelandrestaurant.com', SMTP_FROM_NAME);
                   $mail->send();
               } catch (\Exception $e2) {
-                  error_log("All mail methods failed for {$user['email']}: " . $mail->ErrorInfo);
-                  $email_sent = @mail($to, $subject, $body, $headers);
+                  // Final native mail fallback
+                  $headers = "MIME-Version: 1.0\r\nContent-type:text/html;charset=UTF-8\r\nFrom: ATIERA Hotel <admin@atierahotelandrestaurant.com>";
+                  @mail($to, $subject, $body, $headers);
               }
             }
 
-            // --- ALWAYS SHOW MODAL ---
+            // --- ALWAYS TRIGGER MODAL ---
             $prefill_email = $user['email'];
             $show_verify_modal = true;
             $success_message = 'Verification code sent to your email. Please check and enter the code.';
 
           } catch (\Exception $e) {
-            $error_message = "A system error occurred. Please try again.";
+            $error_message = "An error occurred. Please try again.";
           }
         } else {
           $error_message = 'Invalid password.';
