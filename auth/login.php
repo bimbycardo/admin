@@ -95,9 +95,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['username']) && isset(
             $stmt = $pdo->prepare('INSERT INTO email_verifications (user_id, code, expires_at) VALUES (:user_id, :code, :expires_at)');
             $stmt->execute([':user_id' => $user['id'], ':code' => $code, ':expires_at' => $expiresAt]);
 
-            // Clean & Simple Email Body
-            $subject = "ATIERA Verification Code: $code";
-            $message = "<h2>Hello!</h2><p>Your login verification code is: <strong>$code</strong></p><p>This code expires in 15 minutes.</p>";
+            // Official Template Match from Screenshot
+            $subject = "Your ATIERA verification code";
+            $message = "
+                <div style='font-family: Arial, sans-serif; color: #333;'>
+                    <h2>Verify your email</h2>
+                    <p>Hello admin,</p>
+                    <p>Use the verification code below to sign in. It expires in 15 minutes.</p>
+                    <div style='background: #1a233e; color: white; display: inline-block; padding: 12px 25px; font-size: 24px; font-weight: bold; border-radius: 6px; letter-spacing: 2px; margin: 20px 0;'>
+                        $code
+                    </div>
+                    <p style='color: #666; font-size: 14px;'>If you didn't request this, you can ignore this email.</p>
+                    <p style='color: #888;'>— ATIERA</p>
+                </div>";
 
             $email_sent = sendEmail($user['email'], $user['full_name'], $subject, $message);
 

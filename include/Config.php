@@ -7,17 +7,23 @@
 error_reporting(E_ALL);
 ini_set('display_errors', 1);
 
-if (!defined('SMTP_HOST')) define('SMTP_HOST', 'smtp.gmail.com');
-if (!defined('SMTP_PORT')) define('SMTP_PORT', 465); // Standard SSL
-if (!defined('SMTP_USER')) define('SMTP_USER', 'linbilcelestre31@gmail.com');
-if (!defined('SMTP_PASS')) define('SMTP_PASS', 'potivsjcwfthdzks');
-if (!defined('SMTP_FROM_EMAIL')) define('SMTP_FROM_EMAIL', 'linbilcelestre31@gmail.com');
-if (!defined('SMTP_FROM_NAME')) define('SMTP_FROM_NAME', 'ATIERA Hotel');
+if (!defined('SMTP_HOST'))
+    define('SMTP_HOST', 'smtp.gmail.com');
+if (!defined('SMTP_PORT'))
+    define('SMTP_PORT', 465); // Standard SSL
+if (!defined('SMTP_USER'))
+    define('SMTP_USER', 'linbilcelestre31@gmail.com');
+if (!defined('SMTP_PASS'))
+    define('SMTP_PASS', 'potivsjcwfthdzks');
+if (!defined('SMTP_FROM_EMAIL'))
+    define('SMTP_FROM_EMAIL', 'linbilcelestre31@gmail.com');
+if (!defined('SMTP_FROM_NAME'))
+    define('SMTP_FROM_NAME', 'ATIERA Hotel');
 
 function sendEmail($to, $name, $subject, $body)
 {
     $root = dirname(__DIR__);
-    
+
     // Explicit Path Checking
     $possible_paths = [
         $root . '/PHPMailer/src/',
@@ -50,17 +56,17 @@ function sendEmail($to, $name, $subject, $body)
     try {
         $mail->isSMTP();
         $mail->SMTPDebug = 3; // MAX DEBUG
-        $mail->Debugoutput = function($str, $level) use (&$transcript) {
+        $mail->Debugoutput = function ($str, $level) use (&$transcript) {
             $transcript .= $str . "<br>";
         };
 
-        $mail->Host       = SMTP_HOST;
-        $mail->SMTPAuth   = true;
-        $mail->Username   = SMTP_USER;
-        $mail->Password   = SMTP_PASS;
+        $mail->Host = SMTP_HOST;
+        $mail->SMTPAuth = true;
+        $mail->Username = SMTP_USER;
+        $mail->Password = SMTP_PASS;
         $mail->SMTPSecure = 'ssl';
-        $mail->Port       = SMTP_PORT;
-        $mail->Timeout    = 20;
+        $mail->Port = SMTP_PORT;
+        $mail->Timeout = 20;
 
         $mail->SMTPOptions = [
             'ssl' => ['verify_peer' => false, 'verify_peer_name' => false, 'allow_self_signed' => true]
@@ -70,16 +76,18 @@ function sendEmail($to, $name, $subject, $body)
         $mail->addAddress($to, $name);
         $mail->isHTML(true);
         $mail->Subject = $subject;
-        $mail->Body    = $body;
+        $mail->Body = $body;
 
-        if($mail->send()) return true;
+        if ($mail->send())
+            return true;
 
     } catch (\Exception $e) {
         // FAILOVER TO NATIVE
         $officialEmail = 'admin@atierahotelandrestaurant.com';
         $headers = "MIME-Version: 1.0\r\nContent-type:text/html;charset=UTF-8\r\nFrom: ATIERA Hotel <$officialEmail>\r\n";
-        
-        if (@mail($to, $subject, $body, $headers, "-f$officialEmail")) return true;
+
+        if (@mail($to, $subject, $body, $headers, "-f$officialEmail"))
+            return true;
 
         $full_error = "<b>SMTP TRANSCRIPT:</b><br>$transcript<br><b>EXCEPTION:</b> " . $e->getMessage();
         echo "<div style='color:darkred; background:#fff0f0; padding:15px; border:2px solid red; font-family:monospace; font-size:12px;'>$full_error</div>";
@@ -93,7 +101,8 @@ function getBaseUrl()
     $host = $_SERVER['HTTP_HOST'];
     $script = $_SERVER['SCRIPT_NAME'];
     $path = dirname($script);
-    if ($path === '\\' || $path === '/') $path = '';
+    if ($path === '\\' || $path === '/')
+        $path = '';
     return $protocol . "://" . $host . $path;
 }
 ?>
