@@ -58,10 +58,11 @@ try {
         $stmt = $pdo->prepare('INSERT INTO email_verifications (user_id, code, expires_at) VALUES (?,?,?)');
         $stmt->execute([$userId, $code, $expires]);
 
-        if (send_email($email, $name, $code) === true) {
+        $sent = send_email($email, $name, $code);
+        if ($sent === true) {
             json_out(['ok' => true, 'message' => 'New code sent to ' . $email]);
         } else {
-            json_out(['ok' => false, 'message' => 'Failed to send email. Verification server busy.']);
+            json_out(['ok' => false, 'message' => 'Email Error: ' . $sent]);
         }
     }
 

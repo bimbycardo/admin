@@ -17,8 +17,8 @@ CREATE TABLE IF NOT EXISTS department_secrets (
 
 $conn->query($sql);
 
-// We use the PLAIN TEXT secret to match your current DB setup
-$secret = 'hr3_secret_key_2026';
+// Generate a random high-entropy secret for this setup attempt
+$secret = bin2hex(random_bytes(16));
 $stmt = $conn->prepare("INSERT INTO department_secrets (department, secret_key) VALUES ('HR3', ?) ON DUPLICATE KEY UPDATE secret_key=VALUES(secret_key)");
 $stmt->bind_param("s", $secret);
 

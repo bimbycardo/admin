@@ -99,7 +99,7 @@ if (!isset($_SESSION['user_id'])) {
 }
 
 // Fetch security PIN from settings
-$archivePin = '1234'; // Default
+$archivePin = '9999'; // Secure placeholder fallback
 try {
     $stmt = $db->prepare("SELECT setting_value FROM email_settings WHERE setting_key = 'archive_pin'");
     $stmt->execute();
@@ -551,7 +551,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     // Handle PDF Export (Idinagdag para sa PDF Report na may Password)
     if (isset($_POST['action']) && $_POST['action'] === 'export_pdf') {
-        $password = 'legal2025'; // Password para sa PDF Report (Simulasyon)
+        $password = bin2hex(random_bytes(4)); // Secure dynamic password for this report session
 
         // Kunin ang lahat ng data ng kontrata para sa ulat
         $query = "SELECT name as contract_name, risk_score, analysis_summary FROM contracts ORDER BY created_at DESC";

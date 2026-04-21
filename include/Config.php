@@ -1,29 +1,45 @@
 <?php
 /**
  * ATIERA Hotel & Restaurant - Central Configuration
- * TOTAL CLEANUP VERSION - PROD READY
+ * LINUX COMPATIBILITY VERSION (Case-Insensitive Path Detection)
  */
 
-// SMTP Settings (Clean & Strict)
 if (!defined('SMTP_HOST')) define('SMTP_HOST', 'smtp.gmail.com');
 if (!defined('SMTP_PORT')) define('SMTP_PORT', 465); 
 if (!defined('SMTP_USER')) define('SMTP_USER', 'linbilcelestre31@gmail.com');
-if (!defined('SMTP_PASS')) define('SMTP_PASS', 'potivsjcwfthdzks'); // Removed spaces
+if (!defined('SMTP_PASS')) define('SMTP_PASS', 'potivsjcwfthdzks');
 if (!defined('SMTP_FROM_EMAIL')) define('SMTP_FROM_EMAIL', 'linbilcelestre31@gmail.com');
 if (!defined('SMTP_FROM_NAME')) define('SMTP_FROM_NAME', 'ATIERA Hotel');
 
 function sendEmail($to, $name, $subject, $body)
 {
     $root = dirname(__DIR__); 
-    @require_once $root . '/PHPMailer/src/Exception.php';
-    @require_once $root . '/PHPMailer/src/PHPMailer.php';
-    @require_once $root . '/PHPMailer/src/SMTP.php';
+    
+    // SMART FOLDER DETECTION (Fixes Linux Case-Sensitivity Issues)
+    $possible_paths = [
+        $root . '/PHPMailer/src/',
+        $root . '/phpmailer/src/',
+        $root . '/PHPMailer/PHPMailer/src/',
+        $root . '/vendor/phpmailer/phpmailer/src/'
+    ];
 
-    if (!class_exists('PHPMailer\PHPMailer\PHPMailer')) {
-        return "PHPMailer error: Files not found.";
+    $found_path = '';
+    foreach ($possible_paths as $path) {
+        if (file_exists($path . 'PHPMailer.php')) {
+            $found_path = $path;
+            break;
+        }
     }
 
-    $mail = new PHPMailer\PHPMailer\PHPMailer(true);
+    if (empty($found_path)) {
+        return "Critical Error: PHPMailer folder structure not detected on server. Checked: " . implode(', ', $possible_paths);
+    }
+
+    require_once $found_path . 'Exception.php';
+    require_once $found_path . 'PHPMailer.php';
+    require_once $found_path . 'SMTP.php';
+
+    $mail = new \PHPMailer\PHPMailer\PHPMailer(true);
 
     try {
         $mail->isSMTP();
@@ -31,9 +47,10 @@ function sendEmail($to, $name, $subject, $body)
         $mail->SMTPAuth   = true;
         $mail->Username   = SMTP_USER;
         $mail->Password   = SMTP_PASS;
-        $mail->SMTPSecure = 'ssl'; 
+        $mail->SMTPSecure = \PHPMailer\PHPMailer\PHPMailer::ENCRYPTION_SMTPS;
         $mail->Port       = SMTP_PORT;
-        $mail->Timeout    = 15;
+        $mail->CharSet    = 'UTF-8';
+        $mail->Timeout    = 20;
 
         $mail->setFrom(SMTP_FROM_EMAIL, SMTP_FROM_NAME);
         $mail->addAddress($to, $name);
@@ -48,19 +65,15 @@ function sendEmail($to, $name, $subject, $body)
         return $mail->send();
 
     } catch (\Exception $e) {
-        /**
-         * FAILOVER: Native Mail with clean headers
-         */
+        // ULTIMATE FAILOVER: Native Mail
         $officialEmail = 'admin@atierahotelandrestaurant.com';
         $headers = "MIME-Version: 1.0\r\n";
         $headers .= "Content-type:text/html;charset=UTF-8\r\n";
         $headers .= "From: ATIERA Hotel <$officialEmail>\r\n";
         $headers .= "Reply-To: $officialEmail\r\n";
         
-        if (@mail($to, $subject, $body, $headers, "-f$officialEmail")) {
-            return true;
-        }
-        return "Mail Error: " . $mail->ErrorInfo;
+        $success = @mail($to, $subject, $body, $headers, "-f$officialEmail");
+        return $success ? true : "Final Dispatch Failed: " . $mail->ErrorInfo;
     }
 }
 
