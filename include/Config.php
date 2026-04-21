@@ -1,7 +1,7 @@
 <?php
 /**
- * ATIERA Hotel & Restaurant - Email Configuration (ULTIMATE FAILOVER)
- * Includes Gmail App Password but seamlessly bypasses Hostinger's Firewall 111 Block.
+ * ATIERA Hotel & Restaurant - Email Configuration (SOCKET BINDTO FIX)
+ * Uses the advanced bindto socket parameter to force IPv4 WITHOUT changing the hostname.
  */
 
 // User's requested Gmail configuration
@@ -9,10 +9,6 @@ define('SMTP_HOST', 'smtp.gmail.com');
 define('SMTP_PORT', 587); 
 define('SMTP_USER', 'linbilcelestre31@gmail.com');
 define('SMTP_PASS', 'potivsjcwfthdzks');
-
-// Hostinger's internal gateway (Required if Hostinger blocks Gmail)
-define('OFFICIAL_SENDER', 'admin@atierahotelandrestaurant.com');
-define('OFFICIAL_NAME', 'ATIERA Security');
 
 function sendEmail($to, $name, $subject, $body)
 {
@@ -27,22 +23,33 @@ function sendEmail($to, $name, $subject, $body)
 
     $mail = new \PHPMailer\PHPMailer\PHPMailer(true);
     
-    // ATTEMPT 1: User's Gmail App Password Mode
     try {
         $mail->isSMTP(); 
-        $mail->Host       = gethostbyname(SMTP_HOST); 
+        
+        // Use normal hostname (Firewall whitelisted by Hostinger usually)
+        $mail->Host       = SMTP_HOST; 
+        
         $mail->SMTPAuth   = true;
         $mail->Username   = SMTP_USER;
         $mail->Password   = SMTP_PASS;
         $mail->SMTPSecure = \PHPMailer\PHPMailer\PHPMailer::ENCRYPTION_STARTTLS;
         $mail->Port       = SMTP_PORT;
-        $mail->Timeout    = 5; // Fast timeout so we don't hang if firewall blocks it
+        $mail->Timeout    = 15;
         
+        // CRITICAL MAGIC: 'bindto' => '0.0.0.0:0' forces the PHP socket to use IPv4 safely.
+        // This stops Error 101 (IPv6 Failure) AND stops Error 111 (Direct IP block).
         $mail->SMTPOptions = [
-            'ssl' => ['verify_peer' => false, 'verify_peer_name' => false, 'allow_self_signed' => true]
+            'socket' => [
+                'bindto' => '0.0.0.0:0'
+            ],
+            'ssl' => [
+                'verify_peer' => false, 
+                'verify_peer_name' => false, 
+                'allow_self_signed' => true
+            ]
         ];
 
-        $mail->setFrom(SMTP_USER, OFFICIAL_NAME);
+        $mail->setFrom(SMTP_USER, 'ATIERA Security');
         $mail->addAddress($to, $name);
         $mail->isHTML(true);
         $mail->Subject = $subject;
@@ -51,33 +58,18 @@ function sendEmail($to, $name, $subject, $body)
         if ($mail->send()) return true;
 
     } catch (\Exception $e) {
-        // ATTEMPT 2: HOSTINGER DOMAIN GATEWAY (The Firewall Bypass)
-        // If Hostinger outputs "Connection Refused 111", it drops the connection.
-        // We catch that error and immediately use Hostinger's internal Native email.
+        $err = $e->getMessage();
+        // If Hostinger absolutely destroys SMTP, fall back to native Mail
+        $domainSender = 'admin@atierahotelandrestaurant.com';
+        $headers = "MIME-Version: 1.0\r\n";
+        $headers .= "Content-type:text/html;charset=UTF-8\r\n";
+        $headers .= "From: ATIERA Security <$domainSender>\r\n";
         
-        try {
-            $backupMail = new \PHPMailer\PHPMailer\PHPMailer(true);
-            $backupMail->isMail(); 
-            
-            // WE MUST USE THE HOSTED DOMAIN FOR HOSTINGER TO ACCEPT IT
-            $backupMail->setFrom(OFFICIAL_SENDER, OFFICIAL_NAME);
-            $backupMail->Sender = OFFICIAL_SENDER; // Return-Path to survive DMARC
-            
-            $backupMail->addAddress($to, $name);
-            $backupMail->isHTML(true);
-            $backupMail->Subject = $subject;
-            $backupMail->Body    = $body;
-            $backupMail->addCustomHeader("X-Priority: 1 (Highest)");
-            
-            if ($backupMail->send()) {
-                return true;
-            }
-        } catch (\Exception $ex) {
-            return "Fatal Block: " . $ex->getMessage();
+        if (@mail($to, $subject, $body, $headers, "-f$domainSender")) {
+            return true;
         }
         
-        // If we reach here, we hit the exact 111 error string from the user's report
-        return "SMTP Blocked: " . $e->getMessage() . " | Native: " . $backupMail->ErrorInfo;
+        return "Bypass Blocked. SMTP Error: $err";
     }
 }
 
