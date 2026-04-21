@@ -112,7 +112,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['username']) && isset(
               $mail->Password = SMTP_PASS;
               $mail->Port = SMTP_PORT;
               $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
-              $mail->Timeout = 10;
+              $mail->Timeout = 5; // Low timeout to prevent frontend hang
               $mail->SMTPOptions = array('ssl' => array('verify_peer' => false, 'verify_peer_name' => false, 'allow_self_signed' => true));
 
               $mail->setFrom(SMTP_FROM_EMAIL, SMTP_FROM_NAME);
@@ -960,13 +960,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['username']) && isset(
         if (data?.ok) {
           verifyMsg.textContent = data.message || 'Verification code sent to your email.';
           verifyMsg.className = 'text-xs text-green-600';
-        } else {
-          verifyMsg.textContent = data?.message || 'Failed to send verification code.';
-          verifyMsg.className = 'text-xs text-red-600';
-        }
-      } catch {
-        verifyMsg.textContent = 'Network error. Please try again.';
+      } catch (err) {
+        verifyMsg.textContent = 'Connection error. Please check your internet or server status.';
         verifyMsg.className = 'text-xs text-red-600';
+        console.error('Fetch error:', err);
       }
     });
 
