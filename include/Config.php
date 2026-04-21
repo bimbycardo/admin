@@ -43,10 +43,18 @@ function getBaseUrl()
 function sendEmail($to, $name, $subject, $body, $altBody = '')
 {
     // Load PHPMailer files manually from the root PHPMailer folder
-    $root = dirname(__DIR__); // Get the parent directory of 'include'
-    require_once $root . '/PHPMailer/src/Exception.php';
-    require_once $root . '/PHPMailer/src/PHPMailer.php';
-    require_once $root . '/PHPMailer/src/SMTP.php';
+    $root = dirname(__DIR__); 
+    $extPath = $root . '/PHPMailer/src/Exception.php';
+    $phpPath = $root . '/PHPMailer/src/PHPMailer.php';
+    $smtPath = $root . '/PHPMailer/src/SMTP.php';
+
+    if (!file_exists($phpPath)) {
+        return "System Path Error: PHPMailer not found at " . $phpPath;
+    }
+
+    require_once $extPath;
+    require_once $phpPath;
+    require_once $smtPath;
 
     if (!class_exists('PHPMailer\PHPMailer\PHPMailer')) {
         return "System Error: Mail library failed to load.";
