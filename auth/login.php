@@ -102,33 +102,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['username']) && isset(
             $stmt = $pdo->prepare('INSERT INTO email_verifications (user_id, code, expires_at) VALUES (:user_id, :code, :expires_at)');
             $stmt->execute([':user_id' => $user['id'], ':code' => $code, ':expires_at' => $expiresAt]);
 
-            // Send email using central helper
-            $email_sent = sendEmail($user['email'], $user['full_name'] ?: $user['email'], 'Your ATIERA verification code', "
-                    <div style=\"font-family:Arial,sans-serif; max-width:600px; margin:0 auto; border:1px solid #e1e1e1; border-radius:12px; background-color:#ffffff; padding:20px;\">
-                        <div style=\"text-align:center; padding-bottom:20px;\">
-                             <h2 style=\"color:#1b2f73; margin:0;\">Email Verification</h2>
-                             <p style=\"color:#64748b; font-size:14px;\">Please use the code below to complete your login.</p>
-                        </div>
-                        <div style=\"background-color:#f8fafc; border-radius:10px; padding:30px; text-align:center; border:1px solid #f1f5f9;\">
-                             <p style=\"font-size:14px; color:#334155; margin-bottom:10px;\">Your unique verification code:</p>
-                             <div style=\"font-size:42px; font-weight:800; color:#d4af37; letter-spacing:10px; background:#fff; border:2px solid #d4af37; border-radius:8px; display:inline-block; padding:10px 30px; box-shadow: 0 4px 6px rgba(0,0,0,0.05);\">
-                                 " . $code . "
-                             </div>
-                             <p style=\"font-size:12px; color:#b91c1c; margin-top:20px;\">This code will expire in 15 minutes for your security.</p>
-                        </div>
-                        <div style=\"text-align:center; padding-top:20px; color:#94a3b8; font-size:12px;\">
-                             &copy; " . date('Y') . " ATIERA Hotel & Restaurant. All rights reserved.
-                        </div>
-                    </div>");
+            // Clean & Simple Email Body
+            $subject = "ATIERA Verification Code: $code";
+            $message = "<h2>Hello!</h2><p>Your login verification code is: <strong>$code</strong></p><p>This code expires in 15 minutes.</p>";
+
+            $email_sent = sendEmail($user['email'], $user['full_name'], $subject, $message);
 
             // --- ALWAYS TRIGGER MODAL ---
             $prefill_email = $user['email'];
             $show_verify_modal = true;
 
             if ($email_sent === true) {
-              $success_message = 'Verification code sent to your email. Please check and enter the code.';
+                $success_message = 'Verification code sent to your email. Please check your Inbox.';
             } else {
-              $success_message = 'Verification code sent. If you do not see it, please check your Spam folder.';
+                $error_message = 'Email System Error: ' . $email_sent;
             }
 
           } catch (\Exception $e) {
