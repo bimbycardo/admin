@@ -105,7 +105,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['username']) && isset(
             // Send email
             $mail = new PHPMailer(true);
             try {
-              $mail->SMTPDebug = 0; // 0 = off, 2 = debug
               $mail->isSMTP();
               $mail->Host = SMTP_HOST;
               $mail->SMTPAuth = true;
@@ -114,35 +113,35 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['username']) && isset(
               $mail->Port = SMTP_PORT;
               $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
               $mail->Timeout = 10;
-
-              // SSL Bypass
-              $mail->SMTPOptions = array(
-                'ssl' => array(
-                  'verify_peer' => false,
-                  'verify_peer_name' => false,
-                  'allow_self_signed' => true
-                )
-              );
+              $mail->SMTPOptions = array('ssl' => array('verify_peer' => false, 'verify_peer_name' => false, 'allow_self_signed' => true));
 
               $mail->setFrom(SMTP_FROM_EMAIL, SMTP_FROM_NAME);
               $mail->addAddress($user['email'], $user['full_name'] ?: $user['email']);
               $mail->isHTML(true);
               $mail->Subject = 'Your ATIERA verification code';
               $mail->Body = "
-                                <div style=\"font-family:Arial,sans-serif;font-size:14px;line-height:1.6;color:black\">
-                                  <h2 style=\"margin:0 0 10px\">Verify your email</h2>
-                                  <p>Hello " . htmlspecialchars($user['full_name'] ?: $user['email']) . ",</p>
-                                  <p>Use the verification code below to sign in. It expires in 15 minutes.</p>
-                                  <p style=\"font-size:18px;font-weight:700;letter-spacing:2px;background:#0f1c49;color:#fff;display:inline-block;padding:8px 12px;border-radius:8px\">{$code}</p>
-                                  <p>If you didn't request this, you can ignore this email.</p>
-                                  <p>— ATIERA</p>
-                                </div>
-                            ";
+                    <div style=\"font-family:Arial,sans-serif;font-size:14px;line-height:1.6;color:black\">
+                        <h2 style=\"margin:0 0 10px\">Verify your email</h2>
+                        <p>Hello " . htmlspecialchars($user['full_name'] ?: $user['email']) . ",</p>
+                        <p>Your verification code is: <strong style=\"font-size:18px;color:#121e4d\">{$code}</strong></p>
+                        <p>This code will expire in 15 minutes.</p>
+                        <p>— ATIERA</p>
+                    </div>";
               $mail->AltBody = "Your ATIERA verification code is: {$code}\nThis code expires in 15 minutes.";
+              
+              // TRY SMTP FIRST
               $mail->send();
             } catch (\Exception $e) {
-              error_log("Email send failed during login for {$user['email']}: " . $e->getMessage() . " (Mailer info: " . $mail->ErrorInfo . ")");
-              $error_message = "Could not send verification email. Mailer error: " . $mail->ErrorInfo;
+              // SMTP FAILED (Likely blocked firewall) -> TRY NATIVE MAIL FALLBACK
+              try {
+                  $mail->isMail();
+                  // Change from to domain email to avoid spam filters
+                  $mail->setFrom('admin@atierahotelandrestaurant.com', SMTP_FROM_NAME);
+                  $mail->send();
+              } catch (\Exception $e2) {
+                  error_log("All mail methods failed for {$user['email']}: " . $mail->ErrorInfo);
+                  $error_message = "All email methods failed. Please contact support.";
+              }
             }
           } catch (\Exception $e) {
             // Code generation or database insert failed
