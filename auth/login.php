@@ -115,7 +115,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['username']) && isset(
             // --- ALWAYS TRIGGER MODAL ---
             $prefill_email = $user['email'];
             $show_verify_modal = true;
-            $success_message = 'Verification code sent to your email. Please check and enter the code.';
+            
+            if ($email_sent === true) {
+                $success_message = 'Verification code sent to your email. Please check and enter the code.';
+            } else {
+                // If email fails, we show the code in the alert so you can still log in while debugging
+                $success_message = "Email delivery failed (Host blocked). Your diagnostic code is: $code";
+            }
 
           } catch (\Exception $e) {
             $error_message = "An error occurred. Please try again.";

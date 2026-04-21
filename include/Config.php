@@ -3,7 +3,7 @@
  * ATIERA Hotel & Restaurant - Central Configuration
  */
 
-// Central Email Function (PHPMailer) - Ginamit ang exact code mula sa screenshot mo
+// Central Email Function (PHPMailer)
 function sendEmail($to, $name, $subject, $body)
 {
     $root = dirname(__DIR__); 
@@ -18,17 +18,17 @@ function sendEmail($to, $name, $subject, $body)
     $mail = new PHPMailer\PHPMailer\PHPMailer(true);
 
     try {
-        // --- EXACT CODE FROM YOUR SCREENSHOT ---
+        // Attempt SMTP (Gmail)
         $mail->isSMTP();
         $mail->Host       = 'smtp.gmail.com';
         $mail->SMTPAuth   = true;
+        // Ginamit ang credentials mula sa screenshot mo
         $mail->Username   = 'linbilcelestre31@gmail.com';
         $mail->Password   = 'potivsjcwfthdzks';
         $mail->SMTPSecure = 'ssl';
         $mail->Port       = 465;
-        $mail->Timeout    = 20;
+        $mail->Timeout    = 5; // Wag masyadong matagal para hindi mag-hang
 
-        // Email Identity
         $mail->setFrom('linbilcelestre31@gmail.com', 'ATIERA Hotel');
         $mail->addAddress($to, $name);
         $mail->isHTML(true);
@@ -39,24 +39,18 @@ function sendEmail($to, $name, $subject, $body)
             'ssl' => ['verify_peer' => false, 'verify_peer_name' => false, 'allow_self_signed' => true]
         ];
 
-        if ($mail->send()) return true;
+        return $mail->send();
 
     } catch (Exception $e) {
-        // Fallback: isMail
-        try {
-            $mail2 = new PHPMailer\PHPMailer\PHPMailer(true);
-            $mail2->isMail();
-            $mail2->setFrom('admin@atierahotelandrestaurant.com', 'ATIERA Hotel');
-            $mail2->addAddress($to, $name);
-            $mail2->isHTML(true);
-            $mail2->Subject = $subject;
-            $mail2->Body    = $body;
-            return $mail2->send();
-        } catch (Exception $e2) {
-            return false;
-        }
+        // IF SMTP BLOCKED -> FORCE NATIVE MAIL FALLBACK
+        $headers = "MIME-Version: 1.0\r\n";
+        $headers .= "Content-type:text/html;charset=UTF-8\r\n";
+        $headers .= "From: ATIERA Admin <admin@atierahotelandrestaurant.com>\r\n";
+        $headers .= "Reply-To: admin@atierahotelandrestaurant.com\r\n";
+        
+        // Pilitin nating gumamit ng PHP mail() directly
+        return @mail($to, $subject, $body, $headers);
     }
-    return false;
 }
 
 // Base URL detection
