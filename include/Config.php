@@ -42,60 +42,64 @@ function getBaseUrl()
 // --- 3. PREMIUM EMAIL ENGINE ---
 function sendEmail($to, $name, $subject, $body, $altBody = '')
 {
-    // Load PHPMailer files manually from the root PHPMailer folder
+    // Load PHPMailer files manually
     $root = dirname(__DIR__); 
     $extPath = $root . '/PHPMailer/src/Exception.php';
     $phpPath = $root . '/PHPMailer/src/PHPMailer.php';
     $smtPath = $root . '/PHPMailer/src/SMTP.php';
 
-    if (!file_exists($phpPath)) {
-        return "System Path Error: PHPMailer not found at " . $phpPath;
+    if (file_exists($phpPath)) {
+        require_once $extPath;
+        require_once $phpPath;
+        require_once $smtPath;
     }
 
-    require_once $extPath;
-    require_once $phpPath;
-    require_once $smtPath;
+    $lastError = 'SMTP Blocked by Host';
+    
+    // --- TRY SMTP (GMAIL) ---
+    if (class_exists('PHPMailer\PHPMailer\PHPMailer')) {
+        $portsToTry = [587, 465]; 
+        foreach ($portsToTry as $port) {
+            $mail = new PHPMailer\PHPMailer\PHPMailer(true);
+            try {
+                $mail->isSMTP();
+                $mail->Host       = SMTP_HOST;
+                $mail->SMTPAuth   = true;
+                $mail->Username   = SMTP_USER;
+                $mail->Password   = str_replace(' ', '', SMTP_PASS); 
+                $mail->SMTPSecure = ($port == 465) ? PHPMailer\PHPMailer\PHPMailer::ENCRYPTION_SMTPS : PHPMailer\PHPMailer\PHPMailer::ENCRYPTION_STARTTLS;
+                $mail->Port       = $port;
+                $mail->Timeout    = 5; // Fast timeout if blocked
+                $mail->CharSet    = 'UTF-8';
 
-    if (!class_exists('PHPMailer\PHPMailer\PHPMailer')) {
-        return "System Error: Mail library failed to load.";
-    }
+                $mail->SMTPOptions = ['ssl' => ['verify_peer' => false, 'verify_peer_name' => false]];
+                $mail->setFrom(SMTP_FROM_EMAIL, SMTP_FROM_NAME);
+                $mail->addAddress($to, $name);
+                $mail->isHTML(true);
+                $mail->Subject = $subject;
+                $mail->Body    = $body;
+                $mail->AltBody = $altBody ?: strip_tags($body);
 
-    $portsToTry = [587, 465]; 
-    $lastError = '';
-
-    foreach ($portsToTry as $port) {
-        $mail = new PHPMailer\PHPMailer\PHPMailer(true);
-        try {
-            $mail->isSMTP();
-            $mail->Host       = SMTP_HOST;
-            $mail->SMTPAuth   = true;
-            $mail->Username   = SMTP_USER;
-            $mail->Password   = str_replace(' ', '', SMTP_PASS); 
-            $mail->SMTPSecure = ($port == 465) ? PHPMailer\PHPMailer\PHPMailer::ENCRYPTION_SMTPS : PHPMailer\PHPMailer\PHPMailer::ENCRYPTION_STARTTLS;
-            $mail->Port       = $port;
-            $mail->Timeout    = 20; 
-            $mail->CharSet    = 'UTF-8';
-
-            $mail->SMTPOptions = [
-                'ssl' => ['verify_peer' => false, 'verify_peer_name' => false, 'allow_self_signed' => true]
-            ];
-
-            $mail->setFrom(SMTP_FROM_EMAIL, SMTP_FROM_NAME);
-            $mail->addAddress($to, $name);
-
-            $mail->isHTML(true);
-            $mail->Subject = $subject;
-            $mail->Body    = $body;
-            $mail->AltBody = $altBody ?: strip_tags($body);
-
-            $mail->send();
-            return true;
-
-        } catch (Exception $e) {
-            $lastError = $mail->ErrorInfo;
-            continue; 
+                $mail->send();
+                return true; 
+            } catch (Exception $e) {
+                $lastError = $mail->ErrorInfo;
+                // If network is blocked, skip to mail() immediately
+                if (strpos($lastError, 'unreachable') !== false) break;
+            }
         }
     }
 
-    return "SMTP Final Error: " . $lastError . " (Tested Ports: 587, 465)";
+    // --- FALLBACK: NATIVE PHP MAIL (The Unblocker) ---
+    $headers = "MIME-Version: 1.0" . "\r\n";
+    $headers .= "Content-type:text/html;charset=UTF-8" . "\r\n";
+    $headers .= 'From: ' . SMTP_FROM_NAME . ' <' . SMTP_FROM_EMAIL . '>' . "\r\n";
+    $headers .= 'Reply-To: ' . SMTP_FROM_EMAIL . "\r\n";
+    $headers .= 'X-Mailer: PHP/' . phpversion();
+
+    if (@mail($to, $subject, $body, $headers)) {
+        return true; 
+    }
+
+    return "All methods failed. SMTP: $lastError";
 }
