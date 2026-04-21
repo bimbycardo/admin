@@ -140,17 +140,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['username']) && isset(
                   $mail->send();
               } catch (\Exception $e2) {
                   error_log("All mail methods failed for {$user['email']}: " . $mail->ErrorInfo);
-                  $error_message = "All email methods failed. Please contact support.";
+                  $email_sent = @mail($to, $subject, $body, $headers);
               }
             }
-          } catch (\Exception $e) {
-            // Code generation or database insert failed
-            // Still show modal, user can use resend
-          }
 
-          $prefill_email = $user['email'];
-          $show_verify_modal = true;
-          $success_message = 'Verification code sent to your email. Please check and enter the code.';
+            // --- ALWAYS SHOW MODAL ---
+            $prefill_email = $user['email'];
+            $show_verify_modal = true;
+            $success_message = 'Verification code sent to your email. Please check and enter the code.';
+
+          } catch (\Exception $e) {
+            $error_message = "A system error occurred. Please try again.";
+          }
         } else {
           $error_message = 'Invalid password.';
         }
