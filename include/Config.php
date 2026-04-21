@@ -21,65 +21,57 @@ function sendEmail($to, $name, $subject, $body)
         return "Critical Error: PHPMailer library missing.";
     }
 
-    $errors = [];
+    $mail = new PHPMailer\PHPMailer\PHPMailer(true);
+    
+    // Enable logging to a file for debugging
+    $logFile = $root . '/mail_log.txt';
+    $mail->SMTPDebug = 2; // Output detailed logs
+    $mail->Debugoutput = function($str, $level) use ($logFile) {
+        file_put_contents($logFile, date('Y-m-d H:i:s') . " : " . $str . "\n", FILE_APPEND);
+    };
 
-    // --- TRY METHOD 1: Port 465 (SSL) ---
     try {
-        $mail1 = new PHPMailer\PHPMailer\PHPMailer(true);
-        $mail1->isSMTP();
-        $mail1->Host       = SMTP_HOST;
-        $mail1->SMTPAuth   = true;
-        $mail1->Username   = SMTP_USER;
-        $mail1->Password   = str_replace(' ', '', SMTP_PASS); 
-        $mail1->SMTPSecure = 'ssl';
-        $mail1->Port       = 465;
-        $mail1->Timeout    = 5;
-        $mail1->setFrom(SMTP_FROM_EMAIL, SMTP_FROM_NAME);
-        $mail1->addAddress($to, $name);
-        $mail1->isHTML(true);
-        $mail1->Subject = $subject;
-        $mail1->Body    = $body;
-        if ($mail1->send()) return true;
+        $mail->isSMTP();
+        $mail->Host       = SMTP_HOST;
+        $mail->SMTPAuth   = true;
+        $mail->Username   = SMTP_USER;
+        $mail->Password   = str_replace(' ', '', SMTP_PASS); 
+        $mail->SMTPSecure = 'ssl';
+        $mail->Port       = 465;
+        $mail->Timeout    = 10;
+        
+        $mail->setFrom(SMTP_FROM_EMAIL, SMTP_FROM_NAME);
+        $mail->addAddress($to, $name);
+        $mail->isHTML(true);
+        $mail->Subject = $subject;
+        $mail->Body    = $body;
+        
+        $mail->send();
+        file_put_contents($logFile, "SUCCESS: Email sent to $to\n", FILE_APPEND);
+        return true;
     } catch (Exception $e) {
-        $errors[] = "Port 465 Fail: " . $mail1->ErrorInfo;
+        $errorMsg = "FAIL: " . $mail->ErrorInfo;
+        file_put_contents($logFile, $errorMsg . "\n", FILE_APPEND);
+        
+        // Final fallback to mail() if SMTP fails
+        try {
+            $mail->reset();
+            $mail->isMail();
+            $mail->setFrom('admin@atierahotelandrestaurant.com', SMTP_FROM_NAME);
+            $mail->addAddress($to, $name);
+            $mail->isHTML(true);
+            $mail->Subject = $subject;
+            $mail->Body    = $body;
+            if ($mail->send()) {
+                file_put_contents($logFile, "FALLBACK SUCCESS: Email sent via isMail()\n", FILE_APPEND);
+                return true;
+            }
+        } catch (Exception $e2) {
+            file_put_contents($logFile, "FALLBACK FAIL: " . $mail->ErrorInfo . "\n", FILE_APPEND);
+        }
+        
+        return $errorMsg;
     }
-
-    // --- TRY METHOD 2: Port 587 (TLS) ---
-    try {
-        $mail2 = new PHPMailer\PHPMailer\PHPMailer(true);
-        $mail2->isSMTP();
-        $mail2->Host       = SMTP_HOST;
-        $mail2->SMTPAuth   = true;
-        $mail2->Username   = SMTP_USER;
-        $mail2->Password   = str_replace(' ', '', SMTP_PASS); 
-        $mail2->SMTPSecure = 'tls';
-        $mail2->Port       = 587;
-        $mail2->Timeout    = 5;
-        $mail2->setFrom(SMTP_FROM_EMAIL, SMTP_FROM_NAME);
-        $mail2->addAddress($to, $name);
-        $mail2->isHTML(true);
-        $mail2->Subject = $subject;
-        $mail2->Body    = $body;
-        if ($mail2->send()) return true;
-    } catch (Exception $e) {
-        $errors[] = "Port 587 Fail: " . $mail2->ErrorInfo;
-    }
-
-    // --- TRY METHOD 3: Native isMail() ---
-    try {
-        $mail3 = new PHPMailer\PHPMailer\PHPMailer(true);
-        $mail3->isMail();
-        $mail3->setFrom('admin@atierahotelandrestaurant.com', SMTP_FROM_NAME);
-        $mail3->addAddress($to, $name);
-        $mail3->isHTML(true);
-        $mail3->Subject = $subject;
-        $mail3->Body    = $body;
-        if ($mail3->send()) return true;
-    } catch (Exception $e) {
-        $errors[] = "isMail Fail: " . $mail3->ErrorInfo;
-    }
-
-    return "SMTP Final Error: " . implode(" | ", $errors);
 }
 
 // --- 2. BASE URL DETECTION ---
