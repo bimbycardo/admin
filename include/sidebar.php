@@ -14,7 +14,7 @@ function get_nav_link($tab, $is_dashboard, $isSuperAdmin)
     return "../Modules/dashboard.php?tab=" . urlencode($tab);
 }
 ?>
-<nav class="sidebar" style="z-index: 1000 !important;">
+<nav class="sidebar" style="position: fixed !important; left: 0 !important; top: 0 !important; height: 100vh !important; width: 280px !important; z-index: 1000 !important; background: #0f172a !important; display: flex !important; flex-direction: column !important; visibility: visible !important; opacity: 1 !important;">
     <div class="sidebar-header" style="border-bottom: 1px solid rgba(255, 255, 255, 0.05); padding: 25px 0 20px 0; margin-bottom: 10px;">
         <a href="<?= $isSuperAdmin ? '../Super-admin/Dashboard.php?tab=dashboard' : '../Modules/dashboard.php?tab=dashboard' ?>" class="logo-link"
             title="Go to Dashboard">
@@ -457,7 +457,10 @@ function get_nav_link($tab, $is_dashboard, $isSuperAdmin)
 </style>
 
 <div class="mobile-bottom-nav">
-    <a href="<?= $isSuperAdmin ? '../Super-admin/Dashboard.php' : '../Modules/dashboard.php?tab=dashboard' ?>" class="<?= ($is_dashboard && (!isset($_GET['tab']) || $_GET['tab'] == 'dashboard')) ? 'active' : '' ?>">
+    <?php
+        $is_dashboard_tab = ($is_dashboard && (!isset($_GET['tab']) || $_GET['tab'] == 'dashboard')) || (!$is_dashboard && !isset($_GET['tab']));
+    ?>
+    <a href="<?= $isSuperAdmin ? '../Super-admin/Dashboard.php' : '../Modules/dashboard.php?tab=dashboard' ?>" class="<?= $is_dashboard_tab ? 'active' : '' ?>">
         <i class="fa-solid fa-gauge-high"></i>
         <span>Dashboard</span>
     </a>
@@ -476,7 +479,7 @@ function get_nav_link($tab, $is_dashboard, $isSuperAdmin)
     <?php
         $mgr_active = (isset($_GET['tab']) && ($_GET['tab'] == 'management' || $_GET['tab'] == 'maintenance' || $_GET['tab'] == 'facilities' || $_GET['tab'] == 'reservations' || $_GET['tab'] == 'calendar'));
     ?>
-    <a href="<?= get_nav_link('management', $is_dashboard, $isSuperAdmin) ?>" class="<?= $mgr_active ? 'active' : '' ?>">
+    <a href="<?= get_nav_link('management', $is_dashboard, $isSuperAdmin) ?>" class="<?= (isset($_GET['tab']) && $_GET['tab'] == 'management') ? 'active' : '' ?>">
         <i class="fa-solid fa-list-check"></i>
         <span>Management</span>
     </a>
