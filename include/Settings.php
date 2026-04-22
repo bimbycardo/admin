@@ -1198,6 +1198,9 @@ try {
                         <button class="tab-btn <?= !$isAdmin ? 'active' : '' ?>" onclick="switchTab('security')" id="tab-security">Security</button>
                     </div>
                     <div style="display: flex; gap: 10px;">
+                        <button class="swap-btn" onclick="openSecurityModal('password')">
+                            <i class="fas fa-lock"></i> Change Password
+                        </button>
                         <button class="swap-btn" onclick="openSecurityModal('pin')">
                             <i class="fas fa-key"></i> Security PIN
                         </button>
