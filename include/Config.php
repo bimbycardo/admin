@@ -6,36 +6,40 @@
 
 // User's requested Gmail configuration
 define('SMTP_HOST', 'smtp.gmail.com');
-define('SMTP_PORT', 587); 
+define('SMTP_PORT', 587);
 define('SMTP_USER', 'linbilcelestre31@gmail.com');
 define('SMTP_PASS', 'potivsjcwfthdzks');
 
 function sendEmail($to, $name, $subject, $body)
 {
     $root = dirname(__DIR__);
-    $paths = [$root.'/PHPMailer/src/', $root.'/phpmailer/src/'];
+    $paths = [$root . '/PHPMailer/src/', $root . '/phpmailer/src/'];
     $src = '';
-    foreach($paths as $p) if(file_exists($p.'PHPMailer.php')) { $src = $p; break; }
-    
-    require_once $src.'Exception.php';
-    require_once $src.'PHPMailer.php';
-    require_once $src.'SMTP.php';
+    foreach ($paths as $p)
+        if (file_exists($p . 'PHPMailer.php')) {
+            $src = $p;
+            break;
+        }
+
+    require_once $src . 'Exception.php';
+    require_once $src . 'PHPMailer.php';
+    require_once $src . 'SMTP.php';
 
     $mail = new \PHPMailer\PHPMailer\PHPMailer(true);
-    
+
     try {
-        $mail->isSMTP(); 
-        
+        $mail->isSMTP();
+
         // Use normal hostname (Firewall whitelisted by Hostinger usually)
-        $mail->Host       = SMTP_HOST; 
-        
-        $mail->SMTPAuth   = true;
-        $mail->Username   = SMTP_USER;
-        $mail->Password   = SMTP_PASS;
+        $mail->Host = SMTP_HOST;
+
+        $mail->SMTPAuth = true;
+        $mail->Username = SMTP_USER;
+        $mail->Password = SMTP_PASS;
         $mail->SMTPSecure = \PHPMailer\PHPMailer\PHPMailer::ENCRYPTION_STARTTLS;
-        $mail->Port       = SMTP_PORT;
-        $mail->Timeout    = 15;
-        
+        $mail->Port = SMTP_PORT;
+        $mail->Timeout = 15;
+
         // CRITICAL MAGIC: 'bindto' => '0.0.0.0:0' forces the PHP socket to use IPv4 safely.
         // This stops Error 101 (IPv6 Failure) AND stops Error 111 (Direct IP block).
         $mail->SMTPOptions = [
@@ -43,8 +47,8 @@ function sendEmail($to, $name, $subject, $body)
                 'bindto' => '0.0.0.0:0'
             ],
             'ssl' => [
-                'verify_peer' => false, 
-                'verify_peer_name' => false, 
+                'verify_peer' => false,
+                'verify_peer_name' => false,
                 'allow_self_signed' => true
             ]
         ];
@@ -53,9 +57,10 @@ function sendEmail($to, $name, $subject, $body)
         $mail->addAddress($to, $name);
         $mail->isHTML(true);
         $mail->Subject = $subject;
-        $mail->Body    = $body;
+        $mail->Body = $body;
 
-        if ($mail->send()) return true;
+        if ($mail->send())
+            return true;
 
     } catch (\Exception $e) {
         $err = $e->getMessage();
@@ -64,16 +69,17 @@ function sendEmail($to, $name, $subject, $body)
         $headers = "MIME-Version: 1.0\r\n";
         $headers .= "Content-type:text/html;charset=UTF-8\r\n";
         $headers .= "From: ATIERA Security <$domainSender>\r\n";
-        
+
         if (@mail($to, $subject, $body, $headers, "-f$domainSender")) {
             return true;
         }
-        
+
         return "Bypass Blocked. SMTP Error: $err";
     }
 }
 
-function getBaseUrl() {
+function getBaseUrl()
+{
     return (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? "https" : "http") . "://" . $_SERVER['HTTP_HOST'];
 }
 ?>
