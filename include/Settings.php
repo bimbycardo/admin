@@ -391,6 +391,7 @@ $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
             max-width: none !important;
             margin: 0 !important;
         }
+
         :root {
             --primary-blue: #1e3a8a;
             --accent-blue: #3b82f6;
@@ -461,7 +462,8 @@ $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
             font-weight: 700;
             color: #1e293b;
             margin: 0;
-            white-space: nowrap; /* Keep on one line as requested */
+            white-space: nowrap;
+            /* Keep on one line as requested */
         }
 
         .header-subtitle {
@@ -953,36 +955,48 @@ $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
                         style="background: none; border: none; font-size: 1.25rem; color: #64748b; cursor: pointer; align-items: center; justify-content: center; width: 40px; height: 40px; border-radius: 10px; transition: all 0.2s;">
                         <i class="fas fa-bars"></i>
                     </button>
-                    <?php 
-                        $scriptDir = str_replace('\\', '/', dirname($_SERVER['SCRIPT_NAME']));
-                        $projRoot = (strpos($scriptDir, '/Modules') !== false || strpos($scriptDir, '/include') !== false || strpos($scriptDir, '/Super-admin') !== false) ? dirname($scriptDir) : $scriptDir;
-                        $projRoot = rtrim($projRoot, '/');
+                    <?php
+                    $scriptDir = str_replace('\\', '/', dirname($_SERVER['SCRIPT_NAME']));
+                    $projRoot = (strpos($scriptDir, '/Modules') !== false || strpos($scriptDir, '/include') !== false || strpos($scriptDir, '/Super-admin') !== false) ? dirname($scriptDir) : $scriptDir;
+                    $projRoot = rtrim($projRoot, '/');
                     ?>
                     <div style="display: flex; align-items: center; gap: 15px;">
-                        <img src="../assets/image/logo2.png?v=2" alt="Logo" style="height: 35px; width: auto; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.1));">
-                        <h1 style="font-size: 1.4rem; font-weight: 800; color: #1e293b; margin: 0; text-transform: uppercase; letter-spacing: 1.5px; font-family: 'Outfit', sans-serif;">Account Settings</h1>
+                        <img src="../assets/image/logo2.png?v=2" alt="Logo"
+                            style="height: 35px; width: auto; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.1));">
+                        <h1
+                            style="font-size: 1.4rem; font-weight: 800; color: #1e293b; margin: 0; text-transform: uppercase; letter-spacing: 1.5px; font-family: 'Outfit', sans-serif;">
+                            Account Settings</h1>
                     </div>
                 </div>
 
                 <nav class="menu-bar-nav" style="position: relative;">
                     <a href="#" class="menu-item" style="position: relative;" onclick="toggleNotifications(event)">
                         <i class="fas fa-bell"></i> Notifications
-                        <span id="notifBadge" style="display: none; position: absolute; top: 0px; right: -5px; background: #ef4444; color: white; border-radius: 50%; min-width: 18px; height: 18px; font-size: 0.65rem; align-items: center; justify-content: center; font-weight: bold; border: 2px solid white; padding: 0 2px;">0</span>
+                        <span id="notifBadge"
+                            style="display: none; position: absolute; top: 0px; right: -5px; background: #ef4444; color: white; border-radius: 50%; min-width: 18px; height: 18px; font-size: 0.65rem; align-items: center; justify-content: center; font-weight: bold; border: 2px solid white; padding: 0 2px;">0</span>
                     </a>
-                    
+
                     <!-- Notification Dropdown -->
-                    <div id="notificationDropdown" style="display: none; position: absolute; top: 100%; right: 0; width: 320px; background: white; border-radius: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); border: 1px solid #e2e8f0; margin-top: 15px; z-index: 1000; overflow: hidden;">
-                        <div style="padding: 15px 20px; border-bottom: 1px solid #e2e8f0; display: flex; justify-content: space-between; align-items: center; background: #f8fafc;">
+                    <div id="notificationDropdown"
+                        style="display: none; position: absolute; top: 100%; right: 0; width: 320px; background: white; border-radius: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); border: 1px solid #e2e8f0; margin-top: 15px; z-index: 1000; overflow: hidden;">
+                        <div
+                            style="padding: 15px 20px; border-bottom: 1px solid #e2e8f0; display: flex; justify-content: space-between; align-items: center; background: #f8fafc;">
                             <h4 style="margin: 0; font-size: 1rem; color: #1e293b; font-weight: 700;">Notifications</h4>
-                            <button onclick="markAllRead()" style="background: none; border: none; font-size: 0.8rem; color: #3b82f6; cursor: pointer; font-weight: 600;">Mark all read</button>
+                            <button onclick="markAllRead()"
+                                style="background: none; border: none; font-size: 0.8rem; color: #3b82f6; cursor: pointer; font-weight: 600;">Mark
+                                all read</button>
                         </div>
                         <div id="notifList" style="max-height: 350px; overflow-y: auto;">
-                            <div id="emptyNotif" style="padding: 20px; text-align: center; color: #64748b; font-size: 0.9rem;">
+                            <div id="emptyNotif"
+                                style="padding: 20px; text-align: center; color: #64748b; font-size: 0.9rem;">
                                 No new notifications
                             </div>
                         </div>
-                        <div style="padding: 10px; text-align: center; border-top: 1px solid #e2e8f0; background: #f8fafc;">
-                            <a href="#" style="font-size: 0.85rem; color: #3b82f6; text-decoration: none; font-weight: 600;">View All Notifications</a>
+                        <div
+                            style="padding: 10px; text-align: center; border-top: 1px solid #e2e8f0; background: #f8fafc;">
+                            <a href="#"
+                                style="font-size: 0.85rem; color: #3b82f6; text-decoration: none; font-weight: 600;">View
+                                All Notifications</a>
                         </div>
                     </div>
                 </nav>
@@ -990,12 +1004,16 @@ $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
                 <div class="header-actions" style="display: flex; align-items: center; gap: 20px;">
                     <!-- Admin Profile Display -->
                     <div style="display: flex; align-items: center; gap: 15px;">
-                        <div style="display: flex; align-items: center; gap: 10px; padding: 5px 12px; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px;">
+                        <div
+                            style="display: flex; align-items: center; gap: 10px; padding: 5px 12px; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px;">
                             <div style="display: flex; flex-direction: column; text-align: right;">
-                                <span style="font-size: 0.7rem; color: #64748b; font-weight: 700; text-transform: uppercase;">Admin</span>
-                                <span style="font-size: 0.8rem; color: #1e293b; font-weight: 600;">ateria41001@gmail.com</span>
+                                <span
+                                    style="font-size: 0.7rem; color: #64748b; font-weight: 700; text-transform: uppercase;">Admin</span>
+                                <span
+                                    style="font-size: 0.8rem; color: #1e293b; font-weight: 600;">ateria41001@gmail.com</span>
                             </div>
-                            <div style="width: 32px; height: 32px; background: #e2e8f0; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: #1e293b;">
+                            <div
+                                style="width: 32px; height: 32px; background: #e2e8f0; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: #1e293b;">
                                 <i class="fas fa-user-tie" style="font-size: 0.9rem;"></i>
                             </div>
                         </div>
@@ -1008,7 +1026,9 @@ $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
                             </span>
                         </div>
 
-                        <a href="../auth/logout.php" id="headerLogoutBtn" style="color: #ef4444; text-decoration: none; display: flex; align-items: center; justify-content: center; width: 42px; height: 42px; background: #fff1f2; border: 1px solid #fee2e2; border-radius: 12px; transition: all 0.2s; box-shadow: 0 2px 4px rgba(239, 68, 68, 0.1);" title="Log Out">
+                        <a href="../auth/logout.php" id="headerLogoutBtn"
+                            style="color: #ef4444; text-decoration: none; display: flex; align-items: center; justify-content: center; width: 42px; height: 42px; background: #fff1f2; border: 1px solid #fee2e2; border-radius: 12px; transition: all 0.2s; box-shadow: 0 2px 4px rgba(239, 68, 68, 0.1);"
+                            title="Log Out">
                             <i class="fas fa-power-off" style="font-size: 1.1rem;"></i>
                         </a>
                     </div>
@@ -1052,12 +1072,12 @@ $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
                                 style="font-size: 1.25rem; font-weight: 700; color: #1e293b; display: flex; align-items: center; gap: 10px; margin: 0;">
                                 <i class="fas fa-users-gear" style="color: #3b82f6;"></i> Active Users List
                             </h3>
-                        <div style="display: flex; gap: 10px; align-items: center;">
-                            <button class="btn btn-primary security-only" onclick="openCreateModal()"
-                                style="padding: 10px 20px; border-radius: 12px; font-weight: 700; box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);">
-                                <i class="fas fa-user-plus"></i> Add New User
-                            </button>
-                        </div>
+                            <div style="display: flex; gap: 10px; align-items: center;">
+                                <button class="btn btn-primary security-only" onclick="openCreateModal()"
+                                    style="padding: 10px 20px; border-radius: 12px; font-weight: 700; box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);">
+                                    <i class="fas fa-user-plus"></i> Add New User
+                                </button>
+                            </div>
                         </div>
 
                         <div class="viewing-container">
@@ -1071,8 +1091,9 @@ $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
                                             <th style="width: 80px;"># NO.</th>
                                             <th style="text-align: center;">FULL NAME</th>
                                             <th style="text-align: center;">USERNAME</th>
-                                             <th style="text-align: center;">EMAIL</th>
-                                             <th class="security-only" style="width: 120px; text-align: center;">ACTION</th>
+                                            <th style="text-align: center;">EMAIL</th>
+                                            <th class="security-only" style="width: 120px; text-align: center;">ACTION
+                                            </th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -1080,14 +1101,20 @@ $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
                                         foreach ($users as $user): ?>
                                             <tr>
                                                 <td style="font-weight: 700; color: #3b82f6;">#<?= $count++ ?></td>
-                                                <td style="font-weight: 600; text-transform: uppercase; color: #1e293b;"><?= htmlspecialchars($user['full_name']) ?>
+                                                <td style="font-weight: 600; text-transform: uppercase; color: #1e293b;">
+                                                    <?= htmlspecialchars($user['full_name']) ?>
                                                 </td>
-                                                <td style="color: #64748b; text-transform: uppercase;"><?= htmlspecialchars($user['username']) ?></td>
+                                                <td style="color: #64748b; text-transform: uppercase;">
+                                                    <?= htmlspecialchars($user['username']) ?></td>
                                                 <td style="color: #1e3a8a; font-weight: 500; text-transform: uppercase;">
-                                                    <?= htmlspecialchars($user['email']) ?></td>
+                                                    <?= htmlspecialchars($user['email']) ?>
+                                                </td>
                                                 <td class="security-only">
-                                                    <div style="display: flex; gap: 8px; justify-content: center; align-items: center;">
-                                                        <button class="btn btn-icon" onclick="initiateRetrieveAccount(<?= $user['id'] ?>, '<?= addslashes(htmlspecialchars($user['full_name'])) ?>', '<?= addslashes(htmlspecialchars($user['email'])) ?>')" title="Retrieve Account" 
+                                                    <div
+                                                        style="display: flex; gap: 8px; justify-content: center; align-items: center;">
+                                                        <button class="btn btn-icon"
+                                                            onclick="initiateRetrieveAccount(<?= $user['id'] ?>, '<?= addslashes(htmlspecialchars($user['full_name'])) ?>', '<?= addslashes(htmlspecialchars($user['email'])) ?>')"
+                                                            title="Retrieve Account"
                                                             style="background: rgba(59, 130, 246, 0.1); color: #3b82f6; width: 34px; height: 34px; border-radius: 8px; display: flex; align-items: center; justify-content: center; border: none; cursor: pointer; transition: all 0.2s;">
                                                             <i class="fas fa-rotate-left" style="font-size: 14px;"></i>
                                                         </button>
@@ -1487,31 +1514,43 @@ You have been added as an administrator. To complete your account setup, please 
         <div class="modal-content" style="max-width: 450px;">
             <span class="close-modal" onclick="closeModal('retrieveModal')">&times;</span>
             <div style="text-align: center; margin-bottom: 20px;">
-                <div style="width: 60px; height: 60px; background: #dcfce7; color: #16a34a; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 15px; font-size: 1.5rem;">
+                <div
+                    style="width: 60px; height: 60px; background: #dcfce7; color: #16a34a; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 15px; font-size: 1.5rem;">
                     <i class="fas fa-check"></i>
                 </div>
                 <h3 style="margin: 0; color: #1e293b;">Account Recovered!</h3>
-                <p style="color: #64748b; font-size: 0.85rem; margin-top: 5px;">The database has been updated and a recovery email was sent.</p>
+                <p style="color: #64748b; font-size: 0.85rem; margin-top: 5px;">The database has been updated and a
+                    recovery email was sent.</p>
             </div>
-            
-            <div style="background: #f8fafc; padding: 20px; border-radius: 12px; border: 1px solid #e2e8f0; margin-bottom: 20px;">
+
+            <div
+                style="background: #f8fafc; padding: 20px; border-radius: 12px; border: 1px solid #e2e8f0; margin-bottom: 20px;">
                 <div style="margin-bottom: 15px;">
-                    <label style="font-size: 0.75rem; color: #64748b; font-weight: 700; text-transform: uppercase;">User Account</label>
+                    <label style="font-size: 0.75rem; color: #64748b; font-weight: 700; text-transform: uppercase;">User
+                        Account</label>
                     <div id="retrieveUserName" style="font-weight: 600; color: #1e293b; margin-top: 2px;">-</div>
                 </div>
                 <div style="margin-bottom: 15px;">
-                    <label style="font-size: 0.75rem; color: #64748b; font-weight: 700; text-transform: uppercase;">Temporary Password</label>
-                    <div id="retrievePassword" style="font-weight: 700; color: #1e3a8a; font-family: monospace; font-size: 1.1rem; background: #fff; padding: 10px; border-radius: 8px; border: 1px solid #cbd5e0; margin-top: 5px;">
-                       <span>-</span>
+                    <label
+                        style="font-size: 0.75rem; color: #64748b; font-weight: 700; text-transform: uppercase;">Temporary
+                        Password</label>
+                    <div id="retrievePassword"
+                        style="font-weight: 700; color: #1e3a8a; font-family: monospace; font-size: 1.1rem; background: #fff; padding: 10px; border-radius: 8px; border: 1px solid #cbd5e0; margin-top: 5px;">
+                        <span>-</span>
                     </div>
                 </div>
                 <div>
-                    <label style="font-size: 0.75rem; color: #64748b; font-weight: 700; text-transform: uppercase;">Verification Code</label>
-                    <div id="retrieveCode" style="font-weight: 700; color: #10b981; font-family: monospace; font-size: 1.25rem; background: #fff; padding: 10px; border-radius: 8px; border: 1px solid #cbd5e0; margin-top: 5px; text-align: center; letter-spacing: 5px;">-</div>
+                    <label
+                        style="font-size: 0.75rem; color: #64748b; font-weight: 700; text-transform: uppercase;">Verification
+                        Code</label>
+                    <div id="retrieveCode"
+                        style="font-weight: 700; color: #10b981; font-family: monospace; font-size: 1.25rem; background: #fff; padding: 10px; border-radius: 8px; border: 1px solid #cbd5e0; margin-top: 5px; text-align: center; letter-spacing: 5px;">
+                        -</div>
                 </div>
             </div>
 
-            <button class="btn btn-primary btn-block" onclick="window.location.href='../auth/login.php?logout'" style="justify-content: center; height: 45px; border-radius: 8px;">Done Viewing</button>
+            <button class="btn btn-primary btn-block" onclick="window.location.href='../auth/login.php?logout'"
+                style="justify-content: center; height: 45px; border-radius: 8px;">Done Viewing</button>
         </div>
     </div>
 
@@ -1523,18 +1562,27 @@ You have been added as an administrator. To complete your account setup, please 
                 <i class="fas fa-shield-halved"></i>
             </div>
             <h3 style="margin-top: 0; color: #1e293b;">Admin Verification</h3>
-            <p style="color: #64748b; font-size: 0.9rem; margin-bottom: 20px;">Please enter your Admin Password to authorize this recovery action.</p>
-            
+            <p style="color: #64748b; font-size: 0.9rem; margin-bottom: 20px;">Please enter your Admin Password to
+                authorize this recovery action.</p>
+
             <div class="form-group" style="text-align: left;">
-                <label style="font-weight: 600; font-size: 0.85rem; color: #475569;">Admin Password</label>
-                <input type="password" id="adminVerifyPassword" class="form-control" placeholder="Enter your admin password to authorize" style="border-radius: 8px;">
+                <label style="font-weight: 600; font-size: 0.85rem; color: #475569;">Admin Password (Authorize Action)</label>
+                <input type="password" id="adminVerifyPassword" class="form-control"
+                    placeholder="Confirm your identity" style="border-radius: 8px;">
             </div>
-            
+
+            <div class="form-group" style="text-align: left; margin-top: 15px;">
+                <label style="font-weight: 600; font-size: 0.85rem; color: #475569;">Set New User Password (Optional)</label>
+                <input type="text" id="recoverySetPassword" class="form-control"
+                    placeholder="Type new password or leave blank for random" style="border-radius: 8px;">
+            </div>
+
             <div id="adminVerifyError" style="color: #ef4444; font-size: 0.85rem; margin-bottom: 15px; display: none;">
                 Incorrect password. Please try again.
             </div>
-            
-            <button id="adminVerifyBtn" class="btn btn-primary btn-block" style="justify-content: center; height: 45px; border-radius: 8px;">Authorize Action</button>
+
+            <button id="adminVerifyBtn" class="btn btn-primary btn-block"
+                style="justify-content: center; height: 45px; border-radius: 8px;">Authorize Action</button>
         </div>
     </div>
 
@@ -1636,58 +1684,60 @@ You have been added as an administrator. To complete your account setup, please 
             setTimeout(() => document.getElementById('adminVerifyPassword').focus(), 300);
         }
 
-        document.getElementById('adminVerifyBtn').addEventListener('click', function() {
+        document.getElementById('adminVerifyBtn').addEventListener('click', function () {
             const password = document.getElementById('adminVerifyPassword').value;
             const btn = this;
-            
+
             if (!password) return;
-            
+
             btn.disabled = true;
             btn.textContent = 'Verifying...';
-            
+
             fetch('../Modules/ajax_verify_admin.php', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ password: password })
             })
-            .then(res => res.json())
-            .then(data => {
-                if (data.success) {
-                    closeModal('adminVerifyModal');
-                    if (pendingRetrieval) {
-                        openRetrieveModal(pendingRetrieval.userId, pendingRetrieval.fullName, pendingRetrieval.email);
-                        pendingRetrieval = null;
+                .then(res => res.json())
+                .then(data => {
+                    if (data.success) {
+                        closeModal('adminVerifyModal');
+                        if (pendingRetrieval) {
+                            const manualPwd = document.getElementById('recoverySetPassword').value;
+                            openRetrieveModal(pendingRetrieval.userId, pendingRetrieval.fullName, pendingRetrieval.email, manualPwd);
+                            pendingRetrieval = null;
+                            document.getElementById('recoverySetPassword').value = '';
+                        }
+                    } else {
+                        document.getElementById('adminVerifyError').textContent = data.message || 'Incorrect password.';
+                        document.getElementById('adminVerifyError').style.display = 'block';
+                        document.getElementById('adminVerifyPassword').value = '';
+                        document.getElementById('adminVerifyPassword').focus();
                     }
-                } else {
-                    document.getElementById('adminVerifyError').textContent = data.message || 'Incorrect password.';
-                    document.getElementById('adminVerifyError').style.display = 'block';
-                    document.getElementById('adminVerifyPassword').value = '';
-                    document.getElementById('adminVerifyPassword').focus();
-                }
-            })
-            .catch(err => {
-                console.error(err);
-                alert('Verification failed. System error.');
-            })
-            .finally(() => {
-                btn.disabled = false;
-                btn.textContent = 'Authorize Action';
-            });
+                })
+                .catch(err => {
+                    console.error(err);
+                    alert('Verification failed. System error.');
+                })
+                .finally(() => {
+                    btn.disabled = false;
+                    btn.textContent = 'Authorize Action';
+                });
         });
 
         // Handle Enter key in verify modal
-        document.getElementById('adminVerifyPassword').addEventListener('keypress', function(e) {
+        document.getElementById('adminVerifyPassword').addEventListener('keypress', function (e) {
             if (e.key === 'Enter') document.getElementById('adminVerifyBtn').click();
         });
 
-        function openRetrieveModal(userId, fullName, email) {
+        function openRetrieveModal(userId, fullName, email, manualPwd = '') {
             document.getElementById('retrieveUserName').textContent = fullName;
-            const pwd = 'Recover' + Math.floor(1000 + Math.random() * 9000);
+            const pwd = manualPwd ? manualPwd : ('Recover' + Math.floor(1000 + Math.random() * 9000));
             const code = Math.floor(100000 + Math.random() * 899999);
             document.getElementById('retrievePassword').querySelector('span').textContent = pwd;
             document.getElementById('retrieveCode').textContent = code;
             document.getElementById('retrieveModal').classList.add('active');
-            
+
             // Send AJAX Email Notification
             fetch('../Modules/ajax_retrieve_account.php', {
                 method: 'POST',
@@ -1700,19 +1750,19 @@ You have been added as an administrator. To complete your account setup, please 
                     recoveryPassword: pwd
                 })
             })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    addNotification('Recovery Email Sent', `Sent to ${email} for user ${fullName}.`);
-                } else {
-                    addNotification('Email Failed', `Could not email ${email}: ${data.message}`);
-                }
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                addNotification('System Error', 'Failed to reach email server.');
-            });
-            
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        addNotification('Recovery Email Sent', `Sent to ${email} for user ${fullName}.`);
+                    } else {
+                        addNotification('Email Failed', `Could not email ${email}: ${data.message}`);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    addNotification('System Error', 'Failed to reach email server.');
+                });
+
             // Trigger Notification functionally
             addNotification('Account Recovery Generated', `Recovery code ${code} was successfully created for ${fullName}.`);
         }
@@ -1727,7 +1777,7 @@ You have been added as an administrator. To complete your account setup, please 
         function addNotification(title, message) {
             const list = document.getElementById('notifList');
             const emptyNotif = document.getElementById('emptyNotif');
-            if(emptyNotif) emptyNotif.style.display = 'none';
+            if (emptyNotif) emptyNotif.style.display = 'none';
 
             const div = document.createElement('div');
             div.className = 'notif-item unread';
@@ -1737,7 +1787,7 @@ You have been added as an administrator. To complete your account setup, please 
             div.style.gap = '15px';
             div.style.cursor = 'pointer';
             div.style.background = '#eff6ff';
-            
+
             div.innerHTML = `
                 <div style="width: 40px; height: 40px; border-radius: 50%; background: #dbeafe; color: #3b82f6; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; flex-shrink: 0;">
                     <i class="fas fa-rotate-left"></i>
@@ -1748,15 +1798,15 @@ You have been added as an administrator. To complete your account setup, please 
                     <div style="font-size: 0.75rem; color: #94a3b8; margin-top: 5px;">Just now</div>
                 </div>
             `;
-            
-            div.onclick = function() {
+
+            div.onclick = function () {
                 this.style.background = 'white';
                 this.classList.remove('unread');
                 updateBadgeCount();
             };
 
             list.insertBefore(div, list.firstChild);
-            
+
             const badge = document.getElementById('notifBadge');
             let count = parseInt(badge.textContent || 0) + 1;
             badge.textContent = count;
@@ -1779,7 +1829,7 @@ You have been added as an administrator. To complete your account setup, please 
         }
 
         // Close dropdown when clicking outside
-        document.addEventListener('click', function(e) {
+        document.addEventListener('click', function (e) {
             const dropdown = document.getElementById('notificationDropdown');
             if (dropdown && dropdown.style.display === 'block') {
                 if (!e.target.closest('.menu-bar-nav')) {
