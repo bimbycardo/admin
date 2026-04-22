@@ -26,14 +26,18 @@ $pdo = get_pdo();
 // Ensure session is fully populated if missing role or email (fallback for existing sessions)
 if (isset($_SESSION['user_id']) && (!isset($_SESSION['role']) || !isset($_SESSION['email']))) {
     try {
-        $stmt_s = $pdo->prepare("SELECT email, role FROM users WHERE id = ?");
+        $stmt_s = $pdo->prepare("SELECT * FROM users WHERE id = ?");
         $stmt_s->execute([$_SESSION['user_id']]);
         $u_data = $stmt_s->fetch(PDO::FETCH_ASSOC);
         if ($u_data) {
-            $_SESSION['role'] = $u_data['role'];
-            $_SESSION['email'] = $u_data['email'];
+            $_SESSION['role'] = $u_data['role'] ?? 'admin';
+            $_SESSION['email'] = $u_data['email'] ?? '';
         }
-    } catch (Exception $e) {}
+    } catch (\PDOException $e) {
+        // Fallback or ignore if table/columns don't exist
+    } catch (\Exception $e) {
+        // Ignore other exceptions
+    }
 }
 
 // Ensure notifications table exists
