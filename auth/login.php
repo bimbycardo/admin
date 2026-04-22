@@ -51,7 +51,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['username']) && isset(
       $pdo = get_pdo();
 
       // Check user credentials - try email first, then username
-      $stmt = $pdo->prepare('SELECT id, full_name, username, email, password_hash FROM users WHERE email = :email OR username = :username LIMIT 1');
+      $stmt = $pdo->prepare('SELECT id, full_name, username, email, password_hash, role FROM users WHERE email = :email OR username = :username LIMIT 1');
       $stmt->execute([':email' => $username, ':username' => $username]);
       $user = $stmt->fetch();
 
@@ -84,6 +84,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['username']) && isset(
           $_SESSION['temp_username'] = $user['username'];
           $_SESSION['temp_name'] = $user['full_name'];
           $_SESSION['temp_email'] = $user['email'];
+          $_SESSION['temp_role'] = $user['role'] ?? 'staff';
 
 
           // Ensure email_verifications table exists

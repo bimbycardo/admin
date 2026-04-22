@@ -1144,24 +1144,26 @@ try {
 
                 <div class="tabs-container">
                     <div class="tabs-list">
-                        <?php if (($_SESSION['email'] ?? '') === 'ateria41001@gmail.com'): ?>
+                        <?php if (($_SESSION['role'] ?? '') === 'admin' || ($_SESSION['email'] ?? '') === 'ateria41001@gmail.com'): ?>
                         <button class="tab-btn active" onclick="switchTab('general')" id="tab-general">Users
                             List</button>
                         <?php endif; ?>
-                        <button class="tab-btn <?= ($_SESSION['email'] ?? '') !== 'ateria41001@gmail.com' ? 'active' : '' ?>" onclick="switchTab('security')" id="tab-security">Security</button>
+                        <button class="tab-btn <?= (($_SESSION['role'] ?? '') !== 'admin' && ($_SESSION['email'] ?? '') !== 'ateria41001@gmail.com') ? 'active' : '' ?>" onclick="switchTab('security')" id="tab-security">Security</button>
                     </div>
                     <div style="display: flex; gap: 10px;">
                         <button class="swap-btn" onclick="openSecurityModal('pin')">
                             <i class="fas fa-key"></i> Security PIN
                         </button>
+                        <?php if (($_SESSION['role'] ?? '') === 'admin' || ($_SESSION['email'] ?? '') === 'ateria41001@gmail.com'): ?>
                         <button class="swap-btn" onclick="toggleLayout()">
                             <i class="fas fa-sync-alt"></i> Swap View
                         </button>
+                        <?php endif; ?>
                     </div>
                 </div>
 
                 <!-- Users List Tab Content -->
-                <?php if (($_SESSION['email'] ?? '') === 'ateria41001@gmail.com'): ?>
+                <?php if (($_SESSION['role'] ?? '') === 'admin' || ($_SESSION['email'] ?? '') === 'ateria41001@gmail.com'): ?>
                 <div id="content-general">
                     <div class="content-card">
                         <div
@@ -1231,7 +1233,7 @@ try {
             </div>
 
             <!-- Security Tab Content -->
-            <div id="content-security" style="display: <?= ($_SESSION['email'] ?? '') === 'ateria41001@gmail.com' ? 'none' : 'block' ?>;">
+            <div id="content-security" style="display: <?= (($_SESSION['role'] ?? '') === 'admin' || ($_SESSION['email'] ?? '') === 'ateria41001@gmail.com') ? 'none' : 'block' ?>;">
                 <div class="content-card">
                     <h3 style="font-size: 1.25rem; font-weight: 700; color: #1e293b; margin-bottom: 1.5rem;">
                         Security Controls</h3>
@@ -1264,6 +1266,7 @@ try {
             </div>
 
             <!-- Dashboard Section (Always at bottom) -->
+            <?php if (($_SESSION['role'] ?? '') === 'admin' || ($_SESSION['email'] ?? '') === 'ateria41001@gmail.com'): ?>
             <div class="content-card" style="margin-top: 0;">
                 <h3 style="font-size: 1.25rem; font-weight: 700; color: #1e293b; margin-bottom: 0.75rem;">System
                     Overview</h3>
@@ -1315,6 +1318,7 @@ try {
                     </div>
                 </div>
             </div>
+            <?php endif; ?>
     </div>
     </main>
 

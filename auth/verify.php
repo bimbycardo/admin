@@ -86,6 +86,7 @@ try {
             $_SESSION['username'] = $_SESSION['temp_username'];
             $_SESSION['email'] = $email;
             $_SESSION['name'] = $name;
+            $_SESSION['role'] = $_SESSION['temp_role'] ?? 'staff';
             unset($_SESSION['temp_user_id']);
             $pdo->prepare('DELETE FROM email_verifications WHERE user_id = ?')->execute([$userId]);
             json_out(['ok' => true, 'redirect' => '../Modules/dashboard.php']);
