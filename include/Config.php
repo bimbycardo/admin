@@ -12,12 +12,8 @@ define('SMTP_PASS', base64_decode('eHNtdHBzaWItYTNjNzU2YTk4NjA1Yzg3OTdmYTU5M2NlM
 
 function sendEmail($to, $name, $subject, $body)
 {
-    // Heavily fragmented key to prevent auto-revocation and bypass scanners
-    $k1 = 'xsmtpsib-';
-    $k2 = 'a3c756a98605c8797fa593ce1c26d5f5';
-    $k3 = '600f1c98ccfa1fd8543429ef5e079d09';
-    $k4 = '-Vrwvkuph5bu24aam';
-    $apiKey = $k1 . $k2 . $k3 . $k4;
+    // User provided API Key
+    $apiKey = 'bskZVT4k9rmHTvV';
     
     $data = [
         "sender" => ["name" => "ATIERA Security", "email" => "atiera41001@gmail.com"],
