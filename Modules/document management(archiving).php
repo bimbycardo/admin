@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 /**
  * DOCUMENT MANAGEMENT (ARCHIVING) MODULE
  * Purpose: Upload, organize, and manage company documents with version control
@@ -996,6 +996,17 @@ function formatFileSize($bytes)
                 <div class="logo">
                     <h2>ATIE`RA ARCHIVE</h2>
                 </div>
+                <!-- Profile Display -->
+                <div style="display: flex; align-items: center; gap: 10px; padding: 5px 12px; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px; margin-left: auto; margin-right: 20px;">
+                    <div style="display: flex; flex-direction: column; text-align: right;">
+                        <span style="font-size: 0.7rem; color: #64748b; font-weight: 700; text-transform: uppercase;"><?= htmlspecialchars($_SESSION['name'] ?? 'Admin') ?></span>
+                        <span style="font-size: 0.8rem; color: #1e293b; font-weight: 600;"><?= htmlspecialchars($_SESSION['email'] ?? 'No Email') ?></span>
+                    </div>
+                    <div style="width: 32px; height: 32px; background: #e2e8f0; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: #1e293b;">
+                        <i class="fas fa-user-tie" style="font-size: 0.9rem;"></i>
+                    </div>
+                </div>
+
                 <nav>
                     <ul>
                         <li><a href="#" class="active"><i class="fas fa-home"></i> Home</a></li>
@@ -1033,7 +1044,7 @@ function formatFileSize($bytes)
             <div class="content">
                 <div class="content-header"
                     style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px;">
-                    <h2 id="contentTitle" style="font-weight: 700;">Document Archive | Admin ATIE`RA</h2>
+                    <h2 id="contentTitle" style="font-weight: 700;">Document Archive | <?= htmlspecialchars($_SESSION['name'] ?? 'Admin') ?></h2>
                     <div class="search-container" style="display: flex; gap: 10px;">
                         <input type="text" id="documentSearch" placeholder="Search archive..."
                             style="padding: 10px 15px; border-radius: 12px; border: 1px solid #e2e8f0; width: 250px; outline: none;">

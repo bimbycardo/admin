@@ -1202,7 +1202,7 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
             <div class="header-content">
                 <div class="logo">Legal Management System</div>
                 <div class="user-info">
-                    <span>Welcome, Admin</span>
+                    <span>Welcome, <?= htmlspecialchars($_SESSION['name'] ?? 'Admin') ?></span>
                     <?php if ($isSuperAdmin): ?>
                         <a href="../Super-admin/Dashboard.php" class="logout-btn" id="backDashboardBtn"
                             style="text-decoration: none;">

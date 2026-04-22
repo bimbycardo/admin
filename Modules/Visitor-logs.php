@@ -1,4 +1,7 @@
 <?php
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
 /**
  * VISITOR LOGS MODULE
  * Purpose: Tracks and manages visitor entries/exits for security monitoring
@@ -441,6 +444,17 @@ function getLastInsertId()
                     <i class="fas fa-bell" style="color: rgba(255,255,255,0.8); font-size: 1.1rem;"></i>
                     <span
                         style="position: absolute; top: -8px; right: -8px; background: #ef4444; color: white; font-size: 0.65rem; height: 16px; width: 16px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 800; border: 2px solid #1e293b;">0</span>
+                </div>
+
+                <!-- Profile Display -->
+                <div style="display: flex; align-items: center; gap: 10px; padding: 5px 12px; background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.15); border-radius: 12px; margin-right: 15px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
+                    <div style="display: flex; flex-direction: column; text-align: right;">
+                        <span style="font-size: 0.65rem; color: rgba(255,255,255,0.5); font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px;"><?= htmlspecialchars($_SESSION['name'] ?? 'Admin') ?></span>
+                        <span style="font-size: 0.75rem; color: #fff; font-weight: 600; letter-spacing: -0.2px;"><?= htmlspecialchars($_SESSION['email'] ?? 'No Email') ?></span>
+                    </div>
+                    <div style="width: 32px; height: 32px; background: rgba(255,255,255,0.15); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: #fff; border: 1px solid rgba(255,255,255,0.2);">
+                        <i class="fas fa-user-tie" style="font-size: 0.85rem;"></i>
+                    </div>
                 </div>
 
                 <span onclick="showPage('dashboard')" class="nav-item-top" data-page="dashboard">Dashboard</span>

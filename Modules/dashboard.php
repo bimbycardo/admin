@@ -1148,8 +1148,8 @@ $r_rows = [];
                         <div style="display: flex; align-items: center; gap: 15px;">
                             <div style="display: flex; align-items: center; gap: 10px; padding: 5px 12px; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px;">
                                 <div style="display: flex; flex-direction: column; text-align: right;">
-                                    <span style="font-size: 0.7rem; color: #64748b; font-weight: 700; text-transform: uppercase;">Admin</span>
-                                    <span style="font-size: 0.8rem; color: #1e293b; font-weight: 600;">ateria41001@gmail.com</span>
+                                    <span style="font-size: 0.7rem; color: #64748b; font-weight: 700; text-transform: uppercase;"><?= htmlspecialchars($_SESSION['name'] ?? 'Admin') ?></span>
+                                    <span style="font-size: 0.8rem; color: #1e293b; font-weight: 600;"><?= htmlspecialchars($_SESSION['email'] ?? 'No Email') ?></span>
                                 </div>
                                 <div style="width: 32px; height: 32px; background: #e2e8f0; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: #1e293b;">
                                     <i class="fas fa-user-tie" style="font-size: 0.9rem;"></i>
