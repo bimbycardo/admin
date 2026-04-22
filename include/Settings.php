@@ -1051,6 +1051,51 @@ try {
             box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
             transform: translateY(-2px);
         }
+
+        /* Mobile Header Fixes */
+        @media (max-width: 768px) {
+            .top-header {
+                padding: 0.75rem 1rem !important;
+                height: 60px;
+                gap: 10px;
+            }
+            .header-title {
+                gap: 8px !important;
+            }
+            .header-title img {
+                height: 25px !important;
+            }
+            .header-title h1 {
+                font-size: 1.1rem !important;
+                letter-spacing: 0.5px !important;
+            }
+            .menu-bar-nav {
+                margin-left: 0 !important;
+                gap: 10px !important;
+            }
+            .menu-item {
+                padding: 6px 10px !important;
+            }
+            .menu-item .notif-text {
+                display: none;
+            }
+            .header-actions {
+                gap: 10px !important;
+            }
+            .current-date-header {
+                display: none !important;
+            }
+            .profile-info-text {
+                display: none !important;
+            }
+            #headerLogoutBtn {
+                width: 36px !important;
+                height: 36px !important;
+            }
+            .top-header {
+                padding-left: 10px !important;
+            }
+        }
     </style>
 </head>
 
@@ -1078,7 +1123,7 @@ try {
                     <div style="display: flex; align-items: center; gap: 15px;">
                         <img src="../assets/image/logo2.png?v=2" alt="Logo"
                             style="height: 35px; width: auto; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.1));">
-                        <h1
+                        <h1 id="page-header-title"
                             style="font-size: 1.4rem; font-weight: 800; color: #1e293b; margin: 0; text-transform: uppercase; letter-spacing: 1.5px; font-family: 'Outfit', sans-serif;">
                             Account Settings</h1>
                     </div>
@@ -1086,7 +1131,7 @@ try {
 
                 <nav class="menu-bar-nav" style="position: relative;">
                     <a href="#" class="menu-item" style="position: relative;" onclick="toggleNotifications(event)">
-                        <i class="fas fa-bell"></i> Notifications
+                        <i class="fas fa-bell"></i> <span class="notif-text">Notifications</span>
                         <span id="notifBadge"
                             style="position: absolute; top: 0px; right: -5px; background: #ef4444; color: white; border-radius: 50%; min-width: 18px; height: 18px; font-size: 0.65rem; display: <?= $unread_count > 0 ? 'flex' : 'none' ?>; align-items: center; justify-content: center; font-weight: bold; border: 2px solid white; padding: 0 2px;"><?= $unread_count ?></span>
                     </a>
@@ -1143,7 +1188,7 @@ try {
                     <div style="display: flex; align-items: center; gap: 15px;">
                         <div
                             style="display: flex; align-items: center; gap: 10px; padding: 5px 12px; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px;">
-                            <div style="display: flex; flex-direction: column; text-align: right;">
+                            <div class="profile-info-text" style="display: flex; flex-direction: column; text-align: right;">
                                 <span
                                     style="font-size: 0.7rem; color: #64748b; font-weight: 700; text-transform: uppercase;"><?= htmlspecialchars($_SESSION['name'] ?? 'Admin') ?></span>
                                 <span
@@ -2002,6 +2047,16 @@ You have been added as an administrator. To complete your account setup, please 
 
             if (targetContent) targetContent.style.display = 'block';
             if (targetTab) targetTab.classList.add('active');
+
+            // Update header title based on tab
+            const headerTitle = document.getElementById('page-header-title');
+            if (headerTitle) {
+                if (tabName === 'dashboard') {
+                    headerTitle.innerText = '<?= $isAdmin ? "Users Management" : "Dashboard" ?>';
+                } else if (tabName === 'security') {
+                    headerTitle.innerText = 'Security Control';
+                }
+            }
         }
 
         let currentView = 'dashboard';
