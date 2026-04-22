@@ -1171,7 +1171,7 @@ $r_rows = [];
                                 </div>
                             </div>
 
-                            <a href="../auth/logout.php" id="headerLogoutBtn" style="color: #ef4444; text-decoration: none; display: flex; align-items: center; justify-content: center; width: 40px; height: 40px; background: #fff1f2; border: 1px solid #fee2e2; border-radius: 10px; transition: all 0.2s; box-shadow: 0 2px 4px rgba(239, 68, 68, 0.1);" title="Log Out">
+                            <a href="../Super-admin/auth/logout.php" id="headerLogoutBtn" style="color: #ef4444; text-decoration: none; display: flex; align-items: center; justify-content: center; width: 40px; height: 40px; background: #fff1f2; border: 1px solid #fee2e2; border-radius: 10px; transition: all 0.2s; box-shadow: 0 2px 4px rgba(239, 68, 68, 0.1);" title="Log Out">
                                 <i class="fas fa-power-off"></i>
                             </a>
                         </div>

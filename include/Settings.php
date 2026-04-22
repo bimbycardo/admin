@@ -986,7 +986,7 @@ $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
                             </span>
                         </div>
 
-                        <a href="../auth/logout.php" id="headerLogoutBtn" style="color: #ef4444; text-decoration: none; display: flex; align-items: center; justify-content: center; width: 42px; height: 42px; background: #fff1f2; border: 1px solid #fee2e2; border-radius: 12px; transition: all 0.2s; box-shadow: 0 2px 4px rgba(239, 68, 68, 0.1);" title="Log Out">
+                        <a href="../Super-admin/auth/logout.php" id="headerLogoutBtn" style="color: #ef4444; text-decoration: none; display: flex; align-items: center; justify-content: center; width: 42px; height: 42px; background: #fff1f2; border: 1px solid #fee2e2; border-radius: 12px; transition: all 0.2s; box-shadow: 0 2px 4px rgba(239, 68, 68, 0.1);" title="Log Out">
                             <i class="fas fa-power-off" style="font-size: 1.1rem;"></i>
                         </a>
                     </div>
