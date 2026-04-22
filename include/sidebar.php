@@ -22,8 +22,8 @@ function get_nav_link($tab, $is_dashboard, $isSuperAdmin)
         </a>
         <a href="<?= $isSuperAdmin ? '../Super-admin/Dashboard.php?tab=dashboard' : '../Modules/dashboard.php?tab=dashboard' ?>" class="logo-link"
             title="Go to Dashboard">
-                <div class="logo-area">
-                    <div class="logo" style="display: flex; flex-direction: column; align-items: center; gap: 10px;">
+                <div class="logo-area" style="padding: 0 20px;">
+                    <div class="logo" style="display: flex; align-items: center; gap: 15px;">
                         <?php 
                         // Robust path detection
                         $scriptDir = str_replace('\\', '/', dirname($_SERVER['SCRIPT_NAME']));
@@ -31,14 +31,15 @@ function get_nav_link($tab, $is_dashboard, $isSuperAdmin)
                         $projRoot = rtrim($projRoot, '/');
                         ?>
                         <!-- Full Logo (Open) -->
-                        <img src="<?= $projRoot ?>/assets/image/logo.png?v=2" alt="Atiéra Logo" class="full-logo"
-                            style="height:60px; width:auto; display:block; margin:0 auto; transition: all 0.3s; filter: drop-shadow(0 4px 6px rgba(0,0,0,0.1));">
-                        <?php if ($isSuperAdmin): ?>
-                            <div class="admin-badge"
-                                style="background: rgba(212, 175, 55, 0.15); color: #d4af37; padding: 4px 12px; border-radius: 20px; font-size: 11px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; border: 1px solid rgba(212, 175, 55, 0.3); display: inline-block;">
-                                Administrative
-                            </div>
-                        <?php endif; ?>
+                        <img src="<?= $projRoot ?>/assets/image/logo2.png?v=2" alt="Atiéra Logo" class="full-logo"
+                            style="height:45px; width:auto; display:block; transition: all 0.3s; filter: drop-shadow(0 4px 6px rgba(0,0,0,0.1));">
+                        
+                        <div style="display: flex; flex-direction: column; align-items: flex-start;">
+                            <span style="color: #d4af37; font-family: 'Cinzel', serif; font-size: 1.2rem; font-weight: 700; letter-spacing: 2px; line-height: 1;">ATIÉRA</span>
+                            <?php if ($isSuperAdmin): ?>
+                                <span style="color: #64748b; font-size: 9px; font-weight: 800; text-transform: uppercase; letter-spacing: 1px;">Administrative</span>
+                            <?php endif; ?>
+                        </div>
                     </div>
                 </div>
         </a>
