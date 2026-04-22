@@ -416,6 +416,18 @@ function getLastInsertId()
             <h2 style="text-transform: uppercase; letter-spacing: 2px; font-size: 1.1rem; color: #fff; font-weight: 800;">Visitor Management</h2>
         </div>
         <div class="top-nav">
+            <!-- Real-time Clock -->
+            <div style="margin-right: 25px; text-align: right; display: flex; flex-direction: column; justify-content: center;">
+                <div id="module-clock" style="color: #fff; font-weight: 800; font-size: 1rem; line-height: 1;"></div>
+                <div id="module-date" style="color: rgba(255,255,255,0.5); font-size: 0.7rem; font-weight: 600; text-transform: uppercase; margin-top: 4px; letter-spacing: 0.5px;"></div>
+            </div>
+
+            <!-- Notification Trigger -->
+            <div style="margin-right: 30px; position: relative; cursor: pointer; display: flex; align-items: center;" onclick="alert('All caught up!')">
+                <i class="fas fa-bell" style="color: rgba(255,255,255,0.8); font-size: 1.1rem;"></i>
+                <span style="position: absolute; top: -8px; right: -8px; background: #ef4444; color: white; font-size: 0.65rem; height: 16px; width: 16px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 800; border: 2px solid #1e293b;">0</span>
+            </div>
+
             <span onclick="showPage('dashboard')" class="nav-item-top" data-page="dashboard">Dashboard</span>
             <span onclick="showPage('hotel')" class="nav-pill" data-page="hotel">Hotel</span>
             <span onclick="showPage('restaurant')" class="nav-item-top" data-page="restaurant">Restaurant</span>
@@ -1052,6 +1064,17 @@ function getLastInsertId()
         }
 
         document.addEventListener('DOMContentLoaded', function () {
+            // Real-time Header Clock
+            function updateModuleClock() {
+                const now = new Date();
+                const clockEl = document.getElementById('module-clock');
+                const dateEl = document.getElementById('module-date');
+                if (clockEl) clockEl.textContent = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+                if (dateEl) dateEl.textContent = now.toLocaleDateString([], { weekday: 'short', month: 'short', day: 'numeric', year: 'numeric' });
+            }
+            setInterval(updateModuleClock, 1000);
+            updateModuleClock();
+
             // Sidebar / nav click handling — attach only to elements that have data-page
             document.querySelectorAll('a[data-page]').forEach(function (el) {
                 el.addEventListener('click', function (e) {
