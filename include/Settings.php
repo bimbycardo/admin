@@ -1052,29 +1052,62 @@ try {
             transform: translateY(-2px);
         }
 
-        /* Header Adjustments - Mobile Optimized */
+        /* Header Adjustments - Precise Mobile Match */
         .top-header {
-            padding: 0 12px !important;
+            padding: 0 15px !important;
             height: 60px !important;
             display: flex !important;
             justify-content: space-between !important;
             align-items: center !important;
-            gap: 10px !important;
-            background: rgba(255, 255, 255, 0.95) !important;
-            backdrop-filter: blur(10px);
+            background: #fff !important;
+            border-bottom: 1px solid #f1f5f9 !important;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.02) !important;
         }
 
         .header-title {
             display: flex !important;
             align-items: center !important;
-            gap: 8px !important;
-            flex-shrink: 0;
+            gap: 12px !important;
+            flex: 1;
+            min-width: 0;
+        }
+
+        .header-title h1 {
+            font-size: 1.1rem !important;
+            font-weight: 800 !important;
+            color: #1e293b !important;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            margin: 0;
         }
 
         .header-right-group {
             display: flex !important;
             align-items: center !important;
-            gap: 8px !important;
+            gap: 15px !important;
+            flex-shrink: 0;
+        }
+
+        .menu-item {
+            color: #64748b !important;
+            font-size: 1.2rem !important;
+            text-decoration: none !important;
+            display: flex !important;
+            align-items: center;
+        }
+
+        .icon-box-btn {
+            width: 40px !important;
+            height: 40px !important;
+            border-radius: 12px !important;
+            background: #f8fafc !important;
+            border: 1px solid #f1f5f9 !important;
+            display: flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            cursor: pointer;
+            transition: all 0.2s;
         }
 
         .desktop-only {
@@ -1085,26 +1118,16 @@ try {
             .desktop-only {
                 display: flex !important;
             }
-            .header-title img.desktop-only {
-                display: block !important;
-            }
-            .menu-item .notif-text.desktop-only {
-                display: inline !important;
-            }
             .top-header {
                 padding: 0 2.5rem !important;
                 height: 75px !important;
             }
             .header-title h1 {
                 font-size: 1.4rem !important;
+                overflow: visible;
             }
             .header-right-group {
                 gap: 20px !important;
-            }
-            .user-profile-container {
-                padding: 5px 12px !important;
-                background: #f8fafc !important;
-                border: 1px solid #e2e8f0 !important;
             }
         }
     </style>
@@ -1135,48 +1158,35 @@ try {
                         <img src="../assets/image/logo2.png?v=2" alt="Logo" class="desktop-only"
                             style="height: 35px; width: auto; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.1)); display: none;">
                         <h1 id="page-header-title"
-                            style="font-size: 1.4rem; font-weight: 800; color: #1e293b; margin: 0; text-transform: uppercase; letter-spacing: 1.5px; font-family: 'Outfit', sans-serif;">
-                            Account Settings</h1>
+                            style="text-transform: uppercase; letter-spacing: 1px; font-family: 'Outfit', sans-serif;">
+                            Users Management</h1>
                     </div>
                 </div>
 
                 <div class="header-right-group">
                     <nav class="menu-bar-nav" style="position: relative; margin: 0;">
-                        <a href="#" class="menu-item" style="position: relative; padding: 8px; border: 1px solid #e2e8f0; border-radius: 12px; background: #fff;" onclick="toggleNotifications(event)">
-                            <i class="fas fa-bell"></i> <span class="notif-text desktop-only" style="display: none;">Notifications</span>
+                        <a href="#" class="menu-item" style="position: relative;" onclick="toggleNotifications(event)">
+                            <i class="fas fa-bell"></i>
                             <span id="notifBadge"
-                                style="position: absolute; top: -5px; right: -5px; background: #ef4444; color: white; border-radius: 50%; min-width: 18px; height: 18px; font-size: 0.65rem; display: <?= $unread_count > 0 ? 'flex' : 'none' ?>; align-items: center; justify-content: center; font-weight: bold; border: 2px solid white; padding: 0 2px;"><?= $unread_count ?></span>
+                                style="position: absolute; top: -5px; right: -8px; background: #ef4444; color: white; border-radius: 50%; min-width: 16px; height: 16px; font-size: 0.6rem; display: <?= $unread_count > 0 ? 'flex' : 'none' ?>; align-items: center; justify-content: center; font-weight: bold; border: 2px solid white; padding: 0 2px;"><?= $unread_count ?></span>
                         </a>
-                        <!-- Notification Dropdown stays same -->
                     </nav>
 
-                    <div class="header-actions" style="display: flex; align-items: center; gap: 8px;">
-                        <div class="user-profile-container"
-                            style="display: flex; align-items: center; gap: 10px; padding: 5px; border-radius: 12px;">
-                            <div class="profile-info-text desktop-only" style="display: none; flex-direction: column; text-align: right;">
+                    <div class="header-actions" style="display: flex; align-items: center; gap: 10px;">
+                        <div class="icon-box-btn">
+                            <div class="profile-info-text desktop-only" style="display: none; flex-direction: column; text-align: right; margin-right: 10px;">
                                 <span
                                     style="font-size: 0.7rem; color: #64748b; font-weight: 700; text-transform: uppercase;"><?= htmlspecialchars($_SESSION['name'] ?? 'Admin') ?></span>
                                 <span
                                     style="font-size: 0.8rem; color: #1e293b; font-weight: 600;"><?= htmlspecialchars($_SESSION['email'] ?? 'No Email') ?></span>
                             </div>
-                            <div
-                                style="width: 38px; height: 38px; background: #f1f5f9; border: 1px solid #e2e8f0; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: #1e293b;">
-                                <i class="fas fa-user-tie" style="font-size: 1rem;"></i>
-                            </div>
+                            <i class="fas fa-user-tie" style="font-size: 1.1rem; color: #1e293b;"></i>
                         </div>
 
-                        <div class="current-date-header desktop-only" id="real-time-container"
-                            style="display: none; align-items: center; gap: 10px; background: #f8fafc; padding: 8px 16px; border-radius: 12px; border: 1px solid #e2e8f0;">
-                            <i class="fa-regular fa-calendar-check" style="color: #3b82f6; font-size: 1.1rem;"></i>
-                            <span id="real-time-clock" style="font-weight: 700; color: #1e293b; font-size: 0.9rem;">
-                                <?= date('F d, Y') ?> • 00:00:00
-                            </span>
-                        </div>
-
-                        <a href="../auth/logout.php" id="headerLogoutBtn"
-                            style="color: #ef4444; text-decoration: none; display: flex; align-items: center; justify-content: center; width: 38px; height: 38px; background: #fff1f2; border: 1px solid #fee2e2; border-radius: 12px; transition: all 0.2s;"
+                        <a href="../auth/logout.php" id="headerLogoutBtn" class="icon-box-btn"
+                            style="color: #ef4444; text-decoration: none;"
                             title="Log Out">
-                            <i class="fas fa-power-off" style="font-size: 1rem;"></i>
+                            <i class="fas fa-power-off" style="font-size: 1.1rem;"></i>
                         </a>
                     </div>
                 </div>
