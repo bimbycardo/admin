@@ -39,6 +39,19 @@ function sendEmail($to, $name, $subject, $body)
         $mail->Password   = 'dxis mokl icnb iemt'; // App password
         $mail->SMTPSecure = \PHPMailer\PHPMailer\PHPMailer::ENCRYPTION_STARTTLS;
         $mail->Port       = 587;
+        $mail->Timeout    = 15;
+
+        // CRITICAL FIX: Force IPv4 to bypass 'Network is unreachable' (Error 101)
+        $mail->SMTPOptions = [
+            'socket' => [
+                'bindto' => '0.0.0.0:0'
+            ],
+            'ssl' => [
+                'verify_peer' => false,
+                'verify_peer_name' => false,
+                'allow_self_signed' => true
+            ]
+        ];
 
         // Recipients
         $mail->setFrom('atiera41001@gmail.com', 'ATIERA Security');
