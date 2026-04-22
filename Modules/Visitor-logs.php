@@ -169,64 +169,25 @@ function getLastInsertId()
 </head>
 
 <body>
-    <div class="layout-wrapper" style="min-height: 100vh; background: #f8fafc;">
-        <!-- MAIN CONTENT -->
-        <main class="main-content" style="width: 100%; display: flex; flex-direction: column; height: 100vh; overflow: hidden; position: relative;">
-            
-            <!-- Top Header -->
-            <header class="top-header" style="flex-shrink: 0; background: #fff; padding: 15px 30px; border-bottom: 1px solid #e2e8f0; display: flex; justify-content: space-between; align-items: center; z-index: 10; box-shadow: 0 4px 12px rgba(0,0,0,0.02);">
-                <div class="header-breadcrumb" style="display: flex; align-items: center; gap: 20px;">
-                    <a href="dashboard.php" style="text-decoration: none; color: #64748b; display: flex; align-items: center; gap: 8px; font-weight: 600; padding: 8px 16px; background: #f1f5f9; border-radius: 10px; transition: all 0.2s;">
-                        <i class="fa-solid fa-arrow-left"></i> Back
-                    </a>
-                    <div style="display: flex; align-items: center; gap: 15px;">
-                        <div style="width: 40px; height: 40px; background: #eff6ff; border-radius: 10px; display: flex; align-items: center; justify-content: center; color: #3b82f6;">
-                            <i class="fa-solid fa-id-card-clip" style="font-size: 1.2rem;"></i>
-                        </div>
-                        <h2 style="margin: 0; font-size: 1.4rem; color: #1e293b; font-weight: 800; letter-spacing: -0.5px;">Hotel & Restaurant Visitor Management</h2>
-                    </div>
-                </div>
-            </header>
+    <div class="container" style="padding-top: 40px; padding-bottom: 40px;">
+        <header style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px;">
+            <div style="display: flex; align-items: center; gap: 15px;">
+                  <img src="../assets/image/logo2.png" alt="Ateria Logo" style="height: 50px;">
+                  <h1 style="margin: 0; font-size: 2rem;">Visitor Management System</h1>
+            </div>
+            <a href="dashboard.php" class="btn-primary-action" style="padding: 10px 20px; font-size: 0.9rem;">
+                <i class="fas fa-arrow-left"></i> Back to Dashboard
+            </a>
+        </header>
 
-            <!-- Scrollable Content Area -->
-            <div class="dashboard-content" style="flex: 1; overflow-y: auto; overflow-x: hidden; padding: 30px;">
-                
-                <!-- Main Horizontal Navigation Tabs inside content area -->
-                <div class="main-module-tabs" style="display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 25px; background: #fff; padding: 10px; border-radius: 14px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); border: 1px solid #e2e8f0;">
-                    <button class="nav-btn active" data-target="dashboard" onclick="showPage('dashboard')"><i class="fas fa-chart-line"></i> Dashboard</button>
-                    <button class="nav-btn" data-target="hotel" onclick="showPage('hotel')"><i class="fas fa-hotel"></i> Hotel Management</button>
-                    <button class="nav-btn" data-target="restaurant" onclick="showPage('restaurant')"><i class="fas fa-utensils"></i> Restaurant</button>
-                    <button class="nav-btn" data-target="reports" onclick="showPage('reports')"><i class="fas fa-file-invoice"></i> Reports</button>
-                    <button class="nav-btn" data-target="maintenance" onclick="showPage('maintenance')"><i class="fas fa-tools"></i> Maintenance</button>
-                </div>
-
-                <style>
-                .nav-btn {
-                    padding: 12px 20px;
-                    background: transparent;
-                    border: none;
-                    border-radius: 10px;
-                    font-weight: 600;
-                    color: #64748b;
-                    cursor: pointer;
-                    transition: all 0.2s;
-                    font-size: 0.95rem;
-                    display: flex;
-                    align-items: center;
-                    gap: 8px;
-                }
-                .nav-btn:hover {
-                    background: #f1f5f9;
-                    color: #1e293b;
-                }
-                .nav-btn.active {
-                    background: #eff6ff;
-                    color: #3b82f6;
-                    font-weight: 700;
-                }
-                /* Hide sidebar toggle if implemented generically */
-                .container { width: 100% !important; max-width: none !important; padding: 0 !important; }
-                </style>
+        <!-- Main Horizontal Navigation Tabs -->
+        <div class="tabs" style="margin-bottom: 30px;">
+            <div class="tab active" data-target="dashboard" onclick="showPage('dashboard')"><i class="fas fa-chart-line"></i> Dashboard</div>
+            <div class="tab" data-target="hotel" onclick="showPage('hotel')"><i class="fas fa-hotel"></i> Hotel Management</div>
+            <div class="tab" data-target="restaurant" onclick="showPage('restaurant')"><i class="fas fa-utensils"></i> Restaurant</div>
+            <div class="tab" data-target="reports" onclick="showPage('reports')"><i class="fas fa-file-invoice"></i> Reports</div>
+            <div class="tab" data-target="maintenance" onclick="showPage('maintenance')"><i class="fas fa-tools"></i> Maintenance</div>
+        </div>
 
                 <!-- Dashboard Page -->
                 <div id="dashboard" class="page active">
@@ -621,7 +582,6 @@ function getLastInsertId()
                     </div>
                 </div>
             </div>
-        </main>
     </div>
 
     <!-- Confirmation Modal -->
