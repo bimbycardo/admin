@@ -23,6 +23,20 @@ function nl2br_custom($string)
 
 $pdo = get_pdo();
 
+// Ensure notifications table exists
+try {
+    $pdo->exec("CREATE TABLE IF NOT EXISTS notifications (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        title VARCHAR(255) NOT NULL,
+        message TEXT NOT NULL,
+        type VARCHAR(50) DEFAULT 'info',
+        is_read TINYINT(1) DEFAULT 0,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    )");
+} catch (PDOException $e) {
+    // Silently fail if table creation fails
+}
+
 // Function to get email settings from database with enhanced design
 function getEmailSettings($pdo)
 {
@@ -79,6 +93,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $email = trim($_POST['email']);
             $full_name = trim($_POST['full_name']);
             $password = $_POST['password'];
+            $remarks = trim($_POST['remarks'] ?? '');
 
             try {
                 if (!empty($password)) {
@@ -87,13 +102,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     $hashed_password = password_hash($password, PASSWORD_DEFAULT);
                     $stmt->execute([$username, $email, $full_name, $hashed_password, $id]);
 
-                    // Generate Verification Code for the user
+                    // ... (Verification code and email sending logic remains same) ...
                     $code = (string) random_int(100000, 999999);
                     $expiresAt = (new DateTime('+24 hours'))->format('Y-m-d H:i:s');
                     $stmt_v = $pdo->prepare('INSERT INTO email_verifications (user_id, code, expires_at) VALUES (?, ?, ?)');
                     $stmt_v->execute([$id, $code, $expiresAt]);
 
-                    // Send notification email with password and code
                     $emailSettings = getEmailSettings($pdo);
                     $subject = "Security Update: Your ATIERA Credentials";
                     $body = "
@@ -128,6 +142,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     $stmt = $pdo->prepare("UPDATE users SET username=?, email=?, full_name=? WHERE id=?");
                     $stmt->execute([$username, $email, $full_name, $id]);
                 }
+
+                // Add Notification
+                $notifTitle = "Account Updated: $full_name";
+                $notifMessage = "Admin " . $_SESSION['name'] . " updated account details for $full_name ($username).";
+                if (!empty($remarks)) {
+                    $notifMessage .= " Remark: $remarks";
+                }
+                $stmt_n = $pdo->prepare("INSERT INTO notifications (title, message, type) VALUES (?, ?, 'info')");
+                $stmt_n->execute([$notifTitle, $notifMessage]);
+
                 $message = "User updated successfully!";
             } catch (PDOException $e) {
                 $error = "Error updating user: " . $e->getMessage();
@@ -140,8 +164,22 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $error = "You cannot delete your own account.";
             } else {
                 try {
+                    // Get user info before deleting for notification
+                    $stmt_u = $pdo->prepare("SELECT full_name, username FROM users WHERE id=?");
+                    $stmt_u->execute([$id]);
+                    $userToDelete = $stmt_u->fetch();
+
                     $stmt = $pdo->prepare("DELETE FROM users WHERE id=?");
                     $stmt->execute([$id]);
+
+                    // Add Notification
+                    if ($userToDelete) {
+                        $notifTitle = "Account Deleted: " . $userToDelete['full_name'];
+                        $notifMessage = "Admin " . $_SESSION['name'] . " deleted the account for " . $userToDelete['full_name'] . " (" . $userToDelete['username'] . ").";
+                        $stmt_n = $pdo->prepare("INSERT INTO notifications (title, message, type) VALUES (?, ?, 'danger')");
+                        $stmt_n->execute([$notifTitle, $notifMessage]);
+                    }
+
                     $message = "User deleted successfully!";
                 } catch (PDOException $e) {
                     $error = "Error deleting user: " . $e->getMessage();
@@ -153,6 +191,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $email = trim($_POST['email']);
             $full_name = trim($_POST['full_name']);
             $password = $_POST['password'] ?? '';
+            $remarks = trim($_POST['remarks'] ?? '');
 
             if (!empty($username) && !empty($email)) {
                 try {
@@ -237,6 +276,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                             sendEmail($email, $full_name, $subject, $body);
                             $message = "Invitation sent to <strong>" . htmlspecialchars($email) . "</strong>! They can now activate their account.";
                         }
+
+                        // Add Notification
+                        $notifTitle = "New Account: $full_name";
+                        $notifMessage = "Admin " . $_SESSION['name'] . " created a new account for $full_name ($username).";
+                        if (!empty($remarks)) {
+                            $notifMessage .= " Remark: $remarks";
+                        }
+                        $stmt_n = $pdo->prepare("INSERT INTO notifications (title, message, type) VALUES (?, ?, 'success')");
+                        $stmt_n->execute([$notifTitle, $notifMessage]);
+
                         $pdo->commit();
                     }
                 } catch (\Exception $e) {
@@ -373,6 +422,30 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 // Fetch Users
 $stmt = $pdo->query("SELECT * FROM users ORDER BY id DESC");
 $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+// Handle Notification AJAX Actions for Settings page
+if (isset($_GET['ajax_action']) && $_GET['ajax_action'] === 'mark_all_read') {
+    header('Content-Type: application/json');
+    try {
+        $pdo->exec("UPDATE notifications SET is_read = 1 WHERE is_read = 0");
+        echo json_encode(['success' => true]);
+    } catch (Exception $e) {
+        echo json_encode(['success' => false, 'message' => $e->getMessage()]);
+    }
+    exit;
+}
+
+// Fetch Latest Notifications
+$latest_notifs = [];
+try {
+    $stmt_n = $pdo->query("SELECT * FROM notifications ORDER BY created_at DESC LIMIT 20");
+    $latest_notifs = $stmt_n->fetchAll();
+    
+    $stmt_c = $pdo->query("SELECT COUNT(*) FROM notifications WHERE is_read = 0");
+    $unread_count = $stmt_c->fetchColumn();
+} catch (Exception $e) {
+    $unread_count = 0;
+}
 
 ?>
 <!DOCTYPE html>
@@ -973,7 +1046,7 @@ $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
                     <a href="#" class="menu-item" style="position: relative;" onclick="toggleNotifications(event)">
                         <i class="fas fa-bell"></i> Notifications
                         <span id="notifBadge"
-                            style="display: none; position: absolute; top: 0px; right: -5px; background: #ef4444; color: white; border-radius: 50%; min-width: 18px; height: 18px; font-size: 0.65rem; align-items: center; justify-content: center; font-weight: bold; border: 2px solid white; padding: 0 2px;">0</span>
+                            style="position: absolute; top: 0px; right: -5px; background: #ef4444; color: white; border-radius: 50%; min-width: 18px; height: 18px; font-size: 0.65rem; display: <?= $unread_count > 0 ? 'flex' : 'none' ?>; align-items: center; justify-content: center; font-weight: bold; border: 2px solid white; padding: 0 2px;"><?= $unread_count ?></span>
                     </a>
 
                     <!-- Notification Dropdown -->
@@ -987,10 +1060,32 @@ $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
                                 all read</button>
                         </div>
                         <div id="notifList" style="max-height: 350px; overflow-y: auto;">
-                            <div id="emptyNotif"
-                                style="padding: 20px; text-align: center; color: #64748b; font-size: 0.9rem;">
-                                No new notifications
-                            </div>
+                            <?php if (empty($latest_notifs)): ?>
+                                <div id="emptyNotif" style="padding: 20px; text-align: center; color: #64748b; font-size: 0.9rem;">
+                                    No new notifications
+                                </div>
+                            <?php else: ?>
+                                <?php foreach ($latest_notifs as $notif): 
+                                    $notifIcon = 'fa-bell';
+                                    $notifColor = '#3b82f6';
+                                    $notifBg = '#dbeafe';
+                                    if ($notif['type'] === 'success') { $notifIcon = 'fa-check-circle'; $notifColor = '#10b981'; $notifBg = '#dcfce7'; }
+                                    elseif ($notif['type'] === 'danger') { $notifIcon = 'fa-exclamation-triangle'; $notifColor = '#ef4444'; $notifBg = '#fee2e2'; }
+                                    elseif ($notif['type'] === 'warning') { $notifIcon = 'fa-exclamation-circle'; $notifColor = '#f59e0b'; $notifBg = '#fef3c7'; }
+                                ?>
+                                    <div class="notif-item <?= $notif['is_read'] ? '' : 'unread' ?>" 
+                                         style="padding: 15px 20px; border-bottom: 1px solid #e2e8f0; display: flex; gap: 15px; cursor: pointer; background: <?= $notif['is_read'] ? 'white' : '#eff6ff' ?>;">
+                                        <div style="width: 40px; height: 40px; border-radius: 50%; background: <?= $notifBg ?>; color: <?= $notifColor ?>; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; flex-shrink: 0;">
+                                            <i class="fas <?= $notifIcon ?>"></i>
+                                        </div>
+                                        <div>
+                                            <div style="font-size: 0.9rem; color: #1e293b; font-weight: 600; margin-bottom: 3px;"><?= htmlspecialchars($notif['title']) ?></div>
+                                            <div style="font-size: 0.85rem; color: #64748b; line-height: 1.4;"><?= htmlspecialchars($notif['message']) ?></div>
+                                            <div style="font-size: 0.75rem; color: #94a3b8; margin-top: 5px;"><?= date('M d, h:i A', strtotime($notif['created_at'])) ?></div>
+                                        </div>
+                                    </div>
+                                <?php endforeach; ?>
+                            <?php endif; ?>
                         </div>
                         <div
                             style="padding: 10px; text-align: center; border-top: 1px solid #e2e8f0; background: #f8fafc;">
@@ -1256,6 +1351,11 @@ $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
                     <label>Password <small style="font-weight: 400; color: #718096;">(Leave blank to keep
                             unchanged)</small></label>
                     <input type="password" name="password" class="form-control" placeholder="Enter new password">
+                </div>
+
+                <div class="form-group" id="remarksGroup">
+                    <label>Remarks / Note <small style="font-weight: 400; color: #718096;">(Optional - will show in notifications)</small></label>
+                    <textarea name="remarks" id="userRemarks" class="form-control" rows="2" placeholder="e.g., Updated department, Reset password for security..."></textarea>
                 </div>
 
                 <button type="submit" class="btn btn-primary btn-block" style="margin-top: 1rem;">
@@ -1635,6 +1735,7 @@ You have been added as an administrator. To complete your account setup, please 
             document.getElementById('fullName').value = user.full_name;
             document.getElementById('userName').value = user.username;
             document.getElementById('userEmail').value = user.email;
+            document.getElementById('userRemarks').value = '';
             document.getElementById('passwordGroup').style.display = 'block';
             document.getElementById('userModal').classList.add('active');
         }
@@ -1644,6 +1745,7 @@ You have been added as an administrator. To complete your account setup, please 
             document.getElementById('formAction').value = 'create_user';
             document.getElementById('userId').value = '';
             document.getElementById('userForm').reset();
+            document.getElementById('userRemarks').value = '';
             document.getElementById('userEmail').value = '';
             document.getElementById('passwordGroup').style.display = 'block';
             document.getElementById('userModal').classList.add('active');
@@ -1776,11 +1878,18 @@ You have been added as an administrator. To complete your account setup, please 
         }
 
         function markAllRead() {
-            document.querySelectorAll('#notifList .notif-item.unread').forEach(item => {
-                item.style.background = 'white';
-                item.classList.remove('unread');
-            });
-            updateBadgeCount();
+            fetch('?ajax_action=mark_all_read')
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        document.querySelectorAll('#notifList .notif-item.unread').forEach(item => {
+                            item.style.background = 'white';
+                            item.classList.remove('unread');
+                        });
+                        const badge = document.getElementById('notifBadge');
+                        if(badge) badge.style.display = 'none';
+                    }
+                });
         }
 
         // Close dropdown when clicking outside

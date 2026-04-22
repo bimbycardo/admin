@@ -30,6 +30,37 @@ if (isset($_SESSION['role']) && $_SESSION['role'] === 'super_admin' && !isset($_
 
 // Load shared DB helper (keeps filename safe and centralized)
 require_once __DIR__ . '/../db/db.php';
+$db_notif = get_pdo();
+
+// Handle Notification AJAX Actions
+if (isset($_GET['ajax_action']) && $_GET['ajax_action'] === 'mark_all_read') {
+    header('Content-Type: application/json');
+    try {
+        $db_notif->exec("UPDATE notifications SET is_read = 1 WHERE is_read = 0");
+        echo json_encode(['success' => true]);
+    } catch (Exception $e) {
+        echo json_encode(['success' => false, 'message' => $e->getMessage()]);
+    }
+    exit;
+}
+
+// Fetch Latest Notifications
+$latest_notifs = [];
+try {
+    // Check if table exists first
+    $stmt_check = $db_notif->query("SHOW TABLES LIKE 'notifications'");
+    if ($stmt_check->rowCount() > 0) {
+        $stmt_n = $db_notif->query("SELECT * FROM notifications ORDER BY created_at DESC LIMIT 20");
+        $latest_notifs = $stmt_n->fetchAll();
+        
+        $stmt_c = $db_notif->query("SELECT COUNT(*) FROM notifications WHERE is_read = 0");
+        $unread_count = $stmt_c->fetchColumn();
+    } else {
+        $unread_count = 0;
+    }
+} catch (Exception $e) {
+    $unread_count = 0;
+}
 
 class ReservationSystem
 {
@@ -1109,10 +1140,14 @@ $r_rows = [];
                     <div class="header-actions" style="display: flex; align-items: center; gap: 20px;">
                         <!-- Notification Bar -->
                         <nav class="menu-bar-nav" style="position: relative;">
-                            <a href="#" class="menu-item" style="position: relative; display: flex; align-items: center; justify-content: center; width: 40px; height: 40px; border-radius: 50%; background: #f8fafc; color: #64748b; border: 1px solid #e2e8f0; text-decoration: none;" onclick="toggleNotifications(event)">
-                                <i class="fas fa-bell"></i>
-                                <span id="notifBadge" style="display: none; position: absolute; top: -5px; right: -5px; background: #ef4444; color: white; border-radius: 50%; min-width: 18px; height: 18px; font-size: 0.65rem; align-items: center; justify-content: center; font-weight: bold; border: 2px solid white; padding: 0 2px;">0</span>
-                            </a>
+                            <div style="position: relative;">
+                        <button class="btn btn-outline btn-icon dropdown-toggle" onclick="toggleNotifications(event)"
+                            title="Notifications" style="position: relative;">
+                            <i class="fa-solid fa-bell"></i>
+                            <span id="notifBadge"
+                                style="position: absolute; top: -5px; right: -5px; background: #ef4444; color: white; font-size: 0.6rem; height: 16px; width: 16px; border-radius: 50%; display: <?= $unread_count > 0 ? 'flex' : 'none' ?>; align-items: center; justify-content: center; font-weight: 800; border: 2px solid #fff;"><?= $unread_count ?></span>
+                        </button>
+                    </div>
                             
                             <!-- Notification Dropdown -->
                             <div id="notificationDropdown" style="display: none; position: absolute; top: 100%; right: 0; width: 320px; background: white; border-radius: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); border: 1px solid #e2e8f0; margin-top: 15px; z-index: 1000; overflow: hidden; text-align: left;">
@@ -1121,9 +1156,32 @@ $r_rows = [];
                                     <button onclick="markAllRead()" style="background: none; border: none; font-size: 0.8rem; color: #3b82f6; cursor: pointer; font-weight: 600;">Mark all read</button>
                                 </div>
                                 <div id="notifList" style="max-height: 350px; overflow-y: auto;">
-                                    <div id="emptyNotif" style="padding: 20px; text-align: center; color: #64748b; font-size: 0.9rem;">
-                                        No new notifications
-                                    </div>
+                                    <?php if (empty($latest_notifs)): ?>
+                                        <div id="emptyNotif" style="padding: 20px; text-align: center; color: #64748b; font-size: 0.9rem;">
+                                            No new notifications
+                                        </div>
+                                    <?php else: ?>
+                                        <?php foreach ($latest_notifs as $notif): 
+                                            $notifIcon = 'fa-bell';
+                                            $notifColor = '#3b82f6';
+                                            $notifBg = '#dbeafe';
+                                            if ($notif['type'] === 'success') { $notifIcon = 'fa-check-circle'; $notifColor = '#10b981'; $notifBg = '#dcfce7'; }
+                                            elseif ($notif['type'] === 'danger') { $notifIcon = 'fa-exclamation-triangle'; $notifColor = '#ef4444'; $notifBg = '#fee2e2'; }
+                                            elseif ($notif['type'] === 'warning') { $notifIcon = 'fa-exclamation-circle'; $notifColor = '#f59e0b'; $notifBg = '#fef3c7'; }
+                                        ?>
+                                            <div class="notif-item <?= $notif['is_read'] ? '' : 'unread' ?>" 
+                                                 style="padding: 15px 20px; border-bottom: 1px solid #e2e8f0; display: flex; gap: 15px; cursor: pointer; background: <?= $notif['is_read'] ? 'white' : '#eff6ff' ?>;">
+                                                <div style="width: 40px; height: 40px; border-radius: 50%; background: <?= $notifBg ?>; color: <?= $notifColor ?>; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; flex-shrink: 0;">
+                                                    <i class="fas <?= $notifIcon ?>"></i>
+                                                </div>
+                                                <div>
+                                                    <div style="font-size: 0.9rem; color: #1e293b; font-weight: 600; margin-bottom: 3px;"><?= htmlspecialchars($notif['title']) ?></div>
+                                                    <div style="font-size: 0.85rem; color: #64748b; line-height: 1.4;"><?= htmlspecialchars($notif['message']) ?></div>
+                                                    <div style="font-size: 0.75rem; color: #94a3b8; margin-top: 5px;"><?= date('M d, h:i A', strtotime($notif['created_at'])) ?></div>
+                                                </div>
+                                            </div>
+                                        <?php endforeach; ?>
+                                    <?php endif; ?>
                                 </div>
                                 <div style="padding: 10px; text-align: center; border-top: 1px solid #e2e8f0; background: #f8fafc;">
                                     <a href="#" style="font-size: 0.85rem; color: #3b82f6; text-decoration: none; font-weight: 600;">View All Notifications</a>
@@ -4098,11 +4156,18 @@ $r_rows = [];
         }
 
         function markAllRead() {
-            document.querySelectorAll('#notifList .notif-item.unread').forEach(item => {
-                item.style.background = 'white';
-                item.classList.remove('unread');
-            });
-            updateBadgeCount();
+            fetch('?ajax_action=mark_all_read')
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        document.querySelectorAll('#notifList .notif-item.unread').forEach(item => {
+                            item.style.background = 'white';
+                            item.classList.remove('unread');
+                        });
+                        const badge = document.getElementById('notifBadge');
+                        if(badge) badge.style.display = 'none';
+                    }
+                });
         }
 
         document.addEventListener('DOMContentLoaded', function() {
