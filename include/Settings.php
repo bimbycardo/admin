@@ -23,6 +23,19 @@ function nl2br_custom($string)
 
 $pdo = get_pdo();
 
+// Ensure session is fully populated if missing role or email (fallback for existing sessions)
+if (isset($_SESSION['user_id']) && (!isset($_SESSION['role']) || !isset($_SESSION['email']))) {
+    try {
+        $stmt_s = $pdo->prepare("SELECT email, role FROM users WHERE id = ?");
+        $stmt_s->execute([$_SESSION['user_id']]);
+        $u_data = $stmt_s->fetch(PDO::FETCH_ASSOC);
+        if ($u_data) {
+            $_SESSION['role'] = $u_data['role'];
+            $_SESSION['email'] = $u_data['email'];
+        }
+    } catch (Exception $e) {}
+}
+
 // Ensure notifications table exists
 try {
     $pdo->exec("CREATE TABLE IF NOT EXISTS notifications (
@@ -1144,17 +1157,22 @@ try {
 
                 <div class="tabs-container">
                     <div class="tabs-list">
-                        <?php if (($_SESSION['role'] ?? '') === 'admin' || ($_SESSION['email'] ?? '') === 'ateria41001@gmail.com'): ?>
+                        <?php 
+                        $userRole = $_SESSION['role'] ?? '';
+                        $userEmail = strtolower($_SESSION['email'] ?? '');
+                        $isAdmin = in_array(strtolower($userRole), ['admin', 'manager', 'super_admin']) || $userEmail === 'ateria41001@gmail.com';
+                        ?>
+                        <?php if ($isAdmin): ?>
                         <button class="tab-btn active" onclick="switchTab('general')" id="tab-general">Users
                             List</button>
                         <?php endif; ?>
-                        <button class="tab-btn <?= (($_SESSION['role'] ?? '') !== 'admin' && ($_SESSION['email'] ?? '') !== 'ateria41001@gmail.com') ? 'active' : '' ?>" onclick="switchTab('security')" id="tab-security">Security</button>
+                        <button class="tab-btn <?= !$isAdmin ? 'active' : '' ?>" onclick="switchTab('security')" id="tab-security">Security</button>
                     </div>
                     <div style="display: flex; gap: 10px;">
                         <button class="swap-btn" onclick="openSecurityModal('pin')">
                             <i class="fas fa-key"></i> Security PIN
                         </button>
-                        <?php if (($_SESSION['role'] ?? '') === 'admin' || ($_SESSION['email'] ?? '') === 'ateria41001@gmail.com'): ?>
+                        <?php if ($isAdmin): ?>
                         <button class="swap-btn" onclick="toggleLayout()">
                             <i class="fas fa-sync-alt"></i> Swap View
                         </button>
@@ -1163,7 +1181,7 @@ try {
                 </div>
 
                 <!-- Users List Tab Content -->
-                <?php if (($_SESSION['role'] ?? '') === 'admin' || ($_SESSION['email'] ?? '') === 'ateria41001@gmail.com'): ?>
+                <?php if ($isAdmin): ?>
                 <div id="content-general">
                     <div class="content-card">
                         <div
@@ -1233,7 +1251,7 @@ try {
             </div>
 
             <!-- Security Tab Content -->
-            <div id="content-security" style="display: <?= (($_SESSION['role'] ?? '') === 'admin' || ($_SESSION['email'] ?? '') === 'ateria41001@gmail.com') ? 'none' : 'block' ?>;">
+            <div id="content-security" style="display: <?= $isAdmin ? 'none' : 'block' ?>;">
                 <div class="content-card">
                     <h3 style="font-size: 1.25rem; font-weight: 700; color: #1e293b; margin-bottom: 1.5rem;">
                         Security Controls</h3>
@@ -1266,7 +1284,7 @@ try {
             </div>
 
             <!-- Dashboard Section (Always at bottom) -->
-            <?php if (($_SESSION['role'] ?? '') === 'admin' || ($_SESSION['email'] ?? '') === 'ateria41001@gmail.com'): ?>
+            <?php if ($isAdmin): ?>
             <div class="content-card" style="margin-top: 0;">
                 <h3 style="font-size: 1.25rem; font-weight: 700; color: #1e293b; margin-bottom: 0.75rem;">System
                     Overview</h3>
