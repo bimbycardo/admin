@@ -41,14 +41,18 @@ function sendEmail($to, $name, $subject, $body)
         return true;
     }
 
+    // Decode error message for better readability
+    $errData = json_decode($response, true);
+    $detail = isset($errData['message']) ? $errData['message'] : $response;
+
     // If API fails, try native mail as very last resort
     $domainSender = 'admin@atierahotelandrestaurant.com';
     $headers = "MIME-Version: 1.0\r\nContent-type:text/html;charset=UTF-8\r\nFrom: ATIERA Security <$domainSender>\r\n";
     if (@mail($to, $subject, $body, $headers, "-f$domainSender")) {
-        return "API Failed ($httpCode), but Native Mail sent. Check spam.";
+        return "API Failed ($httpCode: $detail), but Native Mail sent. Check spam.";
     }
 
-    return "Brevo API Error ($httpCode): " . $response;
+    return "Brevo API Error ($httpCode): " . $detail;
 }
 
 function getBaseUrl()
