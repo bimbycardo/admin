@@ -46,9 +46,10 @@ function get_nav_link($tab, $is_dashboard, $isSuperAdmin)
                                         elseif ($tab == 'calendar') echo 'CALENDAR';
                                         elseif ($tab == 'maintenance') echo 'MAINTENANCE';
                                         elseif ($tab == 'management') echo 'MANAGEMENT';
-                                        elseif ($tab == 'visitors') echo 'VISITORS';
-                                        elseif ($tab == 'vault') echo 'VAULT';
-                                        elseif ($tab == 'legal') echo 'LEGAL';
+                                        elseif ($tab == 'reports') echo 'REPORTS';
+                                        elseif ($tab == 'visitors' || $current_page == 'Visitor-logs.php') echo 'VISITORS';
+                                        elseif ($tab == 'vault' || $current_page == 'document management(archiving).php') echo 'VAULT';
+                                        elseif ($tab == 'legal' || $current_page == 'legalmanagement.php') echo 'LEGAL';
                                         else echo 'DASHBOARD';
                                     ?>
                                 </span>
