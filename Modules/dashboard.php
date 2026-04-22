@@ -831,6 +831,15 @@ $r_rows = [];
     <link rel="stylesheet" href="../assets/css/facilities-reservation.css?v=21">
     <link rel="stylesheet" href="../assets/css/Visitors.css?v=1.1">
     <style>
+        .desktop-only {
+            display: none !important;
+        }
+
+        @media (min-width: 1201px) {
+            .desktop-only {
+                display: flex !important;
+            }
+        }
         .container {
             width: 100% !important;
             max-width: none !important;
@@ -1119,7 +1128,7 @@ $r_rows = [];
                             <i class="fas fa-bars"></i>
                         </button>
                         <h1 id="page-title"
-                            style="margin: 0; font-size: 1.5rem; font-weight: 800; color: #0f172a; letter-spacing: -0.5px;">
+                            style="margin: 0; font-size: 1.1rem; font-weight: 800; color: #0f172a; letter-spacing: -0.5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; flex: 1;">
                             <?php
                             $tab_titles = [
                                 'dashboard' => 'Dashboard',
@@ -1135,6 +1144,14 @@ $r_rows = [];
                             echo $tab_titles[$current_tab] ?? 'Dashboard';
                             ?>
                         </h1>
+                        <style>
+                            @media (min-width: 1201px) {
+                                #page-title {
+                                    font-size: 1.5rem !important;
+                                    overflow: visible !important;
+                                }
+                            }
+                        </style>
                     </div>
 
                     <div class="header-actions" style="display: flex; align-items: center; gap: 20px;">
@@ -1193,8 +1210,8 @@ $r_rows = [];
                         if (isset($_SESSION['role']) && $_SESSION['role'] === 'super_admin') {
                             $display_key = $_GET['bypass_key'] ?? $_SESSION['api_key'] ?? '';
                             if (!empty($display_key)): ?>
-                                <div class="api-key-display"
-                                    style="background: white; border: 1px solid #e2e8f0; padding: 6px 12px; border-radius: 8px; font-size: 11px; color: #64748b; font-family: monospace; display: flex; align-items: center; gap: 8px; box-shadow: 0 1px 2px rgba(0,0,0,0.05);">
+                                <div class="desktop-only api-key-display"
+                                    style="background: white; border: 1px solid #e2e8f0; padding: 6px 12px; border-radius: 8px; font-size: 11px; color: #64748b; font-family: monospace; display: none; align-items: center; gap: 8px; box-shadow: 0 1px 2px rgba(0,0,0,0.05);">
                                     <i class="fas fa-key" style="color: #d4af37;"></i>
                                     <span>Key: <strong
                                             style="color: #334155;"><?= substr($display_key, 0, 8) . '...' ?></strong></span>
@@ -1204,8 +1221,8 @@ $r_rows = [];
                         ?>
 
                         <div style="display: flex; align-items: center; gap: 15px;">
-                            <div style="display: flex; align-items: center; gap: 10px; padding: 5px 12px; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px;">
-                                <div style="display: flex; flex-direction: column; text-align: right;">
+                            <div style="display: flex; align-items: center; gap: 10px; padding: 5px; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px;">
+                                <div class="desktop-only" style="display: none; flex-direction: column; text-align: right;">
                                     <span style="font-size: 0.7rem; color: #64748b; font-weight: 700; text-transform: uppercase;"><?= htmlspecialchars($_SESSION['name'] ?? 'Admin') ?></span>
                                     <span style="font-size: 0.8rem; color: #1e293b; font-weight: 600;"><?= htmlspecialchars($_SESSION['email'] ?? 'No Email') ?></span>
                                 </div>
@@ -1214,9 +1231,9 @@ $r_rows = [];
                                 </div>
                             </div>
 
-                            <div class="date-time-display d-flex align-items-center bg-white px-3 py-2 rounded-3 shadow-sm"
-                                style="border: 1px solid #e2e8f0;">
-                                <div class=" me-3 text-end">
+                            <div class="desktop-only date-time-display"
+                                style="display: none; align-items: center; background: white; padding: 8px 15px; border-radius: 12px; border: 1px solid #e2e8f0; box-shadow: 0 2px 4px rgba(0,0,0,0.02);">
+                                <div style="text-align: right; margin-right: 15px;">
                                     <div id="current-date" style="font-weight: 700; color: #1e293b; font-size: 0.9rem;">
                                         <?php echo date('F d, Y'); ?>
                                     </div>
@@ -1224,8 +1241,8 @@ $r_rows = [];
                                         <?php echo date('h:i:s A'); ?>
                                     </div>
                                 </div>
-                                <div class="bg-primary-light p-2 rounded-2">
-                                    <i class="fa-regular fa-calendar-check text-primary"></i>
+                                <div style="background: #eff6ff; padding: 8px; border-radius: 8px; color: #3b82f6;">
+                                    <i class="fa-regular fa-calendar-check"></i>
                                 </div>
                             </div>
 
@@ -4177,6 +4194,26 @@ $r_rows = [];
                 addNotification('Database Updated', msgText);
             }
         });
+        // Force Hide desktop-only elements on mobile
+        function forceHideMobile() {
+            if (window.innerWidth <= 1200) {
+                document.querySelectorAll('.desktop-only').forEach(el => {
+                    el.style.setProperty('display', 'none', 'important');
+                });
+            } else {
+                document.querySelectorAll('.desktop-only').forEach(el => {
+                    if (el.classList.contains('date-time-display') || el.classList.contains('api-key-display')) {
+                        el.style.setProperty('display', 'flex', 'important');
+                    } else if (el.tagName === 'SPAN' || el.tagName === 'DIV') {
+                        el.style.setProperty('display', 'flex', 'important');
+                    } else {
+                        el.style.setProperty('display', 'inline-block', 'important');
+                    }
+                });
+            }
+        }
+        window.addEventListener('resize', forceHideMobile);
+        forceHideMobile();
     </script>
     <!-- Loading Overlay -->
     <div id="loadingOverlay"

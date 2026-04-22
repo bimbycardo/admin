@@ -194,8 +194,26 @@ function getLastInsertId()
 
         .module-header h2 {
             margin: 0;
-            font-size: 1.5rem;
-            font-weight: 700;
+            font-size: 1.1rem;
+            font-weight: 800;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            flex: 1;
+        }
+
+        .desktop-only {
+            display: none !important;
+        }
+
+        @media (min-width: 1201px) {
+            .desktop-only {
+                display: flex !important;
+            }
+            .module-header h2 {
+                font-size: 1.5rem;
+                overflow: visible;
+            }
         }
 
         .top-nav {
@@ -430,8 +448,8 @@ function getLastInsertId()
             </div>
             <div class="top-nav">
                 <!-- Real-time Clock -->
-                <div
-                    style="margin-right: 30px; display: flex; align-items: center; gap: 15px; border-right: 1px solid rgba(255,255,255,0.1); padding-right: 25px;">
+                <div class="desktop-only"
+                    style="margin-right: 30px; display: none; align-items: center; gap: 15px; border-right: 1px solid rgba(255,255,255,0.1); padding-right: 25px;">
                     <div id="module-clock" style="color: #fff; font-weight: 800; font-size: 1rem;"></div>
                     <div id="module-date"
                         style="color: rgba(255,255,255,0.5); font-size: 0.8rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px;">
@@ -447,8 +465,8 @@ function getLastInsertId()
                 </div>
 
                 <!-- Profile Display -->
-                <div style="display: flex; align-items: center; gap: 10px; padding: 5px 12px; background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.15); border-radius: 12px; margin-right: 15px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
-                    <div style="display: flex; flex-direction: column; text-align: right;">
+                <div style="display: flex; align-items: center; gap: 10px; padding: 5px; background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.15); border-radius: 12px; margin-right: 15px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
+                    <div class="desktop-only" style="display: none; flex-direction: column; text-align: right;">
                         <span style="font-size: 0.65rem; color: rgba(255,255,255,0.5); font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px;"><?= htmlspecialchars($_SESSION['name'] ?? 'Admin') ?></span>
                         <span style="font-size: 0.75rem; color: #fff; font-weight: 600; letter-spacing: -0.2px;"><?= htmlspecialchars($_SESSION['email'] ?? 'No Email') ?></span>
                     </div>
@@ -457,10 +475,10 @@ function getLastInsertId()
                     </div>
                 </div>
 
-                <span onclick="showPage('dashboard')" class="nav-item-top" data-page="dashboard">Dashboard</span>
-                <span onclick="showPage('hotel')" class="nav-pill" data-page="hotel">Hotel</span>
-                <span onclick="showPage('restaurant')" class="nav-item-top" data-page="restaurant">Restaurant</span>
-                <span onclick="showPage('reports')" class="nav-item-top" data-page="reports">Reports</span>
+                <span onclick="showPage('dashboard')" class="desktop-only nav-item-top" data-page="dashboard" style="display: none;">Dashboard</span>
+                <span onclick="showPage('hotel')" class="desktop-only nav-pill" data-page="hotel" style="display: none;">Hotel</span>
+                <span onclick="showPage('restaurant')" class="desktop-only nav-item-top" data-page="restaurant" style="display: none;">Restaurant</span>
+                <span onclick="showPage('reports')" class="desktop-only nav-item-top" data-page="reports" style="display: none;">Reports</span>
                 <a href="dashboard.php" class="nav-item-top">Back</a>
             </div>
         </div>
@@ -1084,13 +1102,34 @@ function getLastInsertId()
             }
 
             document.addEventListener('DOMContentLoaded', function () {
-                // Real-time Header Clock
+                // Force Hide desktop-only elements on mobile
+                function forceHideMobile() {
+                    if (window.innerWidth <= 1200) {
+                        document.querySelectorAll('.desktop-only').forEach(el => {
+                            el.style.setProperty('display', 'none', 'important');
+                        });
+                    } else {
+                        document.querySelectorAll('.desktop-only').forEach(el => {
+                            if (el.tagName === 'SPAN' || el.classList.contains('nav-item-top') || el.classList.contains('nav-pill')) {
+                                el.style.setProperty('display', 'inline-block', 'important');
+                            } else {
+                                el.style.setProperty('display', 'flex', 'important');
+                            }
+                        });
+                    }
+                }
+                window.addEventListener('resize', forceHideMobile);
+                forceHideMobile();
+
+                // Update module clock
                 function updateModuleClock() {
-                    const now = new Date();
                     const clockEl = document.getElementById('module-clock');
                     const dateEl = document.getElementById('module-date');
-                    if (clockEl) clockEl.textContent = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-                    if (dateEl) dateEl.textContent = now.toLocaleDateString([], { month: 'short', day: 'numeric', year: 'numeric' });
+                    if (clockEl && dateEl) {
+                        const now = new Date();
+                        clockEl.textContent = now.toLocaleTimeString('en-US', { hour12: true, hour: '2-digit', minute: '2-digit', second: '2-digit' });
+                        dateEl.textContent = now.toLocaleDateString('en-US', { month: 'short', day: '2-digit', year: 'numeric' });
+                    }
                 }
                 setInterval(updateModuleClock, 1000);
                 updateModuleClock();

@@ -512,6 +512,16 @@ function formatFileSize($bytes)
             min-height: 100vh;
         }
 
+        .desktop-only {
+            display: none !important;
+        }
+
+        @media (min-width: 1201px) {
+            .desktop-only {
+                display: flex !important;
+            }
+        }
+
         .container {
             max-width: 1400px;
             margin: 0 auto;
@@ -801,12 +811,35 @@ function formatFileSize($bytes)
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             letter-spacing: 1px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            max-width: 150px;
+        }
+
+        @media (min-width: 1201px) {
+            .logo h2 {
+                max-width: none;
+            }
         }
 
         nav ul {
             display: flex;
             list-style: none;
-            gap: 20px;
+            gap: 15px;
+        }
+
+        nav a.desktop-only {
+            display: none !important;
+        }
+
+        @media (min-width: 1201px) {
+            nav a.desktop-only {
+                display: flex !important;
+            }
+            nav ul {
+                gap: 20px;
+            }
         }
 
         nav a {
@@ -997,8 +1030,8 @@ function formatFileSize($bytes)
                     <h2>ATIE`RA ARCHIVE</h2>
                 </div>
                 <!-- Profile Display -->
-                <div style="display: flex; align-items: center; gap: 10px; padding: 5px 12px; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px; margin-left: auto; margin-right: 20px;">
-                    <div style="display: flex; flex-direction: column; text-align: right;">
+                <div style="display: flex; align-items: center; gap: 10px; padding: 5px; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px; margin-left: auto; margin-right: 15px;">
+                    <div class="desktop-only" style="display: none; flex-direction: column; text-align: right;">
                         <span style="font-size: 0.7rem; color: #64748b; font-weight: 700; text-transform: uppercase;"><?= htmlspecialchars($_SESSION['name'] ?? 'Admin') ?></span>
                         <span style="font-size: 0.8rem; color: #1e293b; font-weight: 600;"><?= htmlspecialchars($_SESSION['email'] ?? 'No Email') ?></span>
                     </div>
@@ -1010,7 +1043,7 @@ function formatFileSize($bytes)
                 <nav>
                     <ul>
                         <li><a href="#" class="active"><i class="fas fa-home"></i> Home</a></li>
-                        <li><a href="../include/Settings.php"><i class="fas fa-cog"></i> Settings</a></li>
+                        <li><a href="../include/Settings.php" class="desktop-only"><i class="fas fa-cog"></i> Settings</a></li>
                         <li><a
                                 href="<?php echo $isSuperAdmin ? '../Super-admin/Dashboard.php' : '../Modules/dashboard.php'; ?>">
                                 <i class="fas fa-arrow-left"></i>
@@ -1245,6 +1278,30 @@ function formatFileSize($bytes)
             setupEventListeners();
 
             // Hide loading screen
+            function forceHideMobile() {
+                if (window.innerWidth <= 1200) {
+                    document.querySelectorAll('.desktop-only').forEach(el => {
+                        el.style.setProperty('display', 'none', 'important');
+                    });
+                } else {
+                    document.querySelectorAll('.desktop-only').forEach(el => {
+                        if (el.tagName === 'A' || el.tagName === 'SPAN') {
+                            el.style.setProperty('display', 'inline-flex', 'important');
+                        } else {
+                            el.style.setProperty('display', 'flex', 'important');
+                        }
+                    });
+                }
+            }
+            window.addEventListener('resize', forceHideMobile);
+            forceHideMobile();
+
+            window.onclick = function (event) {
+                if (event.target == document.getElementById('uploadModal')) {
+                    closeModal();
+                }
+            }
+
             setTimeout(function () {
                 const loader = document.getElementById('loadingOverlay');
                 if (loader) {
