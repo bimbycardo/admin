@@ -978,10 +978,6 @@ $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
                             </div>
                         </div>
 
-                        <a href="../auth/logout.php" id="headerLogoutBtn" style="color: #ef4444; text-decoration: none; display: flex; align-items: center; justify-content: center; width: 42px; height: 42px; background: #fff1f2; border: 1px solid #fee2e2; border-radius: 12px; transition: all 0.2s; box-shadow: 0 2px 4px rgba(239, 68, 68, 0.1);" title="Log Out">
-                            <i class="fas fa-power-off" style="font-size: 1.1rem;"></i>
-                        </a>
-
                         <div class="current-date-header" id="real-time-container"
                             style="display: flex; align-items: center; gap: 10px; background: #f8fafc; padding: 8px 16px; border-radius: 12px; border: 1px solid #e2e8f0;">
                             <i class="fa-regular fa-calendar-check" style="color: #3b82f6; font-size: 1.1rem;"></i>
@@ -989,6 +985,10 @@ $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
                                 <?= date('F d, Y') ?> • 00:00:00
                             </span>
                         </div>
+
+                        <a href="../auth/logout.php" id="headerLogoutBtn" style="color: #ef4444; text-decoration: none; display: flex; align-items: center; justify-content: center; width: 42px; height: 42px; background: #fff1f2; border: 1px solid #fee2e2; border-radius: 12px; transition: all 0.2s; box-shadow: 0 2px 4px rgba(239, 68, 68, 0.1);" title="Log Out">
+                            <i class="fas fa-power-off" style="font-size: 1.1rem;"></i>
+                        </a>
                     </div>
                 </div>
             </header>

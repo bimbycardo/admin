@@ -1156,10 +1156,6 @@ $r_rows = [];
                                 </div>
                             </div>
 
-                            <a href="../auth/logout.php" id="headerLogoutBtn" style="color: #ef4444; text-decoration: none; display: flex; align-items: center; justify-content: center; width: 40px; height: 40px; background: #fff1f2; border: 1px solid #fee2e2; border-radius: 10px; transition: all 0.2s; box-shadow: 0 2px 4px rgba(239, 68, 68, 0.1);" title="Log Out">
-                                <i class="fas fa-power-off"></i>
-                            </a>
-
                             <div class="date-time-display d-flex align-items-center bg-white px-3 py-2 rounded-3 shadow-sm"
                                 style="border: 1px solid #e2e8f0;">
                                 <div class=" me-3 text-end">
@@ -1174,6 +1170,10 @@ $r_rows = [];
                                     <i class="fa-regular fa-calendar-check text-primary"></i>
                                 </div>
                             </div>
+
+                            <a href="../auth/logout.php" id="headerLogoutBtn" style="color: #ef4444; text-decoration: none; display: flex; align-items: center; justify-content: center; width: 40px; height: 40px; background: #fff1f2; border: 1px solid #fee2e2; border-radius: 10px; transition: all 0.2s; box-shadow: 0 2px 4px rgba(239, 68, 68, 0.1);" title="Log Out">
+                                <i class="fas fa-power-off"></i>
+                            </a>
                         </div>
                     </div>
                 </div>
