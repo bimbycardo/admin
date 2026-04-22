@@ -410,7 +410,11 @@ function getLastInsertId()
 <body>
     <!-- Top Header Navigation -->
     <div class="module-header">
-        <h2>Hotel & Restaurant Visitor Management</h2>
+        <div style="display: flex; align-items: center; gap: 15px;">
+            <img src="../assets/image/logo2.png" alt="Ateria" style="height: 35px; brightness: 1.2;">
+            <div style="width: 2px; height: 25px; background: rgba(255,255,255,0.2);"></div>
+            <h2 style="text-transform: uppercase; letter-spacing: 2px; font-size: 1.1rem; color: #fff; font-weight: 800;">Visitor Management</h2>
+        </div>
         <div class="top-nav">
             <span onclick="showPage('dashboard')" class="nav-item-top" data-page="dashboard">Dashboard</span>
             <span onclick="showPage('hotel')" class="nav-pill" data-page="hotel">Hotel</span>
