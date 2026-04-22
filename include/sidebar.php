@@ -32,8 +32,8 @@ function get_nav_link($tab, $is_dashboard, $isSuperAdmin)
                         
                         <!-- Dashboard Title with Border Box below Logo -->
                         <div style="display: flex; flex-direction: column; align-items: center; gap: 5px;">
-                            <div style="border: 1px solid rgba(212, 175, 55, 0.4); padding: 4px 15px; border-radius: 8px; background: rgba(212, 175, 55, 0.05);">
-                                <span style="color: #d4af37; font-family: 'Cinzel', serif; font-size: 0.9rem; font-weight: 700; letter-spacing: 2.5px; text-transform: uppercase;">DASHBOARD</span>
+                            <div style="border: 1px solid rgba(212, 175, 55, 0.4); padding: 3px 12px; border-radius: 6px; background: rgba(212, 175, 55, 0.05); display: flex; align-items: center; justify-content: center;">
+                                <span style="color: #d4af37; font-family: 'Cinzel', serif; font-size: 0.75rem; font-weight: 700; letter-spacing: 2px; text-transform: uppercase;">DASHBOARD</span>
                             </div>
                             <?php if ($isSuperAdmin): ?>
                                 <span style="color: #64748b; font-size: 8px; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; opacity: 0.7;">Administrative Access</span>
