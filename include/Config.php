@@ -12,67 +12,42 @@ define('SMTP_PASS', base64_decode('eHNtdHBzaWItYTNjNzU2YTk4NjA1Yzg3OTdmYTU5M2NlM
 
 function sendEmail($to, $name, $subject, $body)
 {
-    $root = dirname(__DIR__);
-    $paths = [$root . '/PHPMailer/src/', $root . '/phpmailer/src/'];
-    $src = '';
-    foreach ($paths as $p) {
-        if (file_exists($p . 'PHPMailer.php')) {
-            $src = $p;
-            break;
-        }
+    // Bypass SMTP Firewall by using Brevo's REST API (Port 443)
+    $apiKey = 'xsmtpsib-a3c756a98605c8797fa593ce1c26d5f5600f1c98ccfa1fd8543429ef5e079d09-Vrwvkuph5bu24aam';
+    
+    $data = [
+        "sender" => ["name" => "ATIERA Security", "email" => "atiera41001@gmail.com"],
+        "to" => [["email" => $to, "name" => $name]],
+        "subject" => $subject,
+        "htmlContent" => $body
+    ];
+
+    $ch = curl_init('https://api.brevo.com/v3/smtp/email');
+    curl_setopt($ch, CURLOPT_POST, true);
+    curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($data));
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+    curl_setopt($ch, CURLOPT_HTTPHEADER, [
+        'accept: application/json',
+        'api-key: ' . $apiKey,
+        'content-type: application/json'
+    ]);
+
+    $response = curl_exec($ch);
+    $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+    curl_close($ch);
+
+    if ($httpCode >= 200 && $httpCode < 300) {
+        return true;
     }
 
-    if (empty($src)) return "PHPMailer library not found.";
-
-    require_once $src . 'Exception.php';
-    require_once $src . 'PHPMailer.php';
-    require_once $src . 'SMTP.php';
-
-    $mail = new \PHPMailer\PHPMailer\PHPMailer(true);
-
-    try {
-        $mail->isSMTP();
-        $mail->Host       = SMTP_HOST;
-        $mail->SMTPAuth   = true;
-        $mail->Username   = SMTP_USER;
-        $mail->Password   = SMTP_PASS;
-        $mail->SMTPSecure = \PHPMailer\PHPMailer\PHPMailer::ENCRYPTION_STARTTLS; 
-        $mail->Port       = 587;
-        $mail->Timeout    = 25;
-
-        // Force IPv4 for stability (Hostinger fix)
-        $mail->SMTPOptions = [
-            'socket' => ['bindto' => '0.0.0.0:0'],
-            'ssl' => ['verify_peer' => false, 'verify_peer_name' => false, 'allow_self_signed' => true]
-        ];
-
-        $mail->setFrom(SMTP_USER, 'ATIERA Security');
-        $mail->addAddress($to, $name);
-        $mail->isHTML(true);
-        $mail->Subject = $subject;
-        $mail->Body    = $body;
-
-        if ($mail->send()) {
-            return true;
-        }
-
-    } catch (Exception $e) {
-        $smtpError = $mail->ErrorInfo;
-        
-        // --- NATIVE FALLBACK ---
-        $domainSender = 'admin@atierahotelandrestaurant.com'; // Try using a domain email
-        $headers = "MIME-Version: 1.0\r\n";
-        $headers .= "Content-type:text/html;charset=UTF-8\r\n";
-        $headers .= "From: ATIERA Security <$domainSender>\r\n";
-        
-        if (@mail($to, $subject, $body, $headers, "-f$domainSender")) {
-            // If native mail returns true, we return a warning instead of just 'true' 
-            // so the user knows SMTP failed.
-            return "SMTP Failed ($smtpError) but Server Mail sent. Check spam.";
-        }
-        
-        return "Critical Error. SMTP: $smtpError";
+    // If API fails, try native mail as very last resort
+    $domainSender = 'admin@atierahotelandrestaurant.com';
+    $headers = "MIME-Version: 1.0\r\nContent-type:text/html;charset=UTF-8\r\nFrom: ATIERA Security <$domainSender>\r\n";
+    if (@mail($to, $subject, $body, $headers, "-f$domainSender")) {
+        return "API Failed ($httpCode), but Native Mail sent. Check spam.";
     }
+
+    return "Brevo API Error ($httpCode): " . $response;
 }
 
 function getBaseUrl()
