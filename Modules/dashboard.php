@@ -869,7 +869,8 @@ $r_rows = [];
             }
 
             body.collapsed-sidebar .sidebar .sidebar-header {
-                padding: 20px 0 !important;
+                padding: 10px 0 !important;
+                margin-bottom: 0 !important;
                 border-bottom: 1px solid rgba(255, 255, 255, 0.05) !important;
             }
 
@@ -879,18 +880,22 @@ $r_rows = [];
 
             body.collapsed-sidebar .sidebar .logo-area .mini-logo {
                 display: block !important;
-                height: 35px !important;
+                height: 30px !important;
                 width: auto !important;
                 margin: 0 auto !important;
             }
 
+            body.collapsed-sidebar .sidebar .nav-section {
+                margin-bottom: 0.5rem !important;
+            }
+
             body.collapsed-sidebar .sidebar .nav-links a {
                 justify-content: center !important;
-                padding: 1.2rem 0 !important;
+                padding: 1rem 0 !important;
             }
 
             body.collapsed-sidebar .sidebar .nav-links a i {
-                font-size: 1.4rem !important;
+                font-size: 1.3rem !important;
                 margin: 0 !important;
             }
         }
