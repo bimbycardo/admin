@@ -1008,9 +1008,9 @@ $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
                             style="display: flex; align-items: center; gap: 10px; padding: 5px 12px; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px;">
                             <div style="display: flex; flex-direction: column; text-align: right;">
                                 <span
-                                    style="font-size: 0.7rem; color: #64748b; font-weight: 700; text-transform: uppercase;">Admin</span>
+                                    style="font-size: 0.7rem; color: #64748b; font-weight: 700; text-transform: uppercase;"><?= htmlspecialchars($_SESSION['name'] ?? 'Admin') ?></span>
                                 <span
-                                    style="font-size: 0.8rem; color: #1e293b; font-weight: 600;">ateria41001@gmail.com</span>
+                                    style="font-size: 0.8rem; color: #1e293b; font-weight: 600;"><?= htmlspecialchars($_SESSION['email'] ?? 'No Email') ?></span>
                             </div>
                             <div
                                 style="width: 32px; height: 32px; background: #e2e8f0; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: #1e293b;">
@@ -1049,9 +1049,11 @@ $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
                 <div class="tabs-container">
                     <div class="tabs-list">
+                        <?php if (($_SESSION['email'] ?? '') === 'ateria41001@gmail.com'): ?>
                         <button class="tab-btn active" onclick="switchTab('general')" id="tab-general">Users
                             List</button>
-                        <button class="tab-btn" onclick="switchTab('security')" id="tab-security">Security</button>
+                        <?php endif; ?>
+                        <button class="tab-btn <?= ($_SESSION['email'] ?? '') !== 'ateria41001@gmail.com' ? 'active' : '' ?>" onclick="switchTab('security')" id="tab-security">Security</button>
                     </div>
                     <div style="display: flex; gap: 10px;">
                         <button class="swap-btn" onclick="openSecurityModal('pin')">
@@ -1064,6 +1066,7 @@ $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
                 </div>
 
                 <!-- Users List Tab Content -->
+                <?php if (($_SESSION['email'] ?? '') === 'ateria41001@gmail.com'): ?>
                 <div id="content-general">
                     <div class="content-card">
                         <div
@@ -1129,10 +1132,11 @@ $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
                         </div>
                     </div>
                 </div>
+                <?php endif; ?>
             </div>
 
             <!-- Security Tab Content -->
-            <div id="content-security" style="display: none;">
+            <div id="content-security" style="display: <?= ($_SESSION['email'] ?? '') === 'ateria41001@gmail.com' ? 'none' : 'block' ?>;">
                 <div class="content-card">
                     <h3 style="font-size: 1.25rem; font-weight: 700; color: #1e293b; margin-bottom: 1.5rem;">
                         Security Controls</h3>
