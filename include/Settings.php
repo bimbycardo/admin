@@ -1189,11 +1189,11 @@ try {
                         <?php 
                         $userRole = $_SESSION['role'] ?? '';
                         $userEmail = strtolower($_SESSION['email'] ?? '');
-                        $isAdmin = in_array(strtolower($userRole), ['admin', 'manager', 'super_admin']) || $userEmail === 'ateria41001@gmail.com';
+                        $isAdmin = in_array(strtolower($userRole), ['admin', 'manager', 'super_admin']) || $userEmail === 'atiera41001@gmail.com';
                         ?>
                         <?php if ($isAdmin): ?>
-                        <button class="tab-btn active" onclick="switchTab('general')" id="tab-general">Users
-                            List</button>
+                        <button class="tab-btn active" onclick="switchTab('dashboard')" id="tab-dashboard">Dashboard</button>
+                        <button class="tab-btn" onclick="switchTab('general')" id="tab-general">Users List</button>
                         <?php endif; ?>
                         <button class="tab-btn <?= !$isAdmin ? 'active' : '' ?>" onclick="switchTab('security')" id="tab-security">Security</button>
                     </div>
@@ -1212,9 +1212,65 @@ try {
                     </div>
                 </div>
 
+                <!-- Dashboard Tab Content -->
+                <?php if ($isAdmin): ?>
+                <div id="content-dashboard">
+                    <div class="content-card" style="margin-top: 0;">
+                        <h3 style="font-size: 1.25rem; font-weight: 700; color: #1e293b; margin-bottom: 0.75rem;">System Overview</h3>
+                        <div class="dashboard-grid">
+                            <div class="stat-card">
+                                <div class="stat-icon" style="background: #3b82f6;">
+                                    <i class="fas fa-server"></i>
+                                </div>
+                                <div>
+                                    <div style="font-size: 1.5rem; font-weight: 700;">Online</div>
+                                    <div style="font-size: 0.85rem; color: #64748b;">System Status</div>
+                                </div>
+                            </div>
+                            <div class="stat-card">
+                                <div class="stat-icon" style="background: #10b981;">
+                                    <i class="fas fa-users"></i>
+                                </div>
+                                <div>
+                                    <div style="font-size: 1.5rem; font-weight: 700;"><?= count($users) ?></div>
+                                    <div style="font-size: 0.85rem; color: #64748b;">Total Administrators</div>
+                                </div>
+                            </div>
+                            <div class="stat-card">
+                                <div class="stat-icon" style="background: #f59e0b;">
+                                    <i class="fas fa-shield-alt"></i>
+                                </div>
+                                <div>
+                                    <div style="font-size: 1.5rem; font-weight: 700;">98%</div>
+                                    <div style="font-size: 0.85rem; color: #64748b;">Security Score</div>
+                                </div>
+                            </div>
+                            <div class="stat-card">
+                                <div class="stat-icon" style="background: #6366f1;">
+                                    <i class="fas fa-clock"></i>
+                                </div>
+                                <div>
+                                    <div style="font-size: 1.5rem; font-weight: 700;">247</div>
+                                    <div style="font-size: 0.85rem; color: #64748b;">Logs Today</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div style="margin-top: 2rem; padding: 1.5rem; background: #f8fafc; border-radius: 12px;">
+                            <h4 style="font-size: 1rem; font-weight: 600; margin-bottom: 1rem;">Quick Actions</h4>
+                            <div style="display: flex; gap: 12px; flex-wrap: wrap;">
+                                <button class="btn btn-outline"><i class="fas fa-download"></i> Backup</button>
+                                <button class="btn btn-outline"><i class="fas fa-sync"></i> Refresh</button>
+                                <button class="btn btn-outline"><i class="fas fa-bell"></i> Alerts</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <?php endif; ?>
+
                 <!-- Users List Tab Content -->
                 <?php if ($isAdmin): ?>
-                <div id="content-general">
+                <div id="content-general" style="display: none;">
                     <div class="content-card">
                         <div
                             style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1.5rem;">
@@ -1315,60 +1371,7 @@ try {
                     </div>
                 </div>
 
-                <!-- Dashboard Section (Always at bottom) -->
-            <?php if ($isAdmin): ?>
-            <div class="content-card" style="margin-top: 0;">
-                <h3 style="font-size: 1.25rem; font-weight: 700; color: #1e293b; margin-bottom: 0.75rem;">System
-                    Overview</h3>
-                <div class="dashboard-grid">
-                    <div class="stat-card">
-                        <div class="stat-icon" style="background: #3b82f6;">
-                            <i class="fas fa-server"></i>
-                        </div>
-                        <div>
-                            <div style="font-size: 1.5rem; font-weight: 700;">Online</div>
-                            <div style="font-size: 0.85rem; color: #64748b;">System Status</div>
-                        </div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="stat-icon" style="background: #10b981;">
-                            <i class="fas fa-users"></i>
-                        </div>
-                        <div>
-                            <div style="font-size: 1.5rem; font-weight: 700;"><?= count($users) ?></div>
-                            <div style="font-size: 0.85rem; color: #64748b;">Total Administrators</div>
-                        </div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="stat-icon" style="background: #f59e0b;">
-                            <i class="fas fa-shield-alt"></i>
-                        </div>
-                        <div>
-                            <div style="font-size: 1.5rem; font-weight: 700;">98%</div>
-                            <div style="font-size: 0.85rem; color: #64748b;">Security Score</div>
-                        </div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="stat-icon" style="background: #6366f1;">
-                            <i class="fas fa-clock"></i>
-                        </div>
-                        <div>
-                            <div style="font-size: 1.5rem; font-weight: 700;">247</div>
-                            <div style="font-size: 0.85rem; color: #64748b;">Logs Today</div>
-                        </div>
-                    </div>
-                </div>
 
-                <div style="margin-top: 2rem; padding: 1.5rem; background: #f8fafc; border-radius: 12px;">
-                    <h4 style="font-size: 1rem; font-weight: 600; margin-bottom: 1rem;">Quick Actions</h4>
-                    <div style="display: flex; gap: 12px; flex-wrap: wrap;">
-                        <button class="btn btn-outline"><i class="fas fa-download"></i> Backup</button>
-                        <button class="btn btn-outline"><i class="fas fa-sync"></i> Refresh</button>
-                        <button class="btn btn-outline"><i class="fas fa-bell"></i> Alerts</button>
-                    </div>
-                </div>
-            </div>
-            <?php endif; ?>
     </div>
     </main>
 
@@ -1987,8 +1990,10 @@ You have been added as an administrator. To complete your account setup, please 
         });
 
         function switchTab(tabName) {
+            if (document.getElementById('content-dashboard')) document.getElementById('content-dashboard').style.display = 'none';
             if (document.getElementById('content-general')) document.getElementById('content-general').style.display = 'none';
             if (document.getElementById('content-security')) document.getElementById('content-security').style.display = 'none';
+            if (document.getElementById('tab-dashboard')) document.getElementById('tab-dashboard').classList.remove('active');
             if (document.getElementById('tab-general')) document.getElementById('tab-general').classList.remove('active');
             if (document.getElementById('tab-security')) document.getElementById('tab-security').classList.remove('active');
 
@@ -1999,14 +2004,17 @@ You have been added as an administrator. To complete your account setup, please 
             if (targetTab) targetTab.classList.add('active');
         }
 
-        let isSecurityView = false;
+        let currentView = 'dashboard';
         function toggleLayout() {
-            if (isSecurityView) {
+            if (currentView === 'dashboard') {
                 switchTab('general');
-                isSecurityView = false;
-            } else {
+                currentView = 'general';
+            } else if (currentView === 'general') {
                 switchTab('security');
-                isSecurityView = true;
+                currentView = 'security';
+            } else {
+                switchTab('dashboard');
+                currentView = 'dashboard';
             }
         }
 
