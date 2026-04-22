@@ -1191,10 +1191,8 @@ try {
                         $userEmail = strtolower($_SESSION['email'] ?? '');
                         $isAdmin = in_array(strtolower($userRole), ['admin', 'manager', 'super_admin']) || $userEmail === 'atiera41001@gmail.com';
                         ?>
-                        <?php if ($isAdmin): ?>
-                        <button class="tab-btn active" onclick="switchTab('dashboard')" id="tab-dashboard">Users Management</button>
-                        <?php endif; ?>
-                        <button class="tab-btn <?= !$isAdmin ? 'active' : '' ?>" onclick="switchTab('security')" id="tab-security">Security</button>
+                        <button class="tab-btn active" onclick="switchTab('dashboard')" id="tab-dashboard"><?= $isAdmin ? 'Users Management' : 'Dashboard' ?></button>
+                        <button class="tab-btn" onclick="switchTab('security')" id="tab-security">Security</button>
                     </div>
                     <div style="display: flex; gap: 10px;">
                         <button class="swap-btn" onclick="openSecurityModal('password')">
@@ -1211,10 +1209,10 @@ try {
                     </div>
                 </div>
 
-                <!-- Unified Dashboard & Users List Tab Content -->
-                <?php if ($isAdmin): ?>
+                <!-- Unified Dashboard Tab Content (Visible to Everyone) -->
                 <div id="content-dashboard">
-                    <!-- Users List Section (At Top as requested) -->
+                    <!-- Users List Section (Admins Only) -->
+                    <?php if ($isAdmin): ?>
                     <div class="content-card">
                         <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1.5rem;">
                             <h3 style="font-size: 1.25rem; font-weight: 700; color: #1e293b; display: flex; align-items: center; gap: 10px; margin: 0;">
@@ -1286,8 +1284,9 @@ try {
                             </div>
                         </div>
                     </div>
+                    <?php endif; ?>
 
-                    <!-- System Overview Section (Below User List) -->
+                    <!-- System Overview Section (Visible to everyone) -->
                     <div class="content-card">
                         <h3 style="font-size: 1.25rem; font-weight: 700; color: #1e293b; margin-bottom: 0.75rem;">System Overview</h3>
                         <div class="dashboard-grid">
@@ -1339,7 +1338,6 @@ try {
                         </div>
                     </div>
                 </div>
-                <?php endif; ?>
 
                 <!-- Security Tab Content -->
                 <div id="content-security" style="display: <?= $isAdmin ? 'none' : 'block' ?>;">
