@@ -30,8 +30,12 @@ function get_nav_link($tab, $is_dashboard, $isSuperAdmin)
                         <img src="<?= $projRoot ?>/assets/image/logo.png?v=2" alt="Atiéra Logo" class="full-logo"
                             style="height:60px; width:auto; display:block; transition: all 0.3s; filter: drop-shadow(0 4px 6px rgba(0,0,0,0.1));">
                         
+                        <!-- Mini Logo Image (Shown when collapsed) -->
+                        <img src="<?= $projRoot ?>/assets/image/logo2.png?v=2" alt="Atiéra Logo" class="mini-logo"
+                            style="height:40px; width:auto; display:none; margin: 0 auto; transition: all 0.3s; filter: drop-shadow(0 4px 6px rgba(0,0,0,0.1));">
+
                         <!-- Dynamic Subtitle with Border Box below Logo -->
-                        <div style="display: flex; flex-direction: column; align-items: center; gap: 5px;">
+                        <div class="sidebar-subtitle" style="display: flex; flex-direction: column; align-items: center; gap: 5px;">
                             <div style="border: 1px solid rgba(212, 175, 55, 0.4); padding: 3px 12px; border-radius: 6px; background: rgba(212, 175, 55, 0.05); display: flex; align-items: center; justify-content: center;">
                                 <span style="color: #d4af37; font-family: 'Cinzel', serif; font-size: 0.7rem; font-weight: 700; letter-spacing: 2px; text-transform: uppercase;">
                                     <?php

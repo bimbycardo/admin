@@ -862,6 +862,7 @@ $r_rows = [];
 
             body.collapsed-sidebar .sidebar .nav-title,
             body.collapsed-sidebar .sidebar .nav-links a span,
+            body.collapsed-sidebar .sidebar .sidebar-subtitle,
             body.collapsed-sidebar .sidebar .dropdown-arrow {
                 display: none !important;
             }
