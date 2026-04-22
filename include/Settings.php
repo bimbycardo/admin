@@ -1052,48 +1052,67 @@ try {
             transform: translateY(-2px);
         }
 
-        /* Mobile Header Fixes */
+        /* Mobile Header Fixes - Aggressive */
         @media (max-width: 768px) {
             .top-header {
-                padding: 0.75rem 1rem !important;
-                height: 60px;
-                gap: 10px;
+                padding: 0 12px !important;
+                height: 56px !important;
+                display: flex !important;
+                justify-content: space-between !important;
+                align-items: center !important;
+                gap: 5px !important;
             }
             .header-title {
-                gap: 8px !important;
+                gap: 5px !important;
+                flex: 1;
             }
-            .header-title img {
-                height: 25px !important;
+            .header-title div:first-of-type { /* Logo container */
+                display: none !important;
             }
             .header-title h1 {
-                font-size: 1.1rem !important;
-                letter-spacing: 0.5px !important;
+                font-size: 1rem !important;
+                white-space: nowrap;
+                overflow: hidden;
+                text-overflow: ellipsis;
+                max-width: 120px;
             }
             .menu-bar-nav {
-                margin-left: 0 !important;
-                gap: 10px !important;
+                margin: 0 !important;
+                gap: 5px !important;
             }
             .menu-item {
-                padding: 6px 10px !important;
+                padding: 5px !important;
+                background: none !important;
             }
             .menu-item .notif-text {
-                display: none;
+                display: none !important;
             }
             .header-actions {
-                gap: 10px !important;
+                gap: 5px !important;
             }
-            .current-date-header {
-                display: none !important;
+            .header-actions > div:first-child { /* Profile box */
+                padding: 0 !important;
+                background: none !important;
+                border: none !important;
             }
             .profile-info-text {
                 display: none !important;
             }
-            #headerLogoutBtn {
-                width: 36px !important;
-                height: 36px !important;
+            .current-date-header {
+                display: none !important;
             }
-            .top-header {
-                padding-left: 10px !important;
+            #headerLogoutBtn {
+                width: 34px !important;
+                height: 34px !important;
+                background: none !important;
+                border: none !important;
+                box-shadow: none !important;
+                padding: 0 !important;
+            }
+            .mobile-menu-btn {
+                width: 34px !important;
+                height: 34px !important;
+                margin-right: 0 !important;
             }
         }
     </style>
