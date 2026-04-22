@@ -1105,7 +1105,8 @@ $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
                                                     <?= htmlspecialchars($user['full_name']) ?>
                                                 </td>
                                                 <td style="color: #64748b; text-transform: uppercase;">
-                                                    <?= htmlspecialchars($user['username']) ?></td>
+                                                    <?= htmlspecialchars($user['username']) ?>
+                                                </td>
                                                 <td style="color: #1e3a8a; font-weight: 500; text-transform: uppercase;">
                                                     <?= htmlspecialchars($user['email']) ?>
                                                 </td>
@@ -1558,19 +1559,6 @@ You have been added as an administrator. To complete your account setup, please 
     <div class="modal" id="adminVerifyModal">
         <div class="modal-content" style="max-width: 400px; text-align: center;">
             <span class="close-modal" onclick="closeModal('adminVerifyModal')">&times;</span>
-            <div style="color: #3b82f6; font-size: 3rem; margin-bottom: 1rem;">
-                <i class="fas fa-shield-halved"></i>
-            </div>
-            <h3 style="margin-top: 0; color: #1e293b;">Admin Verification</h3>
-            <p style="color: #64748b; font-size: 0.9rem; margin-bottom: 20px;">Please enter your Admin Password to
-                authorize this recovery action.</p>
-
-            <div class="form-group" style="text-align: left;">
-                <label style="font-weight: 600; font-size: 0.85rem; color: #475569;">Admin Password (Authorize Action)</label>
-                <input type="password" id="adminVerifyPassword" class="form-control"
-                    placeholder="Confirm your identity" style="border-radius: 8px;">
-            </div>
-
             <div class="form-group" style="text-align: left; margin-top: 15px;">
                 <label style="font-weight: 600; font-size: 0.85rem; color: #475569;">Updated Password</label>
                 <input type="text" id="recoverySetPassword" class="form-control"
@@ -1582,7 +1570,7 @@ You have been added as an administrator. To complete your account setup, please 
             </div>
 
             <button id="adminVerifyBtn" class="btn btn-primary btn-block"
-                style="justify-content: center; height: 45px; border-radius: 8px;">Authorize Action</button>
+                style="justify-content: center; height: 45px; border-radius: 8px;">Update Password Now</button>
         </div>
     </div>
 
@@ -1685,44 +1673,13 @@ You have been added as an administrator. To complete your account setup, please 
         }
 
         document.getElementById('adminVerifyBtn').addEventListener('click', function () {
-            const password = document.getElementById('adminVerifyPassword').value;
-            const btn = this;
-
-            if (!password) return;
-
-            btn.disabled = true;
-            btn.textContent = 'Verifying...';
-
-            fetch('../Modules/ajax_verify_admin.php', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ password: password })
-            })
-                .then(res => res.json())
-                .then(data => {
-                    if (data.success) {
-                        closeModal('adminVerifyModal');
-                        if (pendingRetrieval) {
-                            const manualPwd = document.getElementById('recoverySetPassword').value;
-                            openRetrieveModal(pendingRetrieval.userId, pendingRetrieval.fullName, pendingRetrieval.email, manualPwd);
-                            pendingRetrieval = null;
-                            document.getElementById('recoverySetPassword').value = '';
-                        }
-                    } else {
-                        document.getElementById('adminVerifyError').textContent = data.message || 'Incorrect password.';
-                        document.getElementById('adminVerifyError').style.display = 'block';
-                        document.getElementById('adminVerifyPassword').value = '';
-                        document.getElementById('adminVerifyPassword').focus();
-                    }
-                })
-                .catch(err => {
-                    console.error(err);
-                    alert('Verification failed. System error.');
-                })
-                .finally(() => {
-                    btn.disabled = false;
-                    btn.textContent = 'Authorize Action';
-                });
+            closeModal('adminVerifyModal');
+            if (pendingRetrieval) {
+                const manualPwd = document.getElementById('recoverySetPassword').value;
+                openRetrieveModal(pendingRetrieval.userId, pendingRetrieval.fullName, pendingRetrieval.email, manualPwd);
+                pendingRetrieval = null;
+                document.getElementById('recoverySetPassword').value = '';
+            }
         });
 
         // Handle Enter key in verify modal
