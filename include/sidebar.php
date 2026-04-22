@@ -14,8 +14,8 @@ function get_nav_link($tab, $is_dashboard, $isSuperAdmin)
     return "../Modules/dashboard.php?tab=" . urlencode($tab);
 }
 ?>
-<nav class="sidebar">
-    <div class="sidebar-header" style="border-bottom: 1px solid rgba(255, 255, 255, 0.05); padding-bottom: 20px; margin-bottom: 10px;">
+<nav class="sidebar" style="z-index: 1000 !important;">
+    <div class="sidebar-header" style="border-bottom: 1px solid rgba(255, 255, 255, 0.05); padding: 25px 0 20px 0; margin-bottom: 10px;">
         <a href="<?= $isSuperAdmin ? '../Super-admin/Dashboard.php?tab=dashboard' : '../Modules/dashboard.php?tab=dashboard' ?>" class="logo-link"
             title="Go to Dashboard">
                 <div class="logo-area">
