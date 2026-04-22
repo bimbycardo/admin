@@ -37,11 +37,11 @@ function sendEmail($to, $name, $subject, $body)
         $mail->SMTPAuth   = true;
         $mail->Username   = 'atiera41001@gmail.com';
         $mail->Password   = 'dxis mokl icnb iemt'; // App password
-        $mail->SMTPSecure = \PHPMailer\PHPMailer\PHPMailer::ENCRYPTION_STARTTLS;
-        $mail->Port       = 587;
+        $mail->SMTPSecure = \PHPMailer\PHPMailer\PHPMailer::ENCRYPTION_SMTPS; // Switched to 465/SSL
+        $mail->Port       = 465;
         $mail->Timeout    = 15;
 
-        // CRITICAL FIX: Force IPv4 to bypass 'Network is unreachable' (Error 101)
+        // CRITICAL FIX: Force IPv4 and handle SSL certificate issues
         $mail->SMTPOptions = [
             'socket' => [
                 'bindto' => '0.0.0.0:0'
@@ -65,7 +65,16 @@ function sendEmail($to, $name, $subject, $body)
         $mail->send();
         return true;
     } catch (\Exception $e) {
-        return "Message could not be sent. Mailer Error: {$mail->ErrorInfo}";
+        // FALLBACK: If Hostinger blocks SMTP (Error 111/101), use Native PHP Mail
+        $headers = "MIME-Version: 1.0\r\n";
+        $headers .= "Content-type:text/html;charset=UTF-8\r\n";
+        $headers .= "From: ATIERA Security <atiera41001@gmail.com>\r\n";
+        
+        if (@mail($to, $subject, $body, $headers)) {
+            return true; 
+        }
+        
+        return "Both SMTP and Native Mail failed. SMTP Error: {$mail->ErrorInfo}";
     }
 }
 
