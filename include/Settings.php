@@ -1252,42 +1252,42 @@ try {
                     </div>
                 </div>
                 <?php endif; ?>
-            </div>
 
-            <!-- Security Tab Content -->
-            <div id="content-security" style="display: <?= $isAdmin ? 'none' : 'block' ?>;">
-                <div class="content-card">
-                    <h3 style="font-size: 1.25rem; font-weight: 700; color: #1e293b; margin-bottom: 1.5rem;">
-                        Security Controls</h3>
-                    <div class="security-grid">
-                        <div class="security-card" onclick="openSecurityModal('password')">
-                            <i class="fas fa-lock"></i>
-                            <h4>Change Admin Password</h4>
-                            <p>Update the master password for this account to maintain high security.</p>
-                        </div>
+                <!-- Security Tab Content -->
+                <div id="content-security" style="display: <?= $isAdmin ? 'none' : 'block' ?>;">
+                    <div class="content-card">
+                        <h3 style="font-size: 1.25rem; font-weight: 700; color: #1e293b; margin-bottom: 1.5rem;">
+                            Security Controls</h3>
+                        <div class="security-grid">
+                            <div class="security-card" onclick="openSecurityModal('password')">
+                                <i class="fas fa-lock"></i>
+                                <h4>Change Password</h4>
+                                <p>Update your account password to maintain high security.</p>
+                            </div>
+                            
+                            <div class="security-card" onclick="openSecurityModal('pin')">
+                                <i class="fas fa-key"></i>
+                                <h4>Security PIN (4-Digit)</h4>
+                                <p>Manage the 4-digit PIN used for sensitive actions across the system.</p>
+                            </div>
 
-                        <div class="security-card" onclick="openSecurityModal('pin')">
-                            <i class="fas fa-key"></i>
-                            <h4>Security PIN (4-Digit)</h4>
-                            <p>Manage the 4-digit PIN used for sensitive actions across the system.</p>
-                        </div>
-
-                        <div class="security-card" onclick="openSecurityModal('logs')">
-                            <i class="fas fa-clipboard-list"></i>
-                            <h4>Audit Logs</h4>
-                            <p>View comprehensive security events and user access logs.</p>
-                        </div>
-
-                        <div class="security-card" onclick="openSecurityModal('email')">
-                            <i class="fas fa-envelope-open-text"></i>
-                            <h4>Email Templates</h4>
-                            <p>Customize the automated emails sent for system notifications.</p>
+                            <?php if ($isAdmin): ?>
+                            <div class="security-card" onclick="openSecurityModal('logs')">
+                                <i class="fas fa-clipboard-list"></i>
+                                <h4>Audit Logs</h4>
+                                <p>View comprehensive security events and user access logs.</p>
+                            </div>
+                            <div class="security-card" onclick="openSecurityModal('email')">
+                                <i class="fas fa-envelope-open-text"></i>
+                                <h4>Email Templates</h4>
+                                <p>Customize the automated emails sent for system notifications.</p>
+                            </div>
+                            <?php endif; ?>
                         </div>
                     </div>
                 </div>
-            </div>
 
-            <!-- Dashboard Section (Always at bottom) -->
+                <!-- Dashboard Section (Always at bottom) -->
             <?php if ($isAdmin): ?>
             <div class="content-card" style="margin-top: 0;">
                 <h3 style="font-size: 1.25rem; font-weight: 700; color: #1e293b; margin-bottom: 0.75rem;">System
