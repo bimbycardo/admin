@@ -784,6 +784,11 @@ $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
             display: inline-block !important;
         }
 
+        .security-unlocked td.security-only,
+        .security-unlocked th.security-only {
+            display: table-cell !important;
+        }
+
         .security-unlocked .viewing-blur {
             filter: none;
             pointer-events: auto;
@@ -1037,10 +1042,6 @@ $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
                                 style="padding: 10px 20px; border-radius: 12px; font-weight: 700; box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);">
                                 <i class="fas fa-user-plus"></i> Add New User
                             </button>
-                            <button class="btn btn-outline security-only" onclick="location.reload()"
-                                style="padding: 10px 20px; border-radius: 12px; font-weight: 700; border: 1px solid #e2e8f0; color: #1e3a8a;">
-                                <i class="fas fa-rotate-left"></i> Retrieve Account
-                            </button>
                         </div>
                         </div>
 
@@ -1053,10 +1054,10 @@ $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
                                     <thead>
                                         <tr>
                                             <th style="width: 80px;"># NO.</th>
-                                            <th>Full Name</th>
-                                            <th>Username</th>
-                                             <th>Email</th>
-                                             <th style="width: 120px;">ACTION</th>
+                                            <th style="text-align: center;">Full Name</th>
+                                            <th style="text-align: center;">Username</th>
+                                             <th style="text-align: center;">Email</th>
+                                             <th class="security-only" style="width: 120px; text-align: center;">ACTION</th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -1064,9 +1065,9 @@ $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
                                         foreach ($users as $user): ?>
                                             <tr>
                                                 <td style="font-weight: 700; color: #3b82f6;">#<?= $count++ ?></td>
-                                                <td style="font-weight: 500;"><?= htmlspecialchars($user['full_name']) ?>
+                                                <td style="font-weight: 600; text-transform: uppercase; color: #1e293b;"><?= htmlspecialchars($user['full_name']) ?>
                                                 </td>
-                                                <td style="color: #64748b;"><?= htmlspecialchars($user['username']) ?></td>
+                                                <td style="color: #64748b; text-transform: uppercase;"><?= htmlspecialchars($user['username']) ?></td>
                                                 <td style="color: #1e3a8a; font-weight: 500;">
                                                     <?= htmlspecialchars($user['email']) ?></td>
                                                 <td class="security-only">
