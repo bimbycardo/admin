@@ -1192,8 +1192,7 @@ try {
                         $isAdmin = in_array(strtolower($userRole), ['admin', 'manager', 'super_admin']) || $userEmail === 'atiera41001@gmail.com';
                         ?>
                         <?php if ($isAdmin): ?>
-                        <button class="tab-btn active" onclick="switchTab('dashboard')" id="tab-dashboard">Dashboard</button>
-                        <button class="tab-btn" onclick="switchTab('general')" id="tab-general">Users List</button>
+                        <button class="tab-btn active" onclick="switchTab('dashboard')" id="tab-dashboard">Users Management</button>
                         <?php endif; ?>
                         <button class="tab-btn <?= !$isAdmin ? 'active' : '' ?>" onclick="switchTab('security')" id="tab-security">Security</button>
                     </div>
@@ -1212,10 +1211,84 @@ try {
                     </div>
                 </div>
 
-                <!-- Dashboard Tab Content -->
+                <!-- Unified Dashboard & Users List Tab Content -->
                 <?php if ($isAdmin): ?>
                 <div id="content-dashboard">
-                    <div class="content-card" style="margin-top: 0;">
+                    <!-- Users List Section (At Top as requested) -->
+                    <div class="content-card">
+                        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1.5rem;">
+                            <h3 style="font-size: 1.25rem; font-weight: 700; color: #1e293b; display: flex; align-items: center; gap: 10px; margin: 0;">
+                                <i class="fas fa-users-gear" style="color: #3b82f6;"></i> Active Users List
+                            </h3>
+                            <div style="display: flex; gap: 10px; align-items: center;">
+                                <button class="btn btn-primary security-only" onclick="openCreateModal()"
+                                    style="padding: 10px 20px; border-radius: 12px; font-weight: 700; box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);">
+                                    <i class="fas fa-user-plus"></i> Add New User
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="viewing-container">
+                            <div class="viewing-badge" onclick="triggerSecurityUnlock()">
+                                <i class="fas fa-eye"></i> Viewing Mode Only
+                            </div>
+                            <div class="viewing-blur" style="overflow-x: auto;">
+                                <table class="table">
+                                    <thead>
+                                        <tr>
+                                            <th style="width: 80px;"># NO.</th>
+                                            <th style="text-align: center;">FULL NAME</th>
+                                            <th style="text-align: center;">USERNAME</th>
+                                            <th style="text-align: center;">EMAIL</th>
+                                            <th class="security-only" style="width: 120px; text-align: center;">ACTION</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <?php $count = 1;
+                                        foreach ($users as $user): ?>
+                                            <tr>
+                                                <td style="font-weight: 700; color: #3b82f6;">#<?= $count++ ?></td>
+                                                <td style="font-weight: 600; text-transform: uppercase; color: #1e293b;">
+                                                    <?= htmlspecialchars($user['full_name']) ?>
+                                                </td>
+                                                <td style="color: #64748b; text-transform: uppercase;">
+                                                    <?= htmlspecialchars($user['username']) ?>
+                                                </td>
+                                                <td style="color: #1e3a8a; font-weight: 500; text-transform: uppercase;">
+                                                    <?= htmlspecialchars($user['email']) ?>
+                                                </td>
+                                                <td class="security-only">
+                                                    <div style="display: flex; gap: 8px; justify-content: center; align-items: center;">
+                                                        <button class="btn btn-icon"
+                                                            onclick='openEditModal(<?= json_encode($user) ?>)'
+                                                            title="Edit User"
+                                                            style="background: rgba(16, 185, 129, 0.1); color: #10b981; width: 34px; height: 34px; border-radius: 8px; display: flex; align-items: center; justify-content: center; border: none; cursor: pointer; transition: all 0.2s;">
+                                                            <i class="fas fa-edit" style="font-size: 14px;"></i>
+                                                        </button>
+                                                        <button class="btn btn-icon"
+                                                            onclick="openDeleteModal(<?= $user['id'] ?>)"
+                                                            title="Delete User"
+                                                            style="background: rgba(239, 68, 68, 0.1); color: #ef4444; width: 34px; height: 34px; border-radius: 8px; display: flex; align-items: center; justify-content: center; border: none; cursor: pointer; transition: all 0.2s;">
+                                                            <i class="fas fa-trash-alt" style="font-size: 14px;"></i>
+                                                        </button>
+                                                        <button class="btn btn-icon"
+                                                            onclick="initiateRetrieveAccount(<?= $user['id'] ?>, '<?= addslashes(htmlspecialchars($user['full_name'])) ?>', '<?= addslashes(htmlspecialchars($user['email'])) ?>')"
+                                                            title="Retrieve Account"
+                                                            style="background: rgba(59, 130, 246, 0.1); color: #3b82f6; width: 34px; height: 34px; border-radius: 8px; display: flex; align-items: center; justify-content: center; border: none; cursor: pointer; transition: all 0.2s;">
+                                                            <i class="fas fa-rotate-left" style="font-size: 14px;"></i>
+                                                        </button>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        <?php endforeach; ?>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- System Overview Section (Below User List) -->
+                    <div class="content-card">
                         <h3 style="font-size: 1.25rem; font-weight: 700; color: #1e293b; margin-bottom: 0.75rem;">System Overview</h3>
                         <div class="dashboard-grid">
                             <div class="stat-card">
@@ -1262,75 +1335,6 @@ try {
                                 <button class="btn btn-outline"><i class="fas fa-download"></i> Backup</button>
                                 <button class="btn btn-outline"><i class="fas fa-sync"></i> Refresh</button>
                                 <button class="btn btn-outline"><i class="fas fa-bell"></i> Alerts</button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <?php endif; ?>
-
-                <!-- Users List Tab Content -->
-                <?php if ($isAdmin): ?>
-                <div id="content-general" style="display: none;">
-                    <div class="content-card">
-                        <div
-                            style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1.5rem;">
-                            <h3
-                                style="font-size: 1.25rem; font-weight: 700; color: #1e293b; display: flex; align-items: center; gap: 10px; margin: 0;">
-                                <i class="fas fa-users-gear" style="color: #3b82f6;"></i> Active Users List
-                            </h3>
-                            <div style="display: flex; gap: 10px; align-items: center;">
-                                <button class="btn btn-primary security-only" onclick="openCreateModal()"
-                                    style="padding: 10px 20px; border-radius: 12px; font-weight: 700; box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);">
-                                    <i class="fas fa-user-plus"></i> Add New User
-                                </button>
-                            </div>
-                        </div>
-
-                        <div class="viewing-container">
-                            <div class="viewing-badge" onclick="triggerSecurityUnlock()">
-                                <i class="fas fa-eye"></i> Viewing Mode Only
-                            </div>
-                            <div class="viewing-blur" style="overflow-x: auto;">
-                                <table class="table">
-                                    <thead>
-                                        <tr>
-                                            <th style="width: 80px;"># NO.</th>
-                                            <th style="text-align: center;">FULL NAME</th>
-                                            <th style="text-align: center;">USERNAME</th>
-                                            <th style="text-align: center;">EMAIL</th>
-                                            <th class="security-only" style="width: 120px; text-align: center;">ACTION
-                                            </th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <?php $count = 1;
-                                        foreach ($users as $user): ?>
-                                            <tr>
-                                                <td style="font-weight: 700; color: #3b82f6;">#<?= $count++ ?></td>
-                                                <td style="font-weight: 600; text-transform: uppercase; color: #1e293b;">
-                                                    <?= htmlspecialchars($user['full_name']) ?>
-                                                </td>
-                                                <td style="color: #64748b; text-transform: uppercase;">
-                                                    <?= htmlspecialchars($user['username']) ?>
-                                                </td>
-                                                <td style="color: #1e3a8a; font-weight: 500; text-transform: uppercase;">
-                                                    <?= htmlspecialchars($user['email']) ?>
-                                                </td>
-                                                <td class="security-only">
-                                                    <div
-                                                        style="display: flex; gap: 8px; justify-content: center; align-items: center;">
-                                                        <button class="btn btn-icon"
-                                                            onclick="initiateRetrieveAccount(<?= $user['id'] ?>, '<?= addslashes(htmlspecialchars($user['full_name'])) ?>', '<?= addslashes(htmlspecialchars($user['email'])) ?>')"
-                                                            title="Retrieve Account"
-                                                            style="background: rgba(59, 130, 246, 0.1); color: #3b82f6; width: 34px; height: 34px; border-radius: 8px; display: flex; align-items: center; justify-content: center; border: none; cursor: pointer; transition: all 0.2s;">
-                                                            <i class="fas fa-rotate-left" style="font-size: 14px;"></i>
-                                                        </button>
-                                                    </div>
-                                                </td>
-                                            </tr>
-                                        <?php endforeach; ?>
-                                    </tbody>
-                                </table>
                             </div>
                         </div>
                     </div>
@@ -1991,10 +1995,8 @@ You have been added as an administrator. To complete your account setup, please 
 
         function switchTab(tabName) {
             if (document.getElementById('content-dashboard')) document.getElementById('content-dashboard').style.display = 'none';
-            if (document.getElementById('content-general')) document.getElementById('content-general').style.display = 'none';
             if (document.getElementById('content-security')) document.getElementById('content-security').style.display = 'none';
             if (document.getElementById('tab-dashboard')) document.getElementById('tab-dashboard').classList.remove('active');
-            if (document.getElementById('tab-general')) document.getElementById('tab-general').classList.remove('active');
             if (document.getElementById('tab-security')) document.getElementById('tab-security').classList.remove('active');
 
             const targetContent = document.getElementById('content-' + tabName);
@@ -2007,9 +2009,6 @@ You have been added as an administrator. To complete your account setup, please 
         let currentView = 'dashboard';
         function toggleLayout() {
             if (currentView === 'dashboard') {
-                switchTab('general');
-                currentView = 'general';
-            } else if (currentView === 'general') {
                 switchTab('security');
                 currentView = 'security';
             } else {
