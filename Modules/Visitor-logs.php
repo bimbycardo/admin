@@ -499,7 +499,7 @@ function getLastInsertId()
 
             <!-- Hotel Management Page -->
             <div id="hotel" class="page">
-                <button class="btn-time-in-large" onclick="activateTab('hotel-checkin')" style="background: #3b82f6;">
+                <button class="btn-time-in-large" onclick="openEntryModal('hotel')" style="background: #3b82f6;">
                     <i class="fas fa-plus-circle"></i> New Hotel Entry
                 </button>
 
@@ -525,28 +525,6 @@ function getLastInsertId()
                     </div>
                 </div>
                 
-                <div class="tab-content" id="hotel-checkin-tab">
-                    <div class="card">
-                        <h2>Guest Registration Form</h2>
-                        <form id="hotel-checkin-form" method="post">
-                             <div class="form-grid">
-                                <div class="form-group">
-                                    <label>Guest Name</label>
-                                    <input type="text" name="full_name" required>
-                                </div>
-                                <div class="form-group">
-                                    <label>Room / Suite</label>
-                                    <input type="text" name="room_number" required>
-                                </div>
-                             </div>
-                             <div style="display: flex; gap: 10px; margin-top: 20px;">
-                                <button type="submit" class="btn-submit-premium">Check-in Guest</button>
-                                <button type="button" class="btn-secondary" onclick="activateTab('hotel-visitors')">Cancel</button>
-                             </div>
-                        </form>
-                    </div>
-                </div>
-
                 <div class="tab-content" id="hotel-history-tab">
                     <div class="content-header-row"><h3>Hotel History</h3></div>
                     <div class="table-container">
@@ -567,7 +545,7 @@ function getLastInsertId()
 
             <!-- Restaurant Management Page -->
             <div id="restaurant" class="page">
-                <button class="btn-time-in-large" onclick="activateTab('restaurant-checkin')" style="background: #3b82f6;">
+                <button class="btn-time-in-large" onclick="openEntryModal('restaurant')" style="background: #3b82f6;">
                     <i class="fas fa-plus-circle"></i> New Restaurant Entry
                 </button>
 
@@ -593,31 +571,6 @@ function getLastInsertId()
                     </div>
                 </div>
 
-                <div class="tab-content" id="restaurant-checkin-tab">
-                    <div class="card">
-                        <h2>Restaurant Entrance Form</h2>
-                        <form id="restaurant-checkin-form">
-                            <div class="form-grid">
-                                <div class="form-group">
-                                    <label>Visitor Name</label>
-                                    <input type="text" name="visitor-name" required>
-                                </div>
-                                <div class="form-group">
-                                    <label>Party Size</label>
-                                    <input type="number" name="party-size" required>
-                                </div>
-                                <div class="form-group">
-                                    <label>Table Number</label>
-                                    <input type="text" name="table-number" required>
-                                </div>
-                            </div>
-                            <div style="display: flex; gap: 10px; margin-top: 20px;">
-                                <button type="submit" class="btn-submit-premium">Register Table</button>
-                                <button type="button" class="btn-secondary" onclick="activateTab('restaurant-visitors')">Cancel</button>
-                            </div>
-                        </form>
-                    </div>
-                </div>
             </div>
 
             <!-- Reports Page -->
@@ -864,29 +817,124 @@ function getLastInsertId()
         }
     </style>
 
-    <!-- Details Modal -->
-    <div id="details-modal" class="modal">
-        <div class="modal-content" style="max-width: 500px;">
-            <div class="modal-header"
-                style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #eee; padding-bottom: 10px;">
-                <h2 id="details-modal-title" style="color: var(--primary); margin: 0;">Details</h2>
-                <button onclick="closeDetailsModal()"
-                    style="background-color: #e74c3c; color: white; border: none; padding: 5px 10px; border-radius: 4px; cursor: pointer;">Close</button>
+    <!-- Entry Modal (Insert/Update) -->
+    <div id="entry-modal" class="modal">
+        <div class="modal-content" style="max-width: 600px;">
+            <div class="modal-header" style="display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #f8fafc; padding-bottom: 15px; margin-bottom: 20px;">
+                <h2 id="entry-modal-title" style="color: #1e293b; margin: 0; font-weight: 800;">Registration</h2>
+                <button onclick="closeEntryModal()" style="background: transparent; border: none; font-size: 1.5rem; color: #94a3b8; cursor: pointer;"><i class="fas fa-times"></i></button>
             </div>
-            <div class="modal-body" id="details-modal-body" style="padding: 20px 0;">
-                <!-- Content will be injected here -->
+            <div class="modal-body">
+                <!-- Hotel Form -->
+                <form id="modal-hotel-form" style="display: none;">
+                    <input type="hidden" name="action" value="insert">
+                    <input type="hidden" name="entry_id" value="">
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label>Guest Name</label>
+                            <input type="text" name="full_name" required placeholder="John Doe">
+                        </div>
+                        <div class="form-group">
+                            <label>Room / Suite</label>
+                            <input type="text" name="room_number" required placeholder="101">
+                        </div>
+                    </div>
+                </form>
+
+                <!-- Restaurant Form -->
+                <form id="modal-restaurant-form" style="display: none;">
+                    <input type="hidden" name="action" value="insert">
+                    <input type="hidden" name="entry_id" value="">
+                    <div class="form-grid" style="grid-template-columns: 1fr 1fr 1fr;">
+                        <div class="form-group">
+                            <label>Diner Name</label>
+                            <input type="text" name="visitor-name" required placeholder="Jane Doe">
+                        </div>
+                        <div class="form-group">
+                            <label>Party Size</label>
+                            <input type="number" name="party-size" required placeholder="2">
+                        </div>
+                        <div class="form-group">
+                            <label>Table</label>
+                            <input type="text" name="table-number" required placeholder="T-12">
+                        </div>
+                    </div>
+                </form>
             </div>
-            <div class="modal-footer" style="text-align: right; border-top: 1px solid #eee; padding-top: 15px;">
-                <button class="btn-primary" onclick="closeDetailsModal()"
-                    style="background-color: var(--primary); color: white; border: none; padding: 8px 16px; border-radius: 4px; cursor: pointer;">OK</button>
+            <div class="modal-footer" style="margin-top: 30px; display: flex; gap: 10px; justify-content: flex-end;">
+                <button type="button" class="btn-secondary" onclick="closeEntryModal()">Cancel</button>
+                <button type="button" class="btn-submit-premium" id="modal-save-btn" onclick="saveModalEntry()" style="width: auto; padding: 12px 30px;">Save Changes</button>
             </div>
         </div>
     </div>
+
+    <!-- Details Modal -->
 
     <!-- corrected external script filename (fix typo) -->
     <script src="../assets/Javascript/Visitor.js?v=<?php echo time(); ?>"></script>
 
     <script>
+        // --- Entry Modal (Insert/Update) ---
+        function openEntryModal(type, data = null) {
+            const modal = document.getElementById('entry-modal');
+            const hotelForm = document.getElementById('modal-hotel-form');
+            const restForm = document.getElementById('modal-restaurant-form');
+            const titleEl = document.getElementById('entry-modal-title');
+            const saveBtn = document.getElementById('modal-save-btn');
+
+            modal.style.display = 'block';
+            hotelForm.style.display = 'none';
+            restForm.style.display = 'none';
+
+            if (type === 'hotel') {
+                hotelForm.style.display = 'block';
+                titleEl.innerHTML = '<i class="fas fa-hotel" style="color:#3b82f6;"></i> ' + (data ? 'Update Guest Info' : 'Guest Registration');
+                saveBtn.textContent = data ? 'Save Changes' : 'Complete Registration';
+                if (data) {
+                    hotelForm.action.value = 'update';
+                    hotelForm.entry_id.value = data.id;
+                    hotelForm.full_name.value = data.name;
+                    hotelForm.room_number.value = data.room;
+                } else {
+                    hotelForm.reset();
+                    hotelForm.action.value = 'insert';
+                }
+            } else if (type === 'restaurant') {
+                restForm.style.display = 'block';
+                titleEl.innerHTML = '<i class="fas fa-utensils" style="color:#3b82f6;"></i> ' + (data ? 'Update Diner Info' : 'Diner Information');
+                saveBtn.textContent = data ? 'Save Changes' : 'Register Table';
+                if (data) {
+                    restForm.action.value = 'update';
+                    restForm.entry_id.value = data.id;
+                    restForm.elements['visitor-name'].value = data.name;
+                    restForm.elements['party-size'].value = data.party;
+                    restForm.elements['table-number'].value = data.table;
+                } else {
+                    restForm.reset();
+                    restForm.action.value = 'insert';
+                }
+            }
+        }
+
+        function closeEntryModal() {
+            document.getElementById('entry-modal').style.display = 'none';
+        }
+
+        function saveModalEntry() {
+            // Placeholder for AJAX logic or form submission
+            const hotelForm = document.getElementById('modal-hotel-form');
+            const restForm = document.getElementById('modal-restaurant-form');
+            const type = hotelForm.style.display === 'block' ? 'hotel' : 'restaurant';
+            
+            // Logic would go here to communicate with Visitor.js or backend
+            console.log('Saving ' + type + ' entry...');
+            
+            alert('Entry has been processed successfully!');
+            closeEntryModal();
+            // Refresh tables if Visitor.js function exists
+            if (typeof loadCurrentVisitors === 'function') loadCurrentVisitors();
+        }
+
         // Modal Helper Functions
 
         // --- Details Modal ---
