@@ -767,6 +767,15 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
         onload="if(media!='all')media='all'">
 
     <style>
+        .desktop-only {
+            display: none !important;
+        }
+
+        @media (min-width: 1201px) {
+            .desktop-only {
+                display: flex !important;
+            }
+        }
         /* Center all table header and cell content within this module */
         .data-table th,
         .data-table td {
@@ -1200,9 +1209,9 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
     <div class="header">
         <div class="container">
             <div class="header-content">
-                <div class="logo">Legal Management System</div>
+                <div class="logo" style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 150px;">Legal Management System</div>
                 <div class="user-info">
-                    <span>Welcome, <?= htmlspecialchars($_SESSION['name'] ?? 'Admin') ?></span>
+                    <span class="desktop-only">Welcome, <?= htmlspecialchars($_SESSION['name'] ?? 'Admin') ?></span>
                     <?php if ($isSuperAdmin): ?>
                         <a href="../Super-admin/Dashboard.php" class="logout-btn" id="backDashboardBtn"
                             style="text-decoration: none;">
@@ -3636,6 +3645,25 @@ $lowPct = $totalContracts ? round(($riskCounts['Low'] / $totalContracts) * 100, 
             modal.style.display = 'none';
         }
     }
+
+    // Force Hide desktop-only elements on mobile
+    function forceHideMobile() {
+        if (window.innerWidth <= 1200) {
+            document.querySelectorAll('.desktop-only').forEach(el => {
+                el.style.setProperty('display', 'none', 'important');
+            });
+        } else {
+            document.querySelectorAll('.desktop-only').forEach(el => {
+                if (el.tagName === 'SPAN') {
+                    el.style.setProperty('display', 'inline-block', 'important');
+                } else {
+                    el.style.setProperty('display', 'flex', 'important');
+                }
+            });
+        }
+    }
+    window.addEventListener('resize', forceHideMobile);
+    forceHideMobile();
 </script>
 </body>
 
