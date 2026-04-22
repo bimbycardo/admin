@@ -169,16 +169,16 @@ function getLastInsertId()
 </head>
 
 <body>
-    <div class="layout-wrapper" style="display: flex; min-height: 100vh; background: #f8fafc;">
-        <!-- SIDEBAR from unified design -->
-        <?php require_once __DIR__ . '/../include/sidebar.php'; ?>
-
+    <div class="layout-wrapper" style="min-height: 100vh; background: #f8fafc;">
         <!-- MAIN CONTENT -->
-        <main class="main-content" style="flex: 1; display: flex; flex-direction: column; height: 100vh; overflow: hidden; position: relative;">
+        <main class="main-content" style="width: 100%; display: flex; flex-direction: column; height: 100vh; overflow: hidden; position: relative;">
             
             <!-- Top Header -->
             <header class="top-header" style="flex-shrink: 0; background: #fff; padding: 15px 30px; border-bottom: 1px solid #e2e8f0; display: flex; justify-content: space-between; align-items: center; z-index: 10; box-shadow: 0 4px 12px rgba(0,0,0,0.02);">
-                <div class="header-breadcrumb" style="display: flex; align-items: center; gap: 10px;">
+                <div class="header-breadcrumb" style="display: flex; align-items: center; gap: 20px;">
+                    <a href="dashboard.php" style="text-decoration: none; color: #64748b; display: flex; align-items: center; gap: 8px; font-weight: 600; padding: 8px 16px; background: #f1f5f9; border-radius: 10px; transition: all 0.2s;">
+                        <i class="fa-solid fa-arrow-left"></i> Back
+                    </a>
                     <div style="display: flex; align-items: center; gap: 15px;">
                         <div style="width: 40px; height: 40px; background: #eff6ff; border-radius: 10px; display: flex; align-items: center; justify-content: center; color: #3b82f6;">
                             <i class="fa-solid fa-id-card-clip" style="font-size: 1.2rem;"></i>
