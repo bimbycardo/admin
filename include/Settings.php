@@ -937,7 +937,7 @@ $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
                         $projRoot = rtrim($projRoot, '/');
                     ?>
                     <div style="display: flex; align-items: center; gap: 15px;">
-                        <img src="<?= $projRoot ?>/assets/image/logo2.png?v=2" alt="Logo" style="height: 35px; width: auto; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.1));">
+                        <img src="../assets/image/logo2.png?v=2" alt="Logo" style="height: 35px; width: auto; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.1));">
                         <h1 style="font-size: 1.4rem; font-weight: 800; color: #1e293b; margin: 0; text-transform: uppercase; letter-spacing: 1.5px; font-family: 'Outfit', sans-serif;">Account Settings</h1>
                     </div>
                 </div>
@@ -1490,6 +1490,29 @@ You have been added as an administrator. To complete your account setup, please 
             </div>
 
             <button class="btn btn-primary btn-block" onclick="window.location.href='../auth/login.php?logout'" style="justify-content: center; height: 45px; border-radius: 8px;">Done Viewing</button>
+        </div>
+    </div>
+
+    <!-- Admin Verification Modal -->
+    <div class="modal" id="adminVerifyModal">
+        <div class="modal-content" style="max-width: 400px; text-align: center;">
+            <span class="close-modal" onclick="closeModal('adminVerifyModal')">&times;</span>
+            <div style="color: #3b82f6; font-size: 3rem; margin-bottom: 1rem;">
+                <i class="fas fa-shield-halved"></i>
+            </div>
+            <h3 style="margin-top: 0; color: #1e293b;">Admin Verification</h3>
+            <p style="color: #64748b; font-size: 0.9rem; margin-bottom: 20px;">Please enter your Admin Password to authorize this recovery action.</p>
+            
+            <div class="form-group" style="text-align: left;">
+                <label style="font-weight: 600; font-size: 0.85rem; color: #475569;">Your Password</label>
+                <input type="password" id="adminVerifyPassword" class="form-control" placeholder="Enter your current password" style="border-radius: 8px;">
+            </div>
+            
+            <div id="adminVerifyError" style="color: #ef4444; font-size: 0.85rem; margin-bottom: 15px; display: none;">
+                Incorrect password. Please try again.
+            </div>
+            
+            <button id="adminVerifyBtn" class="btn btn-primary btn-block" style="justify-content: center; height: 45px; border-radius: 8px;">Authorize Action</button>
         </div>
     </div>
 
