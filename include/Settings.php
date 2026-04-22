@@ -1666,10 +1666,7 @@ You have been added as an administrator. To complete your account setup, please 
 
         function initiateRetrieveAccount(userId, fullName, email) {
             pendingRetrieval = { userId, fullName, email };
-            document.getElementById('adminVerifyPassword').value = '';
-            document.getElementById('adminVerifyError').style.display = 'none';
             document.getElementById('adminVerifyModal').classList.add('active');
-            setTimeout(() => document.getElementById('adminVerifyPassword').focus(), 300);
         }
 
         document.getElementById('adminVerifyBtn').addEventListener('click', function () {
@@ -1682,10 +1679,7 @@ You have been added as an administrator. To complete your account setup, please 
             }
         });
 
-        // Handle Enter key in verify modal
-        document.getElementById('adminVerifyPassword').addEventListener('keypress', function (e) {
-            if (e.key === 'Enter') document.getElementById('adminVerifyBtn').click();
-        });
+
 
         function openRetrieveModal(userId, fullName, email, manualPwd = '') {
             document.getElementById('retrieveUserName').textContent = fullName;
