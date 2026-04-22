@@ -2082,6 +2082,28 @@ You have been added as an administrator. To complete your account setup, please 
         setupPinInputs('confirmPinInputs', 'realConfirmPin');
         setupPinInputs('unlockPinInputs', null);
 
+        // Force Hide desktop-only elements on mobile via JS to bypass CSS cache/priority issues
+        function forceHideMobile() {
+            if (window.innerWidth <= 1200) {
+                document.querySelectorAll('.desktop-only').forEach(el => {
+                    el.style.setProperty('display', 'none', 'important');
+                });
+            } else {
+                document.querySelectorAll('.desktop-only').forEach(el => {
+                    // Restore display for desktop
+                    if (el.classList.contains('profile-info-text') || el.classList.contains('current-date-header')) {
+                        el.style.setProperty('display', 'flex', 'important');
+                    } else if (el.classList.contains('notif-text')) {
+                        el.style.setProperty('display', 'inline', 'important');
+                    } else if (el.tagName === 'IMG') {
+                        el.style.setProperty('display', 'block', 'important');
+                    }
+                });
+            }
+        }
+        window.addEventListener('resize', forceHideMobile);
+        forceHideMobile();
+
         // Real-time Clock Function
         function updateClock() {
             const clock = document.getElementById('real-time-clock');
