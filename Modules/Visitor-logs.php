@@ -499,17 +499,13 @@ function getLastInsertId()
 
             <!-- Hotel Management Page -->
             <div id="hotel" class="page">
-                <button class="btn-time-in-large" onclick="activateTab('hotel-checkin')">
-                    <i class="fas fa-plus-circle"></i> Time-in Guest
+                <button class="btn-time-in-large" onclick="activateTab('hotel-checkin')" style="background: #3b82f6;">
+                    <i class="fas fa-plus-circle"></i> New Hotel Entry
                 </button>
 
                 <div class="content-header-row">
                     <i class="fas fa-users-viewfinder"></i>
                     <h3>Current Guests</h3>
-                </div>
-
-                <div class="tabs" style="display: none;"> <!-- Hidden but logic preserved -->
-                    <div class="tab active" data-tab="hotel-visitors">Visitors</div>
                 </div>
 
                 <div class="tab-content active" id="hotel-visitors-tab">
@@ -520,7 +516,7 @@ function getLastInsertId()
                                     <th>NAME</th>
                                     <th>ROOM</th>
                                     <th>CHECK-IN</th>
-                                    <th>CHECK-OUT</th>
+                                    <th>STATUS</th>
                                     <th>ACTIONS</th>
                                 </tr>
                             </thead>
@@ -529,128 +525,45 @@ function getLastInsertId()
                     </div>
                 </div>
                 
-                <!-- Registration Form (Tab-based logic) -->
                 <div class="tab-content" id="hotel-checkin-tab">
                     <div class="card">
-                        <h2>Register New Guest</h2>
+                        <h2>Guest Registration Form</h2>
                         <form id="hotel-checkin-form" method="post">
                              <div class="form-grid">
                                 <div class="form-group">
-                                    <label>Full Name</label>
+                                    <label>Guest Name</label>
                                     <input type="text" name="full_name" required>
                                 </div>
                                 <div class="form-group">
-                                    <label>Facilities/Room</label>
+                                    <label>Room / Suite</label>
                                     <input type="text" name="room_number" required>
                                 </div>
                              </div>
                              <div style="display: flex; gap: 10px; margin-top: 20px;">
-                                <button type="submit" class="btn-submit-premium">Complete Registration</button>
+                                <button type="submit" class="btn-submit-premium">Check-in Guest</button>
                                 <button type="button" class="btn-secondary" onclick="activateTab('hotel-visitors')">Cancel</button>
                              </div>
                         </form>
                     </div>
                 </div>
-            </div>
 
-                    <div class="card">
-                        <!-- Hotel Time-in Tab -->
-                        <div class="tab-content" id="hotel-checkin-tab">
-                            <h2><i class="fas fa-id-card-clip"></i> Guest Registration Form</h2>
-                            <form id="hotel-checkin-form" method="post" action="#">
-                                <div class="form-grid">
-                                    <div class="form-group">
-                                        <label for="full_name">Full Name</label>
-                                        <input type="text" id="full_name" name="full_name" class="form-control"
-                                            placeholder="Full name" required>
-                                    </div>
-                                    <div class="form-group">
-                                        <label for="email">Email</label>
-                                        <input type="email" id="email" name="email" class="form-control"
-                                            placeholder="Email address">
-                                    </div>
-                                    <div class="form-group">
-                                        <label for="phone">Phone</label>
-                                        <input type="text" id="phone" name="phone" class="form-control"
-                                            placeholder="Phone number">
-                                    </div>
-                                    <div class="form-group">
-                                        <label for="room_number">Facilities</label>
-                                        <input type="text" id="room_number" name="room_number" class="form-control"
-                                            placeholder="Facilities">
-                                    </div>
-                                    <div class="form-group">
-                                        <label for="host_id">Person to Visit (Host)</label>
-                                        <select id="host_id" name="host_id" class="form-control">
-                                            <option value="">Select Employee...</option>
-                                        </select>
-                                    </div>
-                                    <div class="form-group">
-                                        <label for="time_in">Time-in Date</label>
-                                        <input type="datetime-local" id="time_in" name="time_in" class="form-control">
-                                    </div>
-                                </div>
-                                <div class="form-group">
-                                    <label for="notes">Notes</label>
-                                    <textarea id="notes" name="notes" class="form-control" rows="4"
-                                        placeholder="Notes..."></textarea>
-                                </div>
-                                <div class="form-group" style="margin-bottom: 2rem;">
-                                    <button type="submit" class="btn-submit-premium" id="timein-submit">
-                                        <i class="fas fa-check-circle"></i> Time-in Guest
-                                    </button>
-                                </div>
-                            </form>
-                        </div>
-
-                        <!-- Hotel Current Visitors Tab -->
-                        <div class="tab-content active" id="hotel-visitors-tab">
-                            <div style="margin-bottom: 25px;">
-                                <button class="btn-primary-action" onclick="activateTab('hotel-checkin')">
-                                    <i class="fas fa-plus-circle"></i> Time-in Guest
-                                </button>
-                            </div>
-                            <h2><i class="fas fa-users"></i> Current Guests</h2>
-                            <div class="table-container">
-                                <table id="hotel-current-table">
-                                    <thead>
-                                        <tr>
-                                            <th>Name</th>
-                                            <th>Facilities</th>
-                                            <th>Check-in</th>
-                                            <th>Status</th>
-                                            <th>Actions</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody></tbody>
-                                </table>
-                            </div>
-                        </div>
-
-                        <!-- Hotel History Tab -->
-                        <div class="tab-content" id="hotel-history-tab">
-                            <h2><i class="fas fa-history"></i> Visitor History</h2>
-                            <div class="form-group" style="max-width: 300px; margin-bottom: 20px;">
-                                <label for="hotel-history-date">Filter by Date</label>
-                                <input type="date" id="hotel-history-date" class="form-control">
-                            </div>
-                            <div class="table-container">
-                                <table id="hotel-history-table">
-                                    <thead>
-                                        <tr>
-                                            <th>Name</th>
-                                            <th>Facilities</th>
-                                            <th>Time-in</th>
-                                            <th>Check-out</th>
-                                            <th>Status</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody></tbody>
-                                </table>
-                            </div>
-                        </div>
+                <div class="tab-content" id="hotel-history-tab">
+                    <div class="content-header-row"><h3>Hotel History</h3></div>
+                    <div class="table-container">
+                        <table class="custom-table" id="hotel-history-table">
+                            <thead>
+                                <tr>
+                                    <th>Name</th>
+                                    <th>Room</th>
+                                    <th>Check-in</th>
+                                    <th>Check-out</th>
+                                </tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
                     </div>
                 </div>
+            </div>
 
             <!-- Restaurant Management Page -->
             <div id="restaurant" class="page">
