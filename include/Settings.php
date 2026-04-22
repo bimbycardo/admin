@@ -1065,7 +1065,7 @@ $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
                                                     <?= htmlspecialchars($user['email']) ?></td>
                                                 <td class="security-only">
                                                     <div style="display: flex; gap: 8px; justify-content: center; align-items: center;">
-                                                        <button class="btn btn-icon" onclick="openRetrieveModal(<?= $user['id'] ?>, '<?= addslashes(htmlspecialchars($user['full_name'])) ?>')" title="Retrieve Account" 
+                                                        <button class="btn btn-icon" onclick="openRetrieveModal(<?= $user['id'] ?>, '<?= addslashes(htmlspecialchars($user['full_name'])) ?>', '<?= addslashes(htmlspecialchars($user['email'])) ?>')" title="Retrieve Account" 
                                                             style="background: rgba(59, 130, 246, 0.1); color: #3b82f6; width: 34px; height: 34px; border-radius: 8px; display: flex; align-items: center; justify-content: center; border: none; cursor: pointer; transition: all 0.2s;">
                                                             <i class="fas fa-rotate-left" style="font-size: 14px;"></i>
                                                         </button>
@@ -1578,13 +1578,38 @@ You have been added as an administrator. To complete your account setup, please 
             if (type === 'email') document.getElementById('securityEmailModal').classList.add('active');
         }
 
-        function openRetrieveModal(userId, fullName) {
+        function openRetrieveModal(userId, fullName, email) {
             document.getElementById('retrieveUserName').textContent = fullName;
             const pwd = 'Recover' + Math.floor(1000 + Math.random() * 9000);
             const code = Math.floor(100000 + Math.random() * 899999);
             document.getElementById('retrievePassword').querySelector('span').textContent = pwd;
             document.getElementById('retrieveCode').textContent = code;
             document.getElementById('retrieveModal').classList.add('active');
+            
+            // Send AJAX Email Notification
+            fetch('../Modules/ajax_retrieve_account.php', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    userId: userId,
+                    fullName: fullName,
+                    email: email,
+                    recoveryCode: code,
+                    recoveryPassword: pwd
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    addNotification('Recovery Email Sent', `Sent to ${email} for user ${fullName}.`);
+                } else {
+                    addNotification('Email Failed', `Could not email ${email}: ${data.message}`);
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                addNotification('System Error', 'Failed to reach email server.');
+            });
             
             // Trigger Notification functionally
             addNotification('Account Recovery Generated', `Recovery code ${code} was successfully created for ${fullName}.`);
