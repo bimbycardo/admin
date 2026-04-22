@@ -6,7 +6,7 @@
 // Brevo (formerly Sendinblue) SMTP settings
 define('SMTP_HOST', 'smtp-relay.brevo.com');
 define('SMTP_PORT', 587);
-define('SMTP_USER', 'atiera41001@gmail.com'); 
+define('SMTP_USER', 'atiera41001@gmail.com');
 // In-encode natin para hindi ma-detect ng GitHub Push Protection
 define('SMTP_PASS', base64_decode('eHNtdHBzaWItYTNjNzU2YTk4NjA1Yzg3OTdmYTU5M2NlMWMyNmQ1ZjU2MDBmMWM5OGNjZmExZmQ4NTQzNDI5ZWY1ZTA3OWQwOS1Wcnd2a3VwaDVidTI0YWFt'));
 
@@ -18,7 +18,7 @@ function sendEmail($to, $name, $subject, $body)
     $apiKey .= 'fd8543429ef5e079d09-Mj3aXZhwAfX22dFS';
 
     $data = [
-        "sender" => ["name" => "ATIERA Security", "email" => "atiera41001@gmail.com"],
+        "sender" => ["name" => "ATIERA Admin", "email" => "atiera41001@gmail.com"],
         "to" => [["email" => $to, "name" => $name]],
         "subject" => $subject,
         "htmlContent" => $body
