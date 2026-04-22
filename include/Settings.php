@@ -1052,51 +1052,87 @@ try {
             transform: translateY(-2px);
         }
 
-        /* Mobile Header Fixes - Optimized for High-Res Mobiles (Tecno, etc) */
-        @media (max-width: 1200px) {
+        /* Header - Default (Mobile First) */
+        .top-header {
+            padding: 0 10px !important;
+            height: 60px !important;
+            display: flex !important;
+            justify-content: space-between !important;
+            align-items: center !important;
+            gap: 10px !important;
+        }
+
+        .header-title {
+            display: flex !important;
+            align-items: center !important;
+            gap: 10px !important;
+        }
+
+        .header-title img {
+            display: none !important; /* Hide logo on mobile by default */
+        }
+
+        .header-title h1 {
+            font-size: 1.1rem !important;
+            max-width: 150px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        /* Hide bulky elements by default (Mobile First) */
+        .current-date-header, 
+        .profile-info-text,
+        .menu-item .notif-text {
+            display: none !important;
+        }
+
+        .header-actions {
+            display: flex !important;
+            align-items: center !important;
+            gap: 10px !important;
+        }
+
+        .header-actions > div:first-child {
+            padding: 0 !important;
+            background: none !important;
+            border: none !important;
+        }
+
+        #headerLogoutBtn {
+            width: 40px !important;
+            height: 40px !important;
+            padding: 0 !important;
+        }
+
+        /* Desktop Adjustments (Show bulky elements on large screens) */
+        @media (min-width: 1201px) {
             .top-header {
-                padding: 0 8px !important;
-                height: 56px !important;
-                gap: 5px !important;
-            }
-            .header-title {
-                gap: 5px !important;
+                padding: 1.25rem 2.5rem !important;
+                height: auto !important;
+                gap: 20px !important;
             }
             .header-title img {
-                display: none !important;
+                display: block !important;
             }
             .header-title h1 {
-                font-size: 1rem !important;
-                max-width: 100px;
-                white-space: nowrap;
-                overflow: hidden;
-                text-overflow: ellipsis;
+                font-size: 1.4rem !important;
+                max-width: none !important;
             }
-            .menu-bar-nav {
-                margin: 0 !important;
-                gap: 5px !important;
-            }
-            .menu-item .notif-text {
-                display: none !important;
-            }
-            .header-actions {
-                gap: 5px !important;
-            }
-            /* Hide bulky elements on any screen smaller than 1200px to ensure fit */
             .current-date-header, 
             .profile-info-text {
-                display: none !important;
+                display: flex !important;
             }
-            
+            .menu-item .notif-text {
+                display: inline !important;
+            }
             .header-actions > div:first-child {
-                padding: 0 !important;
-                background: none !important;
-                border: none !important;
+                padding: 5px 12px !important;
+                background: #f8fafc !important;
+                border: 1px solid #e2e8f0 !important;
             }
-            #headerLogoutBtn {
-                width: 34px !important;
-                height: 34px !important;
-                padding: 0 !important;
+            .header-actions {
+                gap: 20px !important;
             }
         }
     </style>
