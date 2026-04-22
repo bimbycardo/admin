@@ -1052,67 +1052,51 @@ try {
             transform: translateY(-2px);
         }
 
-        /* Mobile Header Fixes - Aggressive */
-        @media (max-width: 768px) {
+        /* Mobile Header Fixes - Optimized for High-Res Mobiles (Tecno, etc) */
+        @media (max-width: 1024px) {
             .top-header {
-                padding: 0 12px !important;
-                height: 56px !important;
-                display: flex !important;
-                justify-content: space-between !important;
-                align-items: center !important;
-                gap: 5px !important;
+                padding: 0 10px !important;
+                height: 60px !important;
+                gap: 8px !important;
             }
             .header-title {
                 gap: 5px !important;
-                flex: 1;
             }
-            .header-title div:first-of-type { /* Logo container */
+            .header-title img {
                 display: none !important;
             }
             .header-title h1 {
-                font-size: 1rem !important;
+                font-size: 1.1rem !important;
+                max-width: 150px;
                 white-space: nowrap;
                 overflow: hidden;
                 text-overflow: ellipsis;
-                max-width: 120px;
             }
             .menu-bar-nav {
                 margin: 0 !important;
                 gap: 5px !important;
             }
-            .menu-item {
-                padding: 5px !important;
-                background: none !important;
-            }
             .menu-item .notif-text {
                 display: none !important;
             }
             .header-actions {
-                gap: 5px !important;
-            }
-            .header-actions > div:first-child { /* Profile box */
-                padding: 0 !important;
-                background: none !important;
-                border: none !important;
-            }
-            .profile-info-text {
-                display: none !important;
+                gap: 8px !important;
             }
             .current-date-header {
                 display: none !important;
             }
-            #headerLogoutBtn {
-                width: 34px !important;
-                height: 34px !important;
+            .profile-info-text {
+                display: none !important;
+            }
+            .header-actions > div:first-child {
+                padding: 0 !important;
                 background: none !important;
                 border: none !important;
-                box-shadow: none !important;
-                padding: 0 !important;
             }
-            .mobile-menu-btn {
-                width: 34px !important;
-                height: 34px !important;
-                margin-right: 0 !important;
+            #headerLogoutBtn {
+                width: 38px !important;
+                height: 38px !important;
+                padding: 0 !important;
             }
         }
     </style>
