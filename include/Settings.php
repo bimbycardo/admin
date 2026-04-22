@@ -925,13 +925,21 @@ $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
         <?php include 'sidebar.php'; ?>
 
         <main class="main-content">
-            <header class="top-header">
-                <div class="header-title">
+            <header class="top-header" style="padding-left: 40px !important;">
+                <div class="header-title" style="display: flex; align-items: center; gap: 18px;">
                     <button class="mobile-menu-btn" onclick="toggleSidebar()"
-                        style="background: none; border: none; font-size: 1.25rem; color: #64748b; cursor: pointer; align-items: center; justify-content: center; width: 40px; height: 40px; border-radius: 10px; transition: all 0.2s; margin-right: 15px;">
+                        style="background: none; border: none; font-size: 1.25rem; color: #64748b; cursor: pointer; align-items: center; justify-content: center; width: 40px; height: 40px; border-radius: 10px; transition: all 0.2s;">
                         <i class="fas fa-bars"></i>
                     </button>
-                    <h1>Account Settings</h1>
+                    <?php 
+                        $scriptDir = str_replace('\\', '/', dirname($_SERVER['SCRIPT_NAME']));
+                        $projRoot = (strpos($scriptDir, '/Modules') !== false || strpos($scriptDir, '/include') !== false || strpos($scriptDir, '/Super-admin') !== false) ? dirname($scriptDir) : $scriptDir;
+                        $projRoot = rtrim($projRoot, '/');
+                    ?>
+                    <div style="display: flex; align-items: center; gap: 15px;">
+                        <img src="<?= $projRoot ?>/assets/image/logo2.png?v=2" alt="Logo" style="height: 35px; width: auto; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.1));">
+                        <h1 style="font-size: 1.4rem; font-weight: 800; color: #1e293b; margin: 0; text-transform: uppercase; letter-spacing: 1.5px; font-family: 'Outfit', sans-serif;">Account Settings</h1>
+                    </div>
                 </div>
 
                 <nav class="menu-bar-nav" style="position: relative;">
