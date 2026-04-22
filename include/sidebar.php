@@ -15,7 +15,11 @@ function get_nav_link($tab, $is_dashboard, $isSuperAdmin)
 }
 ?>
 <nav class="sidebar" style="position: fixed !important; left: 0 !important; top: 0 !important; height: 100vh !important; width: 280px !important; z-index: 1000 !important; background: #0f172a !important; display: flex !important; flex-direction: column !important; visibility: visible !important; opacity: 1 !important;">
-    <div class="sidebar-header" style="border-bottom: 1px solid rgba(255, 255, 255, 0.05); padding: 25px 0 20px 0; margin-bottom: 10px;">
+    <div class="sidebar-header" style="border-bottom: 1px solid rgba(255, 255, 255, 0.05); padding: 25px 0 20px 0; margin-bottom: 10px; position: relative;">
+        <!-- Sidebar Logout Button -->
+        <a href="../auth/logout.php" style="position: absolute; top: 15px; right: 20px; color: #ef4444; font-size: 1.1rem; opacity: 0.7; transition: all 0.2s;" title="Log Out">
+            <i class="fas fa-power-off"></i>
+        </a>
         <a href="<?= $isSuperAdmin ? '../Super-admin/Dashboard.php?tab=dashboard' : '../Modules/dashboard.php?tab=dashboard' ?>" class="logo-link"
             title="Go to Dashboard">
                 <div class="logo-area">
@@ -29,9 +33,6 @@ function get_nav_link($tab, $is_dashboard, $isSuperAdmin)
                         <!-- Full Logo (Open) -->
                         <img src="<?= $projRoot ?>/assets/image/logo.png?v=2" alt="Atiéra Logo" class="full-logo"
                             style="height:60px; width:auto; display:block; margin:0 auto; transition: all 0.3s; filter: drop-shadow(0 4px 6px rgba(0,0,0,0.1));">
-                        <!-- Mini Logo (Collapsed) -->
-                        <img src="<?= $projRoot ?>/assets/image/logo2.png?v=2" alt="Atiéra Logo" class="mini-logo"
-                            style="height:40px; width:auto; display:none; margin:0 auto; transition: all 0.3s; filter: drop-shadow(0 4px 6px rgba(0,0,0,0.1));">
                         <?php if ($isSuperAdmin): ?>
                             <div class="admin-badge"
                                 style="background: rgba(212, 175, 55, 0.15); color: #d4af37; padding: 4px 12px; border-radius: 20px; font-size: 11px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; border: 1px solid rgba(212, 175, 55, 0.3); display: inline-block;">
@@ -44,7 +45,7 @@ function get_nav_link($tab, $is_dashboard, $isSuperAdmin)
     </div>
 
     <div class="nav-section">
-        <div class="nav-title">Settings</div>
+        <div class="nav-title" style="color: #94a3b8 !important; font-weight: 700; font-size: 0.75rem; letter-spacing: 1.5px; opacity: 0.6;">Settings</div>
         <ul class="nav-links">
             <li>
                 <a href="<?= $isSuperAdmin ? '../Super-admin/Settings.php' : '../include/Settings.php' ?>"
@@ -56,7 +57,7 @@ function get_nav_link($tab, $is_dashboard, $isSuperAdmin)
     </div>
 
     <div class="nav-section">
-        <div class="nav-title">Main Navigation</div>
+        <div class="nav-title" style="color: #94a3b8 !important; font-weight: 700; font-size: 0.75rem; letter-spacing: 1.5px; opacity: 0.6;">Main Navigation</div>
         <ul class="nav-links">
             <li><a href="<?= get_nav_link('dashboard', $is_dashboard, $isSuperAdmin) ?>"
                     class=" <?= ($is_dashboard && (!isset($_GET['tab']) || $_GET['tab'] == 'dashboard')) ? 'active' : '' ?>"
