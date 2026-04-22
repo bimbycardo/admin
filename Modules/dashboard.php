@@ -853,27 +853,24 @@ $r_rows = [];
             }
 
             body.collapsed-sidebar .sidebar {
-                width: 80px;
+                width: 80px !important;
             }
 
             body.collapsed-sidebar .main-content {
-                margin-left: 80px;
+                margin-left: 80px !important;
             }
 
             body.collapsed-sidebar .sidebar .nav-title,
             body.collapsed-sidebar .sidebar .nav-links a span,
             body.collapsed-sidebar .sidebar .sidebar-subtitle,
-            body.collapsed-sidebar .sidebar .dropdown-arrow {
+            body.collapsed-sidebar .sidebar .dropdown-arrow,
+            body.collapsed-sidebar .sidebar .admin-badge {
                 display: none !important;
             }
 
-            body.collapsed-sidebar .sidebar .nav-links a {
-                justify-content: center;
-                padding: 1rem 0;
-            }
-
-            body.collapsed-sidebar .sidebar .logo-area {
-                padding: 1rem 0;
+            body.collapsed-sidebar .sidebar .sidebar-header {
+                padding: 20px 0 !important;
+                border-bottom: 1px solid rgba(255, 255, 255, 0.05) !important;
             }
 
             body.collapsed-sidebar .sidebar .logo-area .full-logo {
@@ -882,15 +879,19 @@ $r_rows = [];
 
             body.collapsed-sidebar .sidebar .logo-area .mini-logo {
                 display: block !important;
+                height: 35px !important;
+                width: auto !important;
+                margin: 0 auto !important;
             }
 
-            body.collapsed-sidebar .sidebar .logo-area .admin-badge {
-                display: none !important;
+            body.collapsed-sidebar .sidebar .nav-links a {
+                justify-content: center !important;
+                padding: 1.2rem 0 !important;
             }
 
             body.collapsed-sidebar .sidebar .nav-links a i {
-                font-size: 1.5rem;
-                margin: 0;
+                font-size: 1.4rem !important;
+                margin: 0 !important;
             }
         }
 
