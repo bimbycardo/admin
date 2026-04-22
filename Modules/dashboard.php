@@ -1136,32 +1136,24 @@ $r_rows = [];
                         }
                         ?>
 
-                        <div class="admin-profile-header"
-                            style="display: flex; align-items: center; gap: 12px; padding: 6px 14px; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 10px;">
-                            <div
-                                style="width: 35px; height: 35px; background: linear-gradient(135deg, #1e293b, #0f172a); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: #d4af37; font-size: 14px; box-shadow: 0 2px 5px rgba(0,0,0,0.1);">
-                                <i class="fa-solid fa-user-shield"></i>
-                            </div>
-                            <div style="display: flex; flex-direction: column;">
-                                <span
-                                    style="font-size: 0.75rem; color: #64748b; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; line-height: 1;">Administrator</span>
-                                <span
-                                    style="font-size: 0.85rem; color: #1e293b; font-weight: 600;">admin41001@gmail.com</span>
-                            </div>
-                        </div>
+                        <div style="display: flex; align-items: center; gap: 15px;">
+                            <a href="../auth/logout.php" id="headerLogoutBtn" style="color: #ef4444; text-decoration: none; display: flex; align-items: center; justify-content: center; width: 40px; height: 40px; background: #fff1f2; border: 1px solid #fee2e2; border-radius: 10px; transition: all 0.2s; box-shadow: 0 2px 4px rgba(239, 68, 68, 0.1);" title="Log Out">
+                                <i class="fas fa-power-off"></i>
+                            </a>
 
-                        <div class="date-time-display d-flex align-items-center bg-white px-3 py-2 rounded-3 shadow-sm"
-                            style="border: 1px solid #e2e8f0;">
-                            <div class=" me-3 text-end">
-                                <div id="current-date" style="font-weight: 700; color: #1e293b; font-size: 0.9rem;">
-                                    <?php echo date('F d, Y'); ?>
+                            <div class="date-time-display d-flex align-items-center bg-white px-3 py-2 rounded-3 shadow-sm"
+                                style="border: 1px solid #e2e8f0;">
+                                <div class=" me-3 text-end">
+                                    <div id="current-date" style="font-weight: 700; color: #1e293b; font-size: 0.9rem;">
+                                        <?php echo date('F d, Y'); ?>
+                                    </div>
+                                    <div id="current-time" style="color: #64748b; font-size: 0.8rem; font-weight: 600;">
+                                        <?php echo date('h:i:s A'); ?>
+                                    </div>
                                 </div>
-                                <div id="current-time" style="color: #64748b; font-size: 0.8rem; font-weight: 600;">
-                                    <?php echo date('h:i:s A'); ?>
+                                <div class="bg-primary-light p-2 rounded-2">
+                                    <i class="fa-regular fa-calendar-check text-primary"></i>
                                 </div>
-                            </div>
-                            <div class="bg-primary-light p-2 rounded-2">
-                                <i class="fa-regular fa-calendar-check text-primary"></i>
                             </div>
                         </div>
                     </div>

@@ -971,31 +971,14 @@ $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
                         <a href="../auth/logout.php" id="headerLogoutBtn" style="color: #ef4444; text-decoration: none; display: flex; align-items: center; justify-content: center; width: 42px; height: 42px; background: #fff1f2; border: 1px solid #fee2e2; border-radius: 12px; transition: all 0.2s; box-shadow: 0 2px 4px rgba(239, 68, 68, 0.1);" title="Log Out">
                             <i class="fas fa-power-off" style="font-size: 1.1rem;"></i>
                         </a>
-                    </div>
 
-                    <div class="current-date-header" id="real-time-container"
-                        style="display: flex; align-items: center; gap: 10px; background: #f8fafc; padding: 8px 16px; border-radius: 12px; border: 1px solid #e2e8f0;">
-                        <i class="fa-regular fa-calendar-check" style="color: #3b82f6; font-size: 1.1rem;"></i>
-                        <span id="real-time-clock" style="font-weight: 700; color: #1e293b; font-size: 0.9rem;">
-                            <?= date('F d, Y') ?> • 00:00:00
-                        </span>
-                    </div>
-
-                    <div class="user-info" style="display: flex; flex-direction: column; align-items: flex-end; gap: 4px; font-weight: 600;">
-                        <div style="display: flex; align-items: center; gap: 12px;">
-                            <div style="text-align: right; margin-right: 5px;">
-                                <div style="font-size: 0.85rem; color: #1e293b;">Admin</div>
-                                <div style="font-size: 0.75rem; color: #64748b; font-weight: 400;">Administrator</div>
-                            </div>
-                            <div
-                                style="width: 40px; height: 40px; background: linear-gradient(135deg, #3b82f6, #2563eb); border-radius: 12px; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 6px rgba(37, 99, 235, 0.2);">
-                                <i class="fas fa-user" style="font-size: 1.1rem; color: white;"></i>
-                            </div>
+                        <div class="current-date-header" id="real-time-container"
+                            style="display: flex; align-items: center; gap: 10px; background: #f8fafc; padding: 8px 16px; border-radius: 12px; border: 1px solid #e2e8f0;">
+                            <i class="fa-regular fa-calendar-check" style="color: #3b82f6; font-size: 1.1rem;"></i>
+                            <span id="real-time-clock" style="font-weight: 700; color: #1e293b; font-size: 0.9rem;">
+                                <?= date('F d, Y') ?> • 00:00:00
+                            </span>
                         </div>
-                        <!-- Logout Button Added Below the Picture -->
-                        <a href="../auth/logout.php" style="font-size: 0.75rem; color: #ef4444; text-decoration: none; display: flex; align-items: center; gap: 5px; padding-right: 5px;">
-                            <i class="fas fa-power-off"></i> Log Out
-                        </a>
                     </div>
                 </div>
             </header>
