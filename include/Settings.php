@@ -1052,87 +1052,37 @@ try {
             transform: translateY(-2px);
         }
 
-        /* Header - Default (Mobile First) */
-        .top-header {
-            padding: 0 10px !important;
-            height: 60px !important;
-            display: flex !important;
-            justify-content: space-between !important;
-            align-items: center !important;
-            gap: 10px !important;
-        }
-
-        .header-title {
-            display: flex !important;
-            align-items: center !important;
-            gap: 10px !important;
-        }
-
-        .header-title img {
-            display: none !important; /* Hide logo on mobile by default */
-        }
-
-        .header-title h1 {
-            font-size: 1.1rem !important;
-            max-width: 150px;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
-
-        /* Hide bulky elements by default (Mobile First) */
-        .current-date-header, 
-        .profile-info-text,
-        .menu-item .notif-text {
+        /* Header Adjustments */
+        .desktop-only {
             display: none !important;
         }
 
-        .header-actions {
-            display: flex !important;
-            align-items: center !important;
-            gap: 10px !important;
-        }
-
-        .header-actions > div:first-child {
-            padding: 0 !important;
-            background: none !important;
-            border: none !important;
-        }
-
-        #headerLogoutBtn {
-            width: 40px !important;
-            height: 40px !important;
-            padding: 0 !important;
-        }
-
-        /* Desktop Adjustments (Show bulky elements on large screens) */
         @media (min-width: 1201px) {
+            .desktop-only {
+                display: flex !important;
+            }
+            .header-title img.desktop-only {
+                display: block !important;
+            }
+            .menu-item .notif-text.desktop-only {
+                display: inline !important;
+            }
             .top-header {
                 padding: 1.25rem 2.5rem !important;
                 height: auto !important;
                 gap: 20px !important;
             }
-            .header-title img {
-                display: block !important;
-            }
             .header-title h1 {
                 font-size: 1.4rem !important;
                 max-width: none !important;
             }
-            .current-date-header, 
-            .profile-info-text {
-                display: flex !important;
+            .header-actions {
+                gap: 20px !important;
             }
-            .menu-item .notif-text {
-                display: inline !important;
-            }
-            .header-actions > div:first-child {
+            .user-profile-container {
                 padding: 5px 12px !important;
                 background: #f8fafc !important;
                 border: 1px solid #e2e8f0 !important;
-            }
-            .header-actions {
-                gap: 20px !important;
             }
         }
     </style>
@@ -1160,8 +1110,8 @@ try {
                     $projRoot = rtrim($projRoot, '/');
                     ?>
                     <div style="display: flex; align-items: center; gap: 15px;">
-                        <img src="../assets/image/logo2.png?v=2" alt="Logo"
-                            style="height: 35px; width: auto; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.1));">
+                        <img src="../assets/image/logo2.png?v=2" alt="Logo" class="desktop-only"
+                            style="height: 35px; width: auto; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.1)); display: none;">
                         <h1 id="page-header-title"
                             style="font-size: 1.4rem; font-weight: 800; color: #1e293b; margin: 0; text-transform: uppercase; letter-spacing: 1.5px; font-family: 'Outfit', sans-serif;">
                             Account Settings</h1>
@@ -1170,7 +1120,7 @@ try {
 
                 <nav class="menu-bar-nav" style="position: relative;">
                     <a href="#" class="menu-item" style="position: relative;" onclick="toggleNotifications(event)">
-                        <i class="fas fa-bell"></i> <span class="notif-text">Notifications</span>
+                        <i class="fas fa-bell"></i> <span class="notif-text desktop-only" style="display: none;">Notifications</span>
                         <span id="notifBadge"
                             style="position: absolute; top: 0px; right: -5px; background: #ef4444; color: white; border-radius: 50%; min-width: 18px; height: 18px; font-size: 0.65rem; display: <?= $unread_count > 0 ? 'flex' : 'none' ?>; align-items: center; justify-content: center; font-weight: bold; border: 2px solid white; padding: 0 2px;"><?= $unread_count ?></span>
                     </a>
@@ -1225,9 +1175,9 @@ try {
                 <div class="header-actions" style="display: flex; align-items: center; gap: 20px;">
                     <!-- Admin Profile Display -->
                     <div style="display: flex; align-items: center; gap: 15px;">
-                        <div
+                        <div class="user-profile-container"
                             style="display: flex; align-items: center; gap: 10px; padding: 5px 12px; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px;">
-                            <div class="profile-info-text" style="display: flex; flex-direction: column; text-align: right;">
+                            <div class="profile-info-text desktop-only" style="display: none; flex-direction: column; text-align: right;">
                                 <span
                                     style="font-size: 0.7rem; color: #64748b; font-weight: 700; text-transform: uppercase;"><?= htmlspecialchars($_SESSION['name'] ?? 'Admin') ?></span>
                                 <span
@@ -1239,8 +1189,8 @@ try {
                             </div>
                         </div>
 
-                        <div class="current-date-header" id="real-time-container"
-                            style="display: flex; align-items: center; gap: 10px; background: #f8fafc; padding: 8px 16px; border-radius: 12px; border: 1px solid #e2e8f0;">
+                        <div class="current-date-header desktop-only" id="real-time-container"
+                            style="display: none; align-items: center; gap: 10px; background: #f8fafc; padding: 8px 16px; border-radius: 12px; border: 1px solid #e2e8f0;">
                             <i class="fa-regular fa-calendar-check" style="color: #3b82f6; font-size: 1.1rem;"></i>
                             <span id="real-time-clock" style="font-weight: 700; color: #1e293b; font-size: 0.9rem;">
                                 <?= date('F d, Y') ?> • 00:00:00
