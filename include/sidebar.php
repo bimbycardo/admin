@@ -16,28 +16,25 @@ function get_nav_link($tab, $is_dashboard, $isSuperAdmin)
 ?>
 <nav class="sidebar" style="position: fixed !important; left: 0 !important; top: 0 !important; height: 100vh !important; width: 280px !important; z-index: 1000 !important; background: #0f172a !important; display: flex !important; flex-direction: column !important; visibility: visible !important; opacity: 1 !important;">
     <div class="sidebar-header" style="border-bottom: 1px solid rgba(255, 255, 255, 0.05); padding: 25px 0 20px 0; margin-bottom: 10px; position: relative;">
-        <!-- Sidebar Logout Button -->
-        <a href="../auth/logout.php" style="position: absolute; top: 15px; right: 20px; color: #ef4444; font-size: 1.1rem; opacity: 0.7; transition: all 0.2s;" title="Log Out">
-            <i class="fas fa-power-off"></i>
-        </a>
         <a href="<?= $isSuperAdmin ? '../Super-admin/Dashboard.php?tab=dashboard' : '../Modules/dashboard.php?tab=dashboard' ?>" class="logo-link"
             title="Go to Dashboard">
-                <div class="logo-area" style="padding: 0 20px;">
-                    <div class="logo" style="display: flex; align-items: center; gap: 15px;">
+                <div class="logo-area" style="text-align: center;">
+                    <div class="logo" style="display: flex; flex-direction: column; align-items: center; gap: 12px;">
                         <?php 
                         // Robust path detection
                         $scriptDir = str_replace('\\', '/', dirname($_SERVER['SCRIPT_NAME']));
                         $projRoot = (strpos($scriptDir, '/Modules') !== false || strpos($scriptDir, '/include') !== false || strpos($scriptDir, '/Super-admin') !== false) ? dirname($scriptDir) : $scriptDir;
                         $projRoot = rtrim($projRoot, '/');
                         ?>
-                        <!-- Full Logo (Open) -->
-                        <img src="<?= $projRoot ?>/assets/image/logo2.png?v=2" alt="Atiéra Logo" class="full-logo"
-                            style="height:45px; width:auto; display:block; transition: all 0.3s; filter: drop-shadow(0 4px 6px rgba(0,0,0,0.1));">
+                        <!-- Full Logo Image -->
+                        <img src="<?= $projRoot ?>/assets/image/logo.png?v=2" alt="Atiéra Logo" class="full-logo"
+                            style="height:65px; width:auto; display:block; transition: all 0.3s; filter: drop-shadow(0 4px 6px rgba(0,0,0,0.1));">
                         
-                        <div style="display: flex; flex-direction: column; align-items: flex-start;">
-                            <span style="color: #d4af37; font-family: 'Cinzel', serif; font-size: 1.2rem; font-weight: 700; letter-spacing: 2px; line-height: 1;">ATIÉRA</span>
+                        <!-- Account Settings Title below Logo -->
+                        <div style="display: flex; flex-direction: column; align-items: center; gap: 4px;">
+                            <span style="color: #d4af37; font-family: 'Cinzel', serif; font-size: 1rem; font-weight: 700; letter-spacing: 2px; text-transform: uppercase;">Account Settings</span>
                             <?php if ($isSuperAdmin): ?>
-                                <span style="color: #64748b; font-size: 9px; font-weight: 800; text-transform: uppercase; letter-spacing: 1px;">Administrative</span>
+                                <span style="color: #64748b; font-size: 9px; font-weight: 800; text-transform: uppercase; letter-spacing: 1.5px; opacity: 0.8;">Administrative Portal</span>
                             <?php endif; ?>
                         </div>
                     </div>
