@@ -31,19 +31,22 @@ function send_email($to, $name, $code)
 {
     $subject = '🔐 ATIERA Verification Code';
     $body = "
-            <div style=\"font-family:Arial,sans-serif; max-width:600px; margin:0 auto; border:1px solid #e1e1e1; border-radius:12px; background-color:#ffffff; padding:20px;\">
-                <div style=\"text-align:center; padding-bottom:20px;\">
-                     <h2 style=\"color:#1b2f73; margin:0;\">Email Verification</h2>
-                     <p style=\"color:#64748b; font-size:14px;\">Use the new code below to complete your login.</p>
-                </div>
-                <div style=\"background-color:#f8fafc; border-radius:10px; padding:30px; text-align:center; border:1px solid #f1f5f9;\">
-                     <p style=\"font-size:14px; color:#334155; margin-bottom:10px;\">Your new verification code:</p>
-                     <div style=\"font-size:42px; font-weight:800; color:#d4af37; letter-spacing:10px; background:#fff; border:2px solid #d4af37; border-radius:8px; display:inline-block; padding:10px 30px; box-shadow: 0 4px 6px rgba(0,0,0,0.05);\">
-                         " . $code . "
-                     </div>
-                     <p style=\"font-size:12px; color:#b91c1c; margin-top:20px;\">This code will expire in 15 minutes.</p>
-                </div>
-            </div>";
+                <div style='font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; border: 1px solid #d4af37; border-radius: 12px; background-color: #0b1538; padding: 30px; color: #ffffff;'>
+                    <div style='text-align: center; padding-bottom: 20px;'>
+                         <h2 style='color: #d4af37; margin: 0; font-size: 28px; letter-spacing: 1px;'>ATIERA</h2>
+                         <p style='color: #94a3b8; font-size: 14px;'>Secure Dashboard Verification</p>
+                    </div>
+                    <div style='background-color: #15265e; border-radius: 10px; padding: 30px; text-align: center; border: 1px solid #2342a6;'>
+                         <p style='font-size: 14px; color: #cbd5e1; margin-bottom: 15px;'>Your verification code is:</p>
+                         <div style='font-size: 42px; font-weight: 800; color: #d4af37; letter-spacing: 12px; background: #0f1c49; border: 2px solid #d4af37; border-radius: 8px; display: inline-block; padding: 15px 35px; box-shadow: 0 4px 15px rgba(212, 175, 55, 0.15);'>
+                             " . $code . "
+                         </div>
+                         <p style='font-size: 12px; color: #f87171; margin-top: 25px;'>This code expires in 15 minutes.</p>
+                    </div>
+                    <div style='text-align: center; margin-top: 25px; color: #64748b; font-size: 12px;'>
+                        If you did not request this, please secure your account immediately.
+                    </div>
+                </div>";
     
     // Calls the hardcoded function in Config.php
     return sendEmail($to, $name, $subject, $body);
