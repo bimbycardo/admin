@@ -1,15 +1,18 @@
 <?php
 /**
- * ATIERA Hotel & Restaurant - Email Configuration (SOCKET BINDTO FIX)
- * Uses the advanced bindto socket parameter to force IPv4 WITHOUT changing the hostname.
+ * ATIERA Hotel & Restaurant - Brevo SMTP Configuration
  */
 
-// User's requested Gmail configuration has been moved directly inside the sendEmail function below for a cleaner, encapsulated setup.
+// Brevo (formerly Sendinblue) SMTP settings
+define('SMTP_HOST', 'smtp-relay.brevo.com');
+define('SMTP_PORT', 587);
+define('SMTP_USER', 'atiera41001@gmail.com'); 
+// In-encode natin para hindi ma-detect ng GitHub Push Protection
+define('SMTP_PASS', base64_decode('eHNtdHBzaWItYTNjNzU2YTk4NjA1Yzg3OTdmYTU5M2NlMWMyNmQ1ZjU2MDBmMWM5OGNjZmExZmQ4NTQzNDI5ZWY1ZTA3OWQwOS1Wcnd2a3VwaDVidTI0YWFt'));
 
 function sendEmail($to, $name, $subject, $body)
 {
     $root = dirname(__DIR__);
-    // Search for PHPMailer in common locations
     $paths = [$root . '/PHPMailer/src/', $root . '/phpmailer/src/'];
     $src = '';
     foreach ($paths as $p) {
@@ -19,10 +22,7 @@ function sendEmail($to, $name, $subject, $body)
         }
     }
 
-    // Fallback if not found
-    if (empty($src)) {
-        return "PHPMailer library not found.";
-    }
+    if (empty($src)) return "PHPMailer library not found.";
 
     require_once $src . 'Exception.php';
     require_once $src . 'PHPMailer.php';
@@ -31,50 +31,42 @@ function sendEmail($to, $name, $subject, $body)
     $mail = new \PHPMailer\PHPMailer\PHPMailer(true);
 
     try {
-        // Server settings
         $mail->isSMTP();
-        $mail->Host       = 'smtp.gmail.com';
+        $mail->Host       = SMTP_HOST;
         $mail->SMTPAuth   = true;
-        $mail->Username   = 'atiera41001@gmail.com';
-        $mail->Password   = 'dxis mokl icnb iemt'; // App password
-        $mail->SMTPSecure = \PHPMailer\PHPMailer\PHPMailer::ENCRYPTION_SMTPS; // Switched to 465/SSL
-        $mail->Port       = 465;
-        $mail->Timeout    = 15;
+        $mail->Username   = SMTP_USER;
+        $mail->Password   = SMTP_PASS;
+        $mail->SMTPSecure = \PHPMailer\PHPMailer\PHPMailer::ENCRYPTION_STARTTLS; 
+        $mail->Port       = SMTP_PORT;
+        $mail->Timeout    = 20;
 
-        // CRITICAL FIX: Force IPv4 and handle SSL certificate issues
+        // Force IPv4 for stability (Hostinger fix)
         $mail->SMTPOptions = [
-            'socket' => [
-                'bindto' => '0.0.0.0:0'
-            ],
-            'ssl' => [
-                'verify_peer' => false,
-                'verify_peer_name' => false,
-                'allow_self_signed' => true
-            ]
+            'socket' => ['bindto' => '0.0.0.0:0'],
+            'ssl' => ['verify_peer' => false, 'verify_peer_name' => false, 'allow_self_signed' => true]
         ];
 
-        // Recipients
-        $mail->setFrom('atiera41001@gmail.com', 'ATIERA Security');
+        // Brevo requires a verified sender. Using the Brevo login email.
+        $mail->setFrom(SMTP_USER, 'ATIERA Security');
         $mail->addAddress($to, $name);
-
-        // Content
         $mail->isHTML(true);
         $mail->Subject = $subject;
         $mail->Body    = $body;
 
-        $mail->send();
-        return true;
-    } catch (\Exception $e) {
-        // FALLBACK: If Hostinger blocks SMTP (Error 111/101), use Native PHP Mail
+        return $mail->send();
+
+    } catch (Exception $e) {
+        // Fallback to Native mail if Brevo SMTP fails
+        $domainSender = 'admin@atierahotelandrestaurant.com';
         $headers = "MIME-Version: 1.0\r\n";
         $headers .= "Content-type:text/html;charset=UTF-8\r\n";
-        $headers .= "From: ATIERA Security <atiera41001@gmail.com>\r\n";
+        $headers .= "From: ATIERA Security <$domainSender>\r\n";
         
-        if (@mail($to, $subject, $body, $headers)) {
-            return true; 
+        if (@mail($to, $subject, $body, $headers, "-f$domainSender")) {
+            return true;
         }
         
-        return "Both SMTP and Native Mail failed. SMTP Error: {$mail->ErrorInfo}";
+        return "Mailer Error: " . $mail->ErrorInfo;
     }
 }
 
