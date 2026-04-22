@@ -441,15 +441,40 @@ $stmt = $pdo->query("SELECT * FROM users ORDER BY id DESC");
 $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
 // Handle Notification AJAX Actions for Settings page
-if (isset($_GET['ajax_action']) && $_GET['ajax_action'] === 'mark_all_read') {
+if (isset($_GET['ajax_action'])) {
     header('Content-Type: application/json');
-    try {
-        $pdo->exec("UPDATE notifications SET is_read = 1 WHERE is_read = 0");
-        echo json_encode(['success' => true]);
-    } catch (Exception $e) {
-        echo json_encode(['success' => false, 'message' => $e->getMessage()]);
+    
+    if ($_GET['ajax_action'] === 'mark_all_read') {
+        try {
+            $pdo->exec("UPDATE notifications SET is_read = 1 WHERE is_read = 0");
+            echo json_encode(['success' => true]);
+        } catch (Exception $e) {
+            echo json_encode(['success' => false, 'message' => $e->getMessage()]);
+        }
+        exit;
     }
-    exit;
+    
+    if ($_GET['ajax_action'] === 'verify_pin') {
+        try {
+            $input = json_decode(file_get_contents('php://input'), true);
+            $pin = $input['pin'] ?? '';
+            
+            $stmt = $pdo->prepare("SELECT setting_value FROM email_settings WHERE setting_key = 'archive_pin'");
+            $stmt->execute();
+            $result = $stmt->fetch(PDO::FETCH_ASSOC);
+            
+            $validPin = $result ? $result['setting_value'] : '1234'; // Fallback to 1234 if not set
+            
+            if ($pin === $validPin) {
+                echo json_encode(['success' => true]);
+            } else {
+                echo json_encode(['success' => false, 'message' => 'Invalid PIN']);
+            }
+        } catch (Exception $e) {
+            echo json_encode(['success' => false, 'message' => $e->getMessage()]);
+        }
+        exit;
+    }
 }
 
 // Fetch Latest Notifications
@@ -1736,22 +1761,52 @@ You have been added as an administrator. To complete your account setup, please 
         function verifyManagementUnlock() {
             const pin = Array.from(document.querySelectorAll('#unlockPinInputs .pin-box')).map(b => b.value).join('');
 
-            // For demonstration, using '1234'. In production, this should be verified via AJAX
-            if (pin === '1234') {
-                document.body.classList.add('security-unlocked');
-                document.querySelector('.viewing-badge').style.display = 'none';
-                closeModal('securityUnlockModal');
-                // Reset pin boxes
-                document.querySelectorAll('#unlockPinInputs .pin-box').forEach(b => b.value = '');
-            } else {
+            if (!pin || pin.length < 4) {
                 const error = document.getElementById('unlockErrorMessage');
-                if (error) error.style.display = 'block';
-                setTimeout(() => { if (error) error.style.display = 'none'; }, 3000);
-                // Clear inputs
-                document.querySelectorAll('#unlockPinInputs .pin-box').forEach(b => b.value = '');
-                const first = document.querySelector('#unlockPinInputs .pin-box');
-                if (first) first.focus();
+                if (error) {
+                    error.textContent = 'Please enter a 4-digit PIN.';
+                    error.style.display = 'block';
+                    setTimeout(() => { error.style.display = 'none'; }, 3000);
+                }
+                return;
             }
+
+            fetch('?ajax_action=verify_pin', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ pin: pin })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    document.body.classList.add('security-unlocked');
+                    const badge = document.querySelector('.viewing-badge');
+                    if (badge) badge.style.display = 'none';
+                    closeModal('securityUnlockModal');
+                    // Reset pin boxes
+                    document.querySelectorAll('#unlockPinInputs .pin-box').forEach(b => b.value = '');
+                } else {
+                    const error = document.getElementById('unlockErrorMessage');
+                    if (error) {
+                        error.textContent = 'Invalid PIN. Access denied.';
+                        error.style.display = 'block';
+                        setTimeout(() => { error.style.display = 'none'; }, 3000);
+                    }
+                    // Clear inputs
+                    document.querySelectorAll('#unlockPinInputs .pin-box').forEach(b => b.value = '');
+                    const first = document.querySelector('#unlockPinInputs .pin-box');
+                    if (first) first.focus();
+                }
+            })
+            .catch(err => {
+                console.error(err);
+                const error = document.getElementById('unlockErrorMessage');
+                if (error) {
+                    error.textContent = 'Error verifying PIN.';
+                    error.style.display = 'block';
+                    setTimeout(() => { error.style.display = 'none'; }, 3000);
+                }
+            });
         }
 
         function openEditModal(user) {
