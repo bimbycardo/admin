@@ -34,7 +34,19 @@ function get_nav_link($tab, $is_dashboard, $isSuperAdmin)
                         <div style="display: flex; flex-direction: column; align-items: center; gap: 5px;">
                             <div style="border: 1px solid rgba(212, 175, 55, 0.4); padding: 3px 12px; border-radius: 6px; background: rgba(212, 175, 55, 0.05); display: flex; align-items: center; justify-content: center;">
                                 <span style="color: #d4af37; font-family: 'Cinzel', serif; font-size: 0.7rem; font-weight: 700; letter-spacing: 2px; text-transform: uppercase;">
-                                    <?= ($current_page == 'Settings.php') ? 'ACCOUNT SETTINGS' : 'DASHBOARD' ?>
+                                    <?php
+                                        $tab = $_GET['tab'] ?? '';
+                                        if ($current_page == 'Settings.php') echo 'ACCOUNT SETTINGS';
+                                        elseif ($tab == 'facilities') echo 'FACILITIES';
+                                        elseif ($tab == 'reservations') echo 'RESERVATIONS';
+                                        elseif ($tab == 'calendar') echo 'CALENDAR';
+                                        elseif ($tab == 'maintenance') echo 'MAINTENANCE';
+                                        elseif ($tab == 'management') echo 'MANAGEMENT';
+                                        elseif ($tab == 'visitors') echo 'VISITORS';
+                                        elseif ($tab == 'vault') echo 'VAULT';
+                                        elseif ($tab == 'legal') echo 'LEGAL';
+                                        else echo 'DASHBOARD';
+                                    ?>
                                 </span>
                             </div>
                             <?php if ($isSuperAdmin): ?>
