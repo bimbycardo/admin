@@ -24,7 +24,7 @@ $subject = "Account Recovery Notice - ATIERA Admin Panel";
 $body = "
 <div style='font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #e2e8f0; border-radius: 12px;'>
     <div style='text-align: center; margin-bottom: 20px;'>
-        <img src='https://atierahotelandrestaurant.com/assets/img/logo.png' alt='Atiéra Logo' style='height: 80px;'>
+        <img src='https://atierahotelandrestaurant.com/assets/image/logo.png' alt='Atiéra Logo' style='height: 80px;'>
     </div>
     <h2 style='color: #1e293b; text-align: center;'>Account Recovery Generated</h2>
     <p style='color: #475569;'>Hello <strong>" . htmlspecialchars($fullName) . "</strong>,</p>
