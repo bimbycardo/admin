@@ -1572,9 +1572,9 @@ You have been added as an administrator. To complete your account setup, please 
             </div>
 
             <div class="form-group" style="text-align: left; margin-top: 15px;">
-                <label style="font-weight: 600; font-size: 0.85rem; color: #475569;">Set New User Password (Optional)</label>
+                <label style="font-weight: 600; font-size: 0.85rem; color: #475569;">Updated Password</label>
                 <input type="text" id="recoverySetPassword" class="form-control"
-                    placeholder="Type new password or leave blank for random" style="border-radius: 8px;">
+                    placeholder="Enter new password for the user" style="border-radius: 8px;">
             </div>
 
             <div id="adminVerifyError" style="color: #ef4444; font-size: 0.85rem; margin-bottom: 15px; display: none;">
