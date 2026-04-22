@@ -1053,11 +1053,11 @@ try {
         }
 
         /* Mobile Header Fixes - Optimized for High-Res Mobiles (Tecno, etc) */
-        @media (max-width: 1024px) {
+        @media (max-width: 1200px) {
             .top-header {
-                padding: 0 10px !important;
-                height: 60px !important;
-                gap: 8px !important;
+                padding: 0 8px !important;
+                height: 56px !important;
+                gap: 5px !important;
             }
             .header-title {
                 gap: 5px !important;
@@ -1066,8 +1066,8 @@ try {
                 display: none !important;
             }
             .header-title h1 {
-                font-size: 1.1rem !important;
-                max-width: 150px;
+                font-size: 1rem !important;
+                max-width: 100px;
                 white-space: nowrap;
                 overflow: hidden;
                 text-overflow: ellipsis;
@@ -1080,22 +1080,22 @@ try {
                 display: none !important;
             }
             .header-actions {
-                gap: 8px !important;
+                gap: 5px !important;
             }
-            .current-date-header {
-                display: none !important;
-            }
+            /* Hide bulky elements on any screen smaller than 1200px to ensure fit */
+            .current-date-header, 
             .profile-info-text {
                 display: none !important;
             }
+            
             .header-actions > div:first-child {
                 padding: 0 !important;
                 background: none !important;
                 border: none !important;
             }
             #headerLogoutBtn {
-                width: 38px !important;
-                height: 38px !important;
+                width: 34px !important;
+                height: 34px !important;
                 padding: 0 !important;
             }
         }
