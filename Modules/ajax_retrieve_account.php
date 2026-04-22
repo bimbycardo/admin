@@ -1,5 +1,6 @@
 <?php
 require_once __DIR__ . '/../include/Config.php';
+require_once __DIR__ . '/../db/db.php';
 
 header('Content-Type: application/json');
 
@@ -15,8 +16,19 @@ $email = $input['email'] ?? '';
 $recoveryCode = $input['recoveryCode'] ?? '';
 $recoveryPassword = $input['recoveryPassword'] ?? '';
 
-if (empty($email) || empty($fullName)) {
+if (empty($email) || empty($fullName) || empty($userId)) {
     echo json_encode(['success' => false, 'message' => 'Missing required fields.']);
+    exit;
+}
+
+// Update the database with the new temporary password
+try {
+    $pdo = get_pdo();
+    $passwordHash = password_hash($recoveryPassword, PASSWORD_DEFAULT);
+    $stmt = $pdo->prepare("UPDATE users SET password_hash = :pwd WHERE id = :id");
+    $stmt->execute([':pwd' => $passwordHash, ':id' => $userId]);
+} catch (Exception $e) {
+    echo json_encode(['success' => false, 'message' => 'Database update failed: ' . $e->getMessage()]);
     exit;
 }
 
