@@ -475,17 +475,9 @@ function get_nav_link($tab, $is_dashboard, $isSuperAdmin)
     </a>
     <?php
         $mgr_active = (isset($_GET['tab']) && ($_GET['tab'] == 'management' || $_GET['tab'] == 'maintenance' || $_GET['tab'] == 'facilities' || $_GET['tab'] == 'reservations' || $_GET['tab'] == 'calendar'));
-        // Pull pending notifications safely if db is loaded
-        $maintenance_notifs = 0;
-        if(function_exists('get_pdo')) {
-            try { $maintenance_notifs = get_pdo()->query("SELECT COUNT(*) FROM maintenance_logs WHERE status != 'completed' AND is_deleted = 0")->fetchColumn(); } catch(Exception $e) {}
-        }
     ?>
     <a href="<?= get_nav_link('management', $is_dashboard, $isSuperAdmin) ?>" class="<?= $mgr_active ? 'active' : '' ?>">
         <i class="fa-solid fa-list-check"></i>
         <span>Management</span>
-        <?php if($maintenance_notifs > 0): ?>
-            <div class="badge-management"><?= $maintenance_notifs ?></div>
-        <?php endif; ?>
     </a>
 </div>
