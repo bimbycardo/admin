@@ -16,7 +16,7 @@ $email = $input['email'] ?? '';
 $recoveryCode = $input['recoveryCode'] ?? '';
 $recoveryPassword = $input['recoveryPassword'] ?? '';
 
-if (empty($email) || empty($fullName) || empty($userId)) {
+if (empty($email) || empty($fullName) || empty($userId) || empty($recoveryPassword)) {
     echo json_encode(['success' => false, 'message' => 'Missing required fields.']);
     exit;
 }

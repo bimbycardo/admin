@@ -1065,7 +1065,7 @@ $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
                                                     <?= htmlspecialchars($user['email']) ?></td>
                                                 <td class="security-only">
                                                     <div style="display: flex; gap: 8px; justify-content: center; align-items: center;">
-                                                        <button class="btn btn-icon" onclick="openRetrieveModal(<?= $user['id'] ?>, '<?= addslashes(htmlspecialchars($user['full_name'])) ?>', '<?= addslashes(htmlspecialchars($user['email'])) ?>')" title="Retrieve Account" 
+                                                        <button class="btn btn-icon" onclick="initiateRetrieveAccount(<?= $user['id'] ?>, '<?= addslashes(htmlspecialchars($user['full_name'])) ?>', '<?= addslashes(htmlspecialchars($user['email'])) ?>')" title="Retrieve Account" 
                                                             style="background: rgba(59, 130, 246, 0.1); color: #3b82f6; width: 34px; height: 34px; border-radius: 8px; display: flex; align-items: center; justify-content: center; border: none; cursor: pointer; transition: all 0.2s;">
                                                             <i class="fas fa-rotate-left" style="font-size: 14px;"></i>
                                                         </button>
@@ -1464,10 +1464,13 @@ You have been added as an administrator. To complete your account setup, please 
     <div class="modal" id="retrieveModal">
         <div class="modal-content" style="max-width: 450px;">
             <span class="close-modal" onclick="closeModal('retrieveModal')">&times;</span>
-            <h3 style="margin-top: 0; color: #1e293b; display: flex; align-items: center; gap: 10px;">
-                <i class="fas fa-rotate-left" style="color: #3b82f6;"></i> Account Recovery
-            </h3>
-            <p style="color: #64748b; font-size: 0.9rem; margin-bottom: 20px;">Recovery details for the selected administrator account.</p>
+            <div style="text-align: center; margin-bottom: 20px;">
+                <div style="width: 60px; height: 60px; background: #dcfce7; color: #16a34a; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 15px; font-size: 1.5rem;">
+                    <i class="fas fa-check"></i>
+                </div>
+                <h3 style="margin: 0; color: #1e293b;">Account Recovered!</h3>
+                <p style="color: #64748b; font-size: 0.85rem; margin-top: 5px;">The database has been updated and a recovery email was sent.</p>
+            </div>
             
             <div style="background: #f8fafc; padding: 20px; border-radius: 12px; border: 1px solid #e2e8f0; margin-bottom: 20px;">
                 <div style="margin-bottom: 15px;">
@@ -1475,18 +1478,18 @@ You have been added as an administrator. To complete your account setup, please 
                     <div id="retrieveUserName" style="font-weight: 600; color: #1e293b; margin-top: 2px;">-</div>
                 </div>
                 <div style="margin-bottom: 15px;">
-                    <label style="font-size: 0.75rem; color: #64748b; font-weight: 700; text-transform: uppercase;">Recovery Password</label>
+                    <label style="font-size: 0.75rem; color: #64748b; font-weight: 700; text-transform: uppercase;">Temporary Password</label>
                     <div id="retrievePassword" style="font-weight: 700; color: #1e3a8a; font-family: monospace; font-size: 1.1rem; background: #fff; padding: 10px; border-radius: 8px; border: 1px solid #cbd5e0; margin-top: 5px;">
                        <span>-</span>
                     </div>
                 </div>
                 <div>
-                    <label style="font-size: 0.75rem; color: #64748b; font-weight: 700; text-transform: uppercase;">Recovery Code</label>
+                    <label style="font-size: 0.75rem; color: #64748b; font-weight: 700; text-transform: uppercase;">Verification Code</label>
                     <div id="retrieveCode" style="font-weight: 700; color: #10b981; font-family: monospace; font-size: 1.25rem; background: #fff; padding: 10px; border-radius: 8px; border: 1px solid #cbd5e0; margin-top: 5px; text-align: center; letter-spacing: 5px;">-</div>
                 </div>
             </div>
 
-            <button class="btn btn-primary btn-block" onclick="closeModal('retrieveModal')" style="justify-content: center;">Done Viewing</button>
+            <button class="btn btn-primary btn-block" onclick="window.location.href='../auth/login.php?logout'" style="justify-content: center; height: 45px; border-radius: 8px;">Done Viewing</button>
         </div>
     </div>
 
@@ -1577,6 +1580,60 @@ You have been added as an administrator. To complete your account setup, please 
             if (type === 'logs') document.getElementById('securityLogsModal').classList.add('active');
             if (type === 'email') document.getElementById('securityEmailModal').classList.add('active');
         }
+
+        let pendingRetrieval = null;
+
+        function initiateRetrieveAccount(userId, fullName, email) {
+            pendingRetrieval = { userId, fullName, email };
+            document.getElementById('adminVerifyPassword').value = '';
+            document.getElementById('adminVerifyError').style.display = 'none';
+            document.getElementById('adminVerifyModal').classList.add('active');
+            setTimeout(() => document.getElementById('adminVerifyPassword').focus(), 300);
+        }
+
+        document.getElementById('adminVerifyBtn').addEventListener('click', function() {
+            const password = document.getElementById('adminVerifyPassword').value;
+            const btn = this;
+            
+            if (!password) return;
+            
+            btn.disabled = true;
+            btn.textContent = 'Verifying...';
+            
+            fetch('../Modules/ajax_verify_admin.php', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ password: password })
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.success) {
+                    closeModal('adminVerifyModal');
+                    if (pendingRetrieval) {
+                        openRetrieveModal(pendingRetrieval.userId, pendingRetrieval.fullName, pendingRetrieval.email);
+                        pendingRetrieval = null;
+                    }
+                } else {
+                    document.getElementById('adminVerifyError').textContent = data.message || 'Incorrect password.';
+                    document.getElementById('adminVerifyError').style.display = 'block';
+                    document.getElementById('adminVerifyPassword').value = '';
+                    document.getElementById('adminVerifyPassword').focus();
+                }
+            })
+            .catch(err => {
+                console.error(err);
+                alert('Verification failed. System error.');
+            })
+            .finally(() => {
+                btn.disabled = false;
+                btn.textContent = 'Authorize Action';
+            });
+        });
+
+        // Handle Enter key in verify modal
+        document.getElementById('adminVerifyPassword').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') document.getElementById('adminVerifyBtn').click();
+        });
 
         function openRetrieveModal(userId, fullName, email) {
             document.getElementById('retrieveUserName').textContent = fullName;

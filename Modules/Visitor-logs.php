@@ -174,7 +174,8 @@ function getLastInsertId()
             background-color: #f0f4f8;
             margin: 0;
             padding: 0;
-            overflow: hidden; /* Header and sidebar take care of layout */
+            overflow: hidden;
+            /* Header and sidebar take care of layout */
         }
 
         /* Top Header */
@@ -185,7 +186,7 @@ function getLastInsertId()
             display: flex;
             justify-content: space-between;
             align-items: center;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
         }
 
         .module-header h2 {
@@ -200,7 +201,8 @@ function getLastInsertId()
             align-items: center;
         }
 
-        .top-nav a, .top-nav span {
+        .top-nav a,
+        .top-nav span {
             color: rgba(255, 255, 255, 0.8);
             text-decoration: none;
             font-weight: 500;
@@ -236,7 +238,7 @@ function getLastInsertId()
             background: white;
             border-radius: 20px;
             padding: 30px 20px;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.05);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
             display: flex;
             flex-direction: column;
             gap: 15px;
@@ -279,7 +281,7 @@ function getLastInsertId()
             background: white;
             border-radius: 20px;
             padding: 40px;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.05);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
             overflow-y: auto;
             position: relative;
         }
@@ -401,249 +403,265 @@ function getLastInsertId()
         }
 
         @media (max-width: 1024px) {
-            .module-body { flex-direction: column; overflow-y: auto; }
-            .module-sidebar { width: 100%; }
+            .module-body {
+                flex-direction: column;
+                overflow-y: auto;
+            }
+
+            .module-sidebar {
+                width: 100%;
+            }
         }
     </style>
-</head>
+    </head>
 
-<body>
-    <!-- Top Header Navigation -->
-    <div class="module-header">
-        <div style="display: flex; align-items: center; gap: 15px;">
-            <img src="../assets/image/logo2.png" alt="Ateria" style="height: 35px; brightness: 1.2;">
-            <div style="width: 2px; height: 25px; background: rgba(255,255,255,0.2);"></div>
-            <h2 style="text-transform: uppercase; letter-spacing: 2px; font-size: 1.1rem; color: #fff; font-weight: 800;">Visitor Management</h2>
-        </div>
-        <div class="top-nav">
-            <!-- Real-time Clock -->
-            <div style="margin-right: 30px; display: flex; align-items: center; gap: 15px; border-right: 1px solid rgba(255,255,255,0.1); padding-right: 25px;">
-                <div id="module-clock" style="color: #fff; font-weight: 800; font-size: 1rem;"></div>
-                <div id="module-date" style="color: rgba(255,255,255,0.5); font-size: 0.8rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px;"></div>
+    <body>
+        <!-- Top Header Navigation -->
+        <div class="module-header">
+            <div style="display: flex; align-items: center; gap: 15px;">
+                <img src="../assets/image/logo2.png" alt="Ateria" style="height: 35px; brightness: 1.2;">
+                <div style="width: 2px; height: 25px; background: rgba(255,255,255,0.2);"></div>
+                <h2
+                    style="text-transform: uppercase; letter-spacing: 2px; font-size: 1.1rem; color: #fff; font-weight: 800;">
+                    Visitor Management</h2>
             </div>
-
-            <!-- Notification Trigger -->
-            <div style="margin-right: 30px; position: relative; cursor: pointer; display: flex; align-items: center;" onclick="alert('All caught up!')">
-                <i class="fas fa-bell" style="color: rgba(255,255,255,0.8); font-size: 1.1rem;"></i>
-                <span style="position: absolute; top: -8px; right: -8px; background: #ef4444; color: white; font-size: 0.65rem; height: 16px; width: 16px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 800; border: 2px solid #1e293b;">0</span>
-            </div>
-
-            <span onclick="showPage('dashboard')" class="nav-item-top" data-page="dashboard">Dashboard</span>
-            <span onclick="showPage('hotel')" class="nav-pill" data-page="hotel">Hotel</span>
-            <span onclick="showPage('restaurant')" class="nav-item-top" data-page="restaurant">Restaurant</span>
-            <span onclick="showPage('reports')" class="nav-item-top" data-page="reports">Reports</span>
-            <a href="dashboard.php" class="nav-item-top">Back</a>
-        </div>
-    </div>
-
-    <!-- Main Module Layout -->
-    <div class="module-body">
-        <!-- Sidebar Navigation -->
-        <div class="module-sidebar">
-            <div class="sidebar-item active" onclick="showPage('dashboard')" data-sidebar="dashboard">
-                <i class="fas fa-chart-line"></i> Dashboard
-            </div>
-            <div class="sidebar-item" onclick="showPage('hotel')" data-sidebar="hotel">
-                <i class="fas fa-hotel"></i> Hotel Management
-            </div>
-            <div class="sidebar-item" onclick="showPage('restaurant')" data-sidebar="restaurant">
-                <i class="fas fa-utensils"></i> Restaurant Management
-            </div>
-            <div class="sidebar-item" onclick="showPage('reports')" data-sidebar="reports">
-                <i class="fas fa-file-invoice"></i> Reports
-            </div>
-            <div class="sidebar-item" onclick="alert('Settings coming soon!')">
-                <i class="fas fa-cog"></i> Settings
-            </div>
-        </div>
-
-        <!-- Main Content Area -->
-        <div class="module-main-content">
-            
-            <!-- Dashboard Page -->
-            <div id="dashboard" class="page active">
-                <div class="content-header-row">
-                    <i class="fas fa-chart-pie"></i>
-                    <h3>Visitor Overview</h3>
-                </div>
-                <div class="stats-container">
-                    <div class="stat-card">
-                        <i class="fas fa-concierge-bell"></i>
-                        <div class="stat-number" id="hotel-today">0</div>
-                        <div class="stat-label">Hotel Today</div>
+            <div class="top-nav">
+                <!-- Real-time Clock -->
+                <div
+                    style="margin-right: 30px; display: flex; align-items: center; gap: 15px; border-right: 1px solid rgba(255,255,255,0.1); padding-right: 25px;">
+                    <div id="module-clock" style="color: #fff; font-weight: 800; font-size: 1rem;"></div>
+                    <div id="module-date"
+                        style="color: rgba(255,255,255,0.5); font-size: 0.8rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px;">
                     </div>
-                    <div class="stat-card">
+                </div>
+
+                <!-- Notification Trigger -->
+                <div style="margin-right: 30px; position: relative; cursor: pointer; display: flex; align-items: center;"
+                    onclick="alert('All caught up!')">
+                    <i class="fas fa-bell" style="color: rgba(255,255,255,0.8); font-size: 1.1rem;"></i>
+                    <span
+                        style="position: absolute; top: -8px; right: -8px; background: #ef4444; color: white; font-size: 0.65rem; height: 16px; width: 16px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 800; border: 2px solid #1e293b;">0</span>
+                </div>
+
+                <span onclick="showPage('dashboard')" class="nav-item-top" data-page="dashboard">Dashboard</span>
+                <span onclick="showPage('hotel')" class="nav-pill" data-page="hotel">Hotel</span>
+                <span onclick="showPage('restaurant')" class="nav-item-top" data-page="restaurant">Restaurant</span>
+                <span onclick="showPage('reports')" class="nav-item-top" data-page="reports">Reports</span>
+                <a href="dashboard.php" class="nav-item-top">Back</a>
+            </div>
+        </div>
+
+        <!-- Main Module Layout -->
+        <div class="module-body">
+            <!-- Sidebar Navigation -->
+            <div class="module-sidebar">
+                <div class="sidebar-item active" onclick="showPage('dashboard')" data-sidebar="dashboard">
+                    <i class="fas fa-chart-line"></i> Dashboard
+                </div>
+                <div class="sidebar-item" onclick="showPage('hotel')" data-sidebar="hotel">
+                    <i class="fas fa-hotel"></i> Hotel Management
+                </div>
+                <div class="sidebar-item" onclick="showPage('restaurant')" data-sidebar="restaurant">
+                    <i class="fas fa-utensils"></i> Restaurant Management
+                </div>
+                <div class="sidebar-item" onclick="showPage('reports')" data-sidebar="reports">
+                    <i class="fas fa-file-invoice"></i> Reports
+                </div>
+                <div class="sidebar-item" onclick="alert('Settings coming soon!')">
+                    <i class="fas fa-cog"></i> Settings
+                </div>
+            </div>
+
+            <!-- Main Content Area -->
+            <div class="module-main-content">
+
+                <!-- Dashboard Page -->
+                <div id="dashboard" class="page active">
+                    <div class="content-header-row">
+                        <i class="fas fa-chart-pie"></i>
+                        <h3>Visitor Overview</h3>
+                    </div>
+                    <div class="stats-container">
+                        <div class="stat-card">
+                            <i class="fas fa-concierge-bell"></i>
+                            <div class="stat-number" id="hotel-today">0</div>
+                            <div class="stat-label">Hotel Today</div>
+                        </div>
+                        <div class="stat-card">
+                            <i class="fas fa-utensils"></i>
+                            <div class="stat-number" id="restaurant-today">0</div>
+                            <div class="stat-label">Restaurant Today</div>
+                        </div>
+                        <div class="stat-card">
+                            <i class="fas fa-user-clock"></i>
+                            <div class="stat-number" id="hotel-current">0</div>
+                            <div class="stat-label">Checked In Hotel</div>
+                        </div>
+                        <div class="stat-card">
+                            <i class="fas fa-chair"></i>
+                            <div class="stat-number" id="restaurant-current">0</div>
+                            <div class="stat-label">Checked In Restaurant</div>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <h2>Recent Activity</h2>
+                        <div id="recent-activity">
+                            <!-- Activity populated by JS -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Hotel Management Page -->
+                <div id="hotel" class="page">
+                    <button class="btn-time-in-large" onclick="openEntryModal('hotel')" style="background: #3b82f6;">
+                        <i class="fas fa-plus-circle"></i> New Hotel Entry
+                    </button>
+
+                    <div class="content-header-row">
+                        <i class="fas fa-users-viewfinder"></i>
+                        <h3>Current Guests</h3>
+                    </div>
+
+                    <div class="tab-content active" id="hotel-visitors-tab">
+                        <div class="table-container">
+                            <table class="custom-table" id="hotel-current-table">
+                                <thead>
+                                    <tr>
+                                        <th>NAME</th>
+                                        <th>ROOM</th>
+                                        <th>CHECK-IN</th>
+                                        <th>STATUS</th>
+                                        <th>ACTIONS</th>
+                                    </tr>
+                                </thead>
+                                <tbody></tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <div class="tab-content" id="hotel-history-tab">
+                        <div class="content-header-row">
+                            <h3>Hotel History</h3>
+                        </div>
+                        <div class="table-container">
+                            <table class="custom-table" id="hotel-history-table">
+                                <thead>
+                                    <tr>
+                                        <th>Name</th>
+                                        <th>Room</th>
+                                        <th>Check-in</th>
+                                        <th>Check-out</th>
+                                    </tr>
+                                </thead>
+                                <tbody></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Restaurant Management Page -->
+                <div id="restaurant" class="page">
+                    <button class="btn-time-in-large" onclick="openEntryModal('restaurant')"
+                        style="background: #3b82f6;">
+                        <i class="fas fa-plus-circle"></i> New Restaurant Entry
+                    </button>
+
+                    <div class="content-header-row">
                         <i class="fas fa-utensils"></i>
-                        <div class="stat-number" id="restaurant-today">0</div>
-                        <div class="stat-label">Restaurant Today</div>
+                        <h3>Current Diners</h3>
                     </div>
-                    <div class="stat-card">
-                        <i class="fas fa-user-clock"></i>
-                        <div class="stat-number" id="hotel-current">0</div>
-                        <div class="stat-label">Checked In Hotel</div>
-                    </div>
-                    <div class="stat-card">
-                        <i class="fas fa-chair"></i>
-                        <div class="stat-number" id="restaurant-current">0</div>
-                        <div class="stat-label">Checked In Restaurant</div>
-                    </div>
-                </div>
 
-                <div class="card">
-                    <h2>Recent Activity</h2>
-                    <div id="recent-activity">
-                        <!-- Activity populated by JS -->
-                    </div>
-                </div>
-            </div>
-
-            <!-- Hotel Management Page -->
-            <div id="hotel" class="page">
-                <button class="btn-time-in-large" onclick="openEntryModal('hotel')" style="background: #3b82f6;">
-                    <i class="fas fa-plus-circle"></i> New Hotel Entry
-                </button>
-
-                <div class="content-header-row">
-                    <i class="fas fa-users-viewfinder"></i>
-                    <h3>Current Guests</h3>
-                </div>
-
-                <div class="tab-content active" id="hotel-visitors-tab">
-                    <div class="table-container">
-                        <table class="custom-table" id="hotel-current-table">
-                            <thead>
-                                <tr>
-                                    <th>NAME</th>
-                                    <th>ROOM</th>
-                                    <th>CHECK-IN</th>
-                                    <th>STATUS</th>
-                                    <th>ACTIONS</th>
-                                </tr>
-                            </thead>
-                            <tbody></tbody>
-                        </table>
-                    </div>
-                </div>
-                
-                <div class="tab-content" id="hotel-history-tab">
-                    <div class="content-header-row"><h3>Hotel History</h3></div>
-                    <div class="table-container">
-                        <table class="custom-table" id="hotel-history-table">
-                            <thead>
-                                <tr>
-                                    <th>Name</th>
-                                    <th>Room</th>
-                                    <th>Check-in</th>
-                                    <th>Check-out</th>
-                                </tr>
-                            </thead>
-                            <tbody></tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Restaurant Management Page -->
-            <div id="restaurant" class="page">
-                <button class="btn-time-in-large" onclick="openEntryModal('restaurant')" style="background: #3b82f6;">
-                    <i class="fas fa-plus-circle"></i> New Restaurant Entry
-                </button>
-
-                <div class="content-header-row">
-                    <i class="fas fa-utensils"></i>
-                    <h3>Current Diners</h3>
-                </div>
-
-                <div class="tab-content active" id="restaurant-visitors-tab">
-                    <div class="table-container">
-                        <table class="custom-table" id="restaurant-current-table">
-                            <thead>
-                                <tr>
-                                    <th>NAME</th>
-                                    <th>PARTY SIZE</th>
-                                    <th>TABLE</th>
-                                    <th>CHECK-IN</th>
-                                    <th>ACTIONS</th>
-                                </tr>
-                            </thead>
-                            <tbody></tbody>
-                        </table>
-                    </div>
-                </div>
-
-            </div>
-
-            <!-- Reports Page -->
-            <div id="reports" class="page">
-                <div class="content-header-row">
-                    <i class="fas fa-file-invoice"></i>
-                    <h3>Analytics & Reports</h3>
-                </div>
-                <div class="card">
-                    <form id="report-form">
-                        <div class="form-grid">
-                            <div class="form-group">
-                                <label>Report Type</label>
-                                <select id="report-type" name="report-type">
-                                    <option value="daily">Daily Report</option>
-                                    <option value="weekly">Weekly Report</option>
-                                    <option value="monthly">Monthly Report</option>
-                                    <option value="custom">Custom Range</option>
-                                </select>
-                            </div>
-                            <div class="form-group">
-                                <label>Venue</label>
-                                <select id="report-venue" name="report-venue">
-                                    <option value="all">All Venues</option>
-                                    <option value="hotel">Hotel</option>
-                                    <option value="restaurant">Restaurant</option>
-                                </select>
-                            </div>
-                        </div>
-                        <button type="submit" class="btn-submit-premium" style="width: auto; padding: 12px 25px;">
-                            <i class="fas fa-download"></i> Generate PDF Report
-                        </button>
-                    </form>
-                </div>
-            </div>
-
-                    <div class="card" id="report-results" style="display: none;">
-                        <h2>Report Results</h2>
-                        <div id="report-data">
-                            <!-- Report data will be displayed here -->
+                    <div class="tab-content active" id="restaurant-visitors-tab">
+                        <div class="table-container">
+                            <table class="custom-table" id="restaurant-current-table">
+                                <thead>
+                                    <tr>
+                                        <th>NAME</th>
+                                        <th>PARTY SIZE</th>
+                                        <th>TABLE</th>
+                                        <th>CHECK-IN</th>
+                                        <th>ACTIONS</th>
+                                    </tr>
+                                </thead>
+                                <tbody></tbody>
+                            </table>
                         </div>
                     </div>
 
-                    <!-- Read / Details panel for selected report item -->
-                    <aside id="report-read-panel" class="read-panel" aria-hidden="true" style="display:none;">
-                        <div class="rp-header">
-                            <h3 style="margin:0;">Report Details</h3>
-                            <button type="button" class="btn-back" id="rp-back-btn">Back</button>
-                        </div>
-                        <div id="rp-content">
-                            <div class="rp-row">
-                                <div class="label">Name</div>
-                                <div class="value" id="rp-name">-</div>
-                            </div>
-                            <div class="rp-row">
-                                <div class="label">Venue</div>
-                                <div class="value" id="rp-venue">-</div>
-                            </div>
-                            <div class="rp-row">
-                                <div class="label">Check-in</div>
-                                <div class="value" id="rp-checkin">-</div>
-                            </div>
-                            <div class="rp-row">
-                                <div class="label">Check-out</div>
-                                <div class="value" id="rp-checkout">-</div>
-                            </div>
-                            <div class="rp-row">
-                                <div class="label">Notes</div>
-                                <div class="value" id="rp-notes">-</div>
-                            </div>
-                        </div>
-                    </aside>
                 </div>
+
+                <!-- Reports Page -->
+                <div id="reports" class="page">
+                    <div class="content-header-row">
+                        <i class="fas fa-file-invoice"></i>
+                        <h3>Analytics & Reports</h3>
+                    </div>
+                    <div class="card">
+                        <form id="report-form">
+                            <div class="form-grid">
+                                <div class="form-group">
+                                    <label>Report Type</label>
+                                    <select id="report-type" name="report-type">
+                                        <option value="daily">Daily Report</option>
+                                        <option value="weekly">Weekly Report</option>
+                                        <option value="monthly">Monthly Report</option>
+                                        <option value="custom">Custom Range</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label>Venue</label>
+                                    <select id="report-venue" name="report-venue">
+                                        <option value="all">All Venues</option>
+                                        <option value="hotel">Hotel</option>
+                                        <option value="restaurant">Restaurant</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <button type="submit" class="btn-submit-premium" style="width: auto; padding: 12px 25px;">
+                                <i class="fas fa-download"></i> Generate PDF Report
+                            </button>
+                        </form>
+                    </div>
+                </div>
+
+                <div class="card" id="report-results" style="display: none;">
+                    <h2>Report Results</h2>
+                    <div id="report-data">
+                        <!-- Report data will be displayed here -->
+                    </div>
+                </div>
+
+                <!-- Read / Details panel for selected report item -->
+                <aside id="report-read-panel" class="read-panel" aria-hidden="true" style="display:none;">
+                    <div class="rp-header">
+                        <h3 style="margin:0;">Report Details</h3>
+                        <button type="button" class="btn-back" id="rp-back-btn">Back</button>
+                    </div>
+                    <div id="rp-content">
+                        <div class="rp-row">
+                            <div class="label">Name</div>
+                            <div class="value" id="rp-name">-</div>
+                        </div>
+                        <div class="rp-row">
+                            <div class="label">Venue</div>
+                            <div class="value" id="rp-venue">-</div>
+                        </div>
+                        <div class="rp-row">
+                            <div class="label">Check-in</div>
+                            <div class="value" id="rp-checkin">-</div>
+                        </div>
+                        <div class="rp-row">
+                            <div class="label">Check-out</div>
+                            <div class="value" id="rp-checkout">-</div>
+                        </div>
+                        <div class="rp-row">
+                            <div class="label">Notes</div>
+                            <div class="value" id="rp-notes">-</div>
+                        </div>
+                    </div>
+                </aside>
+            </div>
 
 
 
@@ -653,467 +671,494 @@ function getLastInsertId()
                     <i class="fas fa-screwdriver-wrench"></i>
                     <h3>Service & Maintenance</h3>
                 </div>
-                
+
                 <div class="card" style="padding: 1.5rem;">
-                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem; padding-bottom: 1rem; border-bottom: 1px solid var(--gray-100);">
-                            <div style="display: flex; align-items: center; gap: 12px;">
-                                <div style="width: 40px; height: 40px; background: rgba(59, 130, 246, 0.1); border-radius: 10px; display: flex; align-items: center; justify-content: center; color: var(--secondary);">
-                                    <i class="fas fa-screwdriver-wrench"></i>
-                                </div>
-                                <h2 style="margin: 0; font-size: 1.25rem;">Maintenance Logs</h2>
+                    <div
+                        style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem; padding-bottom: 1rem; border-bottom: 1px solid var(--gray-100);">
+                        <div style="display: flex; align-items: center; gap: 12px;">
+                            <div
+                                style="width: 40px; height: 40px; background: rgba(59, 130, 246, 0.1); border-radius: 10px; display: flex; align-items: center; justify-content: center; color: var(--secondary);">
+                                <i class="fas fa-screwdriver-wrench"></i>
                             </div>
-                            <button class="btn-primary-action" style="width: auto; padding: 10px 20px;" onclick="alert('Maintenance feature coming soon!')">
-                                <i class="fas fa-plus"></i> Schedule Maintenance
-                            </button>
+                            <h2 style="margin: 0; font-size: 1.25rem;">Maintenance Logs</h2>
                         </div>
-                        
-                        <div class="table-container">
-                            <table class="table">
-                                <thead style="background: var(--gray-50);">
-                                    <tr>
-                                        <th style="width: 120px;">Ticket ID</th>
-                                        <th>Facility / Area</th>
-                                        <th>Issue Description</th>
-                                        <th style="width: 150px;">Reported Date</th>
-                                        <th style="width: 120px;">Priority</th>
-                                        <th style="width: 130px;">Status</th>
-                                        <th style="width: 80px; text-align: center;">Action</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr>
-                                        <td style="font-weight: 700; color: var(--secondary);">#MT-2024-001</td>
-                                        <td style="font-weight: 700; color: #1e293b;">Banquet Hall A</td>
-                                        <td style="color: var(--gray-600);">Air conditioning unit leaking water</td>
-                                        <td>2024-01-15</td>
-                                        <td><span class="status-badge" style="background: #fee2e2; color: #b91c1c; border: 1px solid #fecaca;"><i class="fas fa-circle" style="font-size: 6px;"></i> HIGH</span></td>
-                                        <td><span class="status-badge badge-in-progress"><i class="fas fa-spinner fa-spin"></i> IN PROGRESS</span></td>
-                                        <td style="text-align: center;"><button class="btn-action-view" onclick="alert('Viewing #MT-2024-001')"><i class="fas fa-eye"></i></button></td>
-                                    </tr>
-                                    <tr>
-                                        <td style="font-weight: 700; color: var(--secondary);">#MT-2024-002</td>
-                                        <td style="font-weight: 700; color: #1e293b;">Meeting Room 2</td>
-                                        <td style="color: var(--gray-600);">Projector bulb replacement needed</td>
-                                        <td>2024-01-20</td>
-                                        <td><span class="status-badge badge-pending"><i class="fas fa-circle" style="font-size: 6px;"></i> MEDIUM</span></td>
-                                        <td><span class="status-badge badge-open"><i class="fas fa-folder-open"></i> OPEN</span></td>
-                                        <td style="text-align: center;"><button class="btn-action-view" onclick="alert('Viewing #MT-2024-002')"><i class="fas fa-eye"></i></button></td>
-                                    </tr>
-                                    <tr>
-                                        <td style="font-weight: 700; color: var(--secondary);">#MT-2024-003</td>
-                                        <td style="font-weight: 700; color: #1e293b;">Pool Side</td>
-                                        <td style="color: var(--gray-600);">Loose tiles near the deep end</td>
-                                        <td>2024-01-18</td>
-                                        <td><span class="status-badge badge-completed" style="background: #f0fdf4; color: #15803d;"><i class="fas fa-circle" style="font-size: 6px;"></i> LOW</span></td>
-                                        <td><span class="status-badge badge-completed"><i class="fas fa-check-circle"></i> COMPLETED</span></td>
-                                        <td style="text-align: center;"><button class="btn-action-view" onclick="alert('Viewing #MT-2024-003')" style="color: #10b981; border-color: #10b981;"><i class="fas fa-check-double"></i></button></td>
-                                    </tr>
-                                    <tr>
-                                        <td style="font-weight: 700; color: var(--secondary);">#MT-2024-004</td>
-                                        <td style="font-weight: 700; color: #1e293b;">Executive Lounge</td>
-                                        <td style="color: var(--gray-600);">Coffee machine malfunction</td>
-                                        <td>2024-01-22</td>
-                                        <td><span class="status-badge badge-pending"><i class="fas fa-circle" style="font-size: 6px;"></i> MEDIUM</span></td>
-                                        <td><span class="status-badge badge-pending"><i class="fas fa-clock"></i> PENDING</span></td>
-                                        <td style="text-align: center;"><button class="btn-action-view" onclick="alert('Viewing #MT-2024-004')"><i class="fas fa-eye"></i></button></td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                        </div>
+                        <button class="btn-primary-action" style="width: auto; padding: 10px 20px;"
+                            onclick="alert('Maintenance feature coming soon!')">
+                            <i class="fas fa-plus"></i> Schedule Maintenance
+                        </button>
+                    </div>
+
+                    <div class="table-container">
+                        <table class="table">
+                            <thead style="background: var(--gray-50);">
+                                <tr>
+                                    <th style="width: 120px;">Ticket ID</th>
+                                    <th>Facility / Area</th>
+                                    <th>Issue Description</th>
+                                    <th style="width: 150px;">Reported Date</th>
+                                    <th style="width: 120px;">Priority</th>
+                                    <th style="width: 130px;">Status</th>
+                                    <th style="width: 80px; text-align: center;">Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td style="font-weight: 700; color: var(--secondary);">#MT-2024-001</td>
+                                    <td style="font-weight: 700; color: #1e293b;">Banquet Hall A</td>
+                                    <td style="color: var(--gray-600);">Air conditioning unit leaking water</td>
+                                    <td>2024-01-15</td>
+                                    <td><span class="status-badge"
+                                            style="background: #fee2e2; color: #b91c1c; border: 1px solid #fecaca;"><i
+                                                class="fas fa-circle" style="font-size: 6px;"></i> HIGH</span></td>
+                                    <td><span class="status-badge badge-in-progress"><i
+                                                class="fas fa-spinner fa-spin"></i> IN PROGRESS</span></td>
+                                    <td style="text-align: center;"><button class="btn-action-view"
+                                            onclick="alert('Viewing #MT-2024-001')"><i class="fas fa-eye"></i></button>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td style="font-weight: 700; color: var(--secondary);">#MT-2024-002</td>
+                                    <td style="font-weight: 700; color: #1e293b;">Meeting Room 2</td>
+                                    <td style="color: var(--gray-600);">Projector bulb replacement needed</td>
+                                    <td>2024-01-20</td>
+                                    <td><span class="status-badge badge-pending"><i class="fas fa-circle"
+                                                style="font-size: 6px;"></i> MEDIUM</span></td>
+                                    <td><span class="status-badge badge-open"><i class="fas fa-folder-open"></i>
+                                            OPEN</span></td>
+                                    <td style="text-align: center;"><button class="btn-action-view"
+                                            onclick="alert('Viewing #MT-2024-002')"><i class="fas fa-eye"></i></button>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td style="font-weight: 700; color: var(--secondary);">#MT-2024-003</td>
+                                    <td style="font-weight: 700; color: #1e293b;">Pool Side</td>
+                                    <td style="color: var(--gray-600);">Loose tiles near the deep end</td>
+                                    <td>2024-01-18</td>
+                                    <td><span class="status-badge badge-completed"
+                                            style="background: #f0fdf4; color: #15803d;"><i class="fas fa-circle"
+                                                style="font-size: 6px;"></i> LOW</span></td>
+                                    <td><span class="status-badge badge-completed"><i class="fas fa-check-circle"></i>
+                                            COMPLETED</span></td>
+                                    <td style="text-align: center;"><button class="btn-action-view"
+                                            onclick="alert('Viewing #MT-2024-003')"
+                                            style="color: #10b981; border-color: #10b981;"><i
+                                                class="fas fa-check-double"></i></button></td>
+                                </tr>
+                                <tr>
+                                    <td style="font-weight: 700; color: var(--secondary);">#MT-2024-004</td>
+                                    <td style="font-weight: 700; color: #1e293b;">Executive Lounge</td>
+                                    <td style="color: var(--gray-600);">Coffee machine malfunction</td>
+                                    <td>2024-01-22</td>
+                                    <td><span class="status-badge badge-pending"><i class="fas fa-circle"
+                                                style="font-size: 6px;"></i> MEDIUM</span></td>
+                                    <td><span class="status-badge badge-pending"><i class="fas fa-clock"></i>
+                                            PENDING</span></td>
+                                    <td style="text-align: center;"><button class="btn-action-view"
+                                            onclick="alert('Viewing #MT-2024-004')"><i class="fas fa-eye"></i></button>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
                     </div>
                 </div>
             </div>
-    </div>
+        </div>
+        </div>
 
-    <!-- Confirmation Modal -->
-    <div id="confirmation-modal" class="modal">
-        <div class="modal-content" style="max-width: 400px; text-align: center;">
-            <div class="modal-header" style="justify-content: center; border-bottom: none;">
-                <h2 style="color: #e74c3c;"><i class="fas fa-exclamation-triangle"></i> Confirm Action</h2>
-            </div>
-            <div class="modal-body" style="padding: 20px 0;">
-                <p id="confirmation-message">Are you sure you want to proceed?</p>
-            </div>
-            <div class="modal-footer" style="display: flex; justify-content: center; gap: 10px; padding-top: 10px;">
-                <button id="confirm-btn" class="btn-danger">Yes, Confirm</button>
-                <button id="cancel-btn" class="btn-secondary" onclick="closeConfirmationModal()">Cancel</button>
+        <!-- Confirmation Modal -->
+        <div id="confirmation-modal" class="modal">
+            <div class="modal-content" style="max-width: 400px; text-align: center;">
+                <div class="modal-header" style="justify-content: center; border-bottom: none;">
+                    <h2 style="color: #e74c3c;"><i class="fas fa-exclamation-triangle"></i> Confirm Action</h2>
+                </div>
+                <div class="modal-body" style="padding: 20px 0;">
+                    <p id="confirmation-message">Are you sure you want to proceed?</p>
+                </div>
+                <div class="modal-footer" style="display: flex; justify-content: center; gap: 10px; padding-top: 10px;">
+                    <button id="confirm-btn" class="btn-danger">Yes, Confirm</button>
+                    <button id="cancel-btn" class="btn-secondary" onclick="closeConfirmationModal()">Cancel</button>
+                </div>
             </div>
         </div>
-    </div>
 
-    <style>
-        /* Modal Styles */
-        .modal {
-            display: none;
-            position: fixed;
-            z-index: 1000;
-            left: 0;
-            top: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0, 0, 0, 0.5);
-            animation: fadeIn 0.3s;
-        }
-
-        @keyframes fadeIn {
-            from {
-                opacity: 0;
+        <style>
+            /* Modal Styles */
+            .modal {
+                display: none;
+                position: fixed;
+                z-index: 1000;
+                left: 0;
+                top: 0;
+                width: 100%;
+                height: 100%;
+                background-color: rgba(0, 0, 0, 0.5);
+                animation: fadeIn 0.3s;
             }
 
-            to {
-                opacity: 1;
-            }
-        }
+            @keyframes fadeIn {
+                from {
+                    opacity: 0;
+                }
 
-        .modal-content {
-            background-color: #fefefe;
-            margin: 15% auto;
-            padding: 20px;
-            border: 1px solid #888;
-            width: 80%;
-            border-radius: 8px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-            animation: slideDown 0.3s;
-        }
-
-        @keyframes slideDown {
-            from {
-                transform: translateY(-50px);
-                opacity: 0;
+                to {
+                    opacity: 1;
+                }
             }
 
-            to {
-                transform: translateY(0);
-                opacity: 1;
+            .modal-content {
+                background-color: #fefefe;
+                margin: 15% auto;
+                padding: 20px;
+                border: 1px solid #888;
+                width: 80%;
+                border-radius: 8px;
+                box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+                animation: slideDown 0.3s;
             }
-        }
 
-        .btn-danger {
-            background-color: #e74c3c;
-            color: white;
-            border: none;
-            padding: 10px 20px;
-            border-radius: 5px;
-            cursor: pointer;
-            transition: background 0.3s;
-        }
+            @keyframes slideDown {
+                from {
+                    transform: translateY(-50px);
+                    opacity: 0;
+                }
 
-        .btn-danger:hover {
-            background-color: #c0392b;
-        }
+                to {
+                    transform: translateY(0);
+                    opacity: 1;
+                }
+            }
 
-        .btn-secondary {
-            background-color: #95a5a6;
-            color: white;
-            border: none;
-            padding: 10px 20px;
-            border-radius: 5px;
-            cursor: pointer;
-            transition: background 0.3s;
-        }
+            .btn-danger {
+                background-color: #e74c3c;
+                color: white;
+                border: none;
+                padding: 10px 20px;
+                border-radius: 5px;
+                cursor: pointer;
+                transition: background 0.3s;
+            }
 
-        .btn-secondary:hover {
-            background-color: #7f8c8d;
-        }
-    </style>
+            .btn-danger:hover {
+                background-color: #c0392b;
+            }
 
-    <!-- Entry Modal (Insert/Update) -->
-    <div id="entry-modal" class="modal">
-        <div class="modal-content" style="max-width: 600px;">
-            <div class="modal-header" style="display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #f8fafc; padding-bottom: 15px; margin-bottom: 20px;">
-                <h2 id="entry-modal-title" style="color: #1e293b; margin: 0; font-weight: 800;">Registration</h2>
-                <button onclick="closeEntryModal()" style="background: transparent; border: none; font-size: 1.5rem; color: #94a3b8; cursor: pointer;"><i class="fas fa-times"></i></button>
-            </div>
-            <div class="modal-body">
-                <!-- Hotel Form -->
-                <form id="modal-hotel-form" style="display: none;">
-                    <input type="hidden" name="action" value="insert">
-                    <input type="hidden" name="entry_id" value="">
-                    <div class="form-grid">
-                        <div class="form-group">
-                            <label>Guest Name</label>
-                            <input type="text" name="full_name" required placeholder="John Doe">
+            .btn-secondary {
+                background-color: #95a5a6;
+                color: white;
+                border: none;
+                padding: 10px 20px;
+                border-radius: 5px;
+                cursor: pointer;
+                transition: background 0.3s;
+            }
+
+            .btn-secondary:hover {
+                background-color: #7f8c8d;
+            }
+        </style>
+
+        <!-- Entry Modal (Insert/Update) -->
+        <div id="entry-modal" class="modal">
+            <div class="modal-content" style="max-width: 600px;">
+                <div class="modal-header"
+                    style="display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #f8fafc; padding-bottom: 15px; margin-bottom: 20px;">
+                    <h2 id="entry-modal-title" style="color: #1e293b; margin: 0; font-weight: 800;">Registration</h2>
+                    <button onclick="closeEntryModal()"
+                        style="background: transparent; border: none; font-size: 1.5rem; color: #94a3b8; cursor: pointer;"><i
+                            class="fas fa-times"></i></button>
+                </div>
+                <div class="modal-body">
+                    <!-- Hotel Form -->
+                    <form id="modal-hotel-form" style="display: none;">
+                        <input type="hidden" name="action" value="insert">
+                        <input type="hidden" name="entry_id" value="">
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label>Guest Name</label>
+                                <input type="text" name="full_name" required placeholder="John Doe">
+                            </div>
+                            <div class="form-group">
+                                <label>Room / Suite</label>
+                                <input type="text" name="room_number" required placeholder="101">
+                            </div>
                         </div>
-                        <div class="form-group">
-                            <label>Room / Suite</label>
-                            <input type="text" name="room_number" required placeholder="101">
-                        </div>
-                    </div>
-                </form>
+                    </form>
 
-                <!-- Restaurant Form -->
-                <form id="modal-restaurant-form" style="display: none;">
-                    <input type="hidden" name="action" value="insert">
-                    <input type="hidden" name="entry_id" value="">
-                    <div class="form-grid" style="grid-template-columns: 1fr 1fr 1fr;">
-                        <div class="form-group">
-                            <label>Diner Name</label>
-                            <input type="text" name="visitor-name" required placeholder="Jane Doe">
+                    <!-- Restaurant Form -->
+                    <form id="modal-restaurant-form" style="display: none;">
+                        <input type="hidden" name="action" value="insert">
+                        <input type="hidden" name="entry_id" value="">
+                        <div class="form-grid" style="grid-template-columns: 1fr 1fr 1fr;">
+                            <div class="form-group">
+                                <label>Diner Name</label>
+                                <input type="text" name="visitor-name" required placeholder="Jane Doe">
+                            </div>
+                            <div class="form-group">
+                                <label>Party Size</label>
+                                <input type="number" name="party-size" required placeholder="2">
+                            </div>
+                            <div class="form-group">
+                                <label>Table</label>
+                                <input type="text" name="table-number" required placeholder="T-12">
+                            </div>
                         </div>
-                        <div class="form-group">
-                            <label>Party Size</label>
-                            <input type="number" name="party-size" required placeholder="2">
-                        </div>
-                        <div class="form-group">
-                            <label>Table</label>
-                            <input type="text" name="table-number" required placeholder="T-12">
-                        </div>
-                    </div>
-                </form>
-            </div>
-            <div class="modal-footer" style="margin-top: 30px; display: flex; gap: 10px; justify-content: flex-end;">
-                <button type="button" class="btn-secondary" onclick="closeEntryModal()">Cancel</button>
-                <button type="button" class="btn-submit-premium" id="modal-save-btn" onclick="saveModalEntry()" style="width: auto; padding: 12px 30px;">Save Changes</button>
+                    </form>
+                </div>
+                <div class="modal-footer"
+                    style="margin-top: 30px; display: flex; gap: 10px; justify-content: flex-end;">
+                    <button type="button" class="btn-secondary" onclick="closeEntryModal()">Cancel</button>
+                    <button type="button" class="btn-submit-premium" id="modal-save-btn" onclick="saveModalEntry()"
+                        style="width: auto; padding: 12px 30px;">Save Changes</button>
+                </div>
             </div>
         </div>
-    </div>
 
-    <!-- Details Modal -->
+        <!-- Details Modal -->
 
-    <!-- corrected external script filename (fix typo) -->
-    <script src="../assets/Javascript/Visitor.js?v=<?php echo time(); ?>"></script>
+        <!-- corrected external script filename (fix typo) -->
+        <script src="../assets/Javascript/Visitor.js?v=<?php echo time(); ?>"></script>
 
-    <script>
-        // --- Entry Modal (Insert/Update) ---
-        function openEntryModal(type, data = null) {
-            const modal = document.getElementById('entry-modal');
-            const hotelForm = document.getElementById('modal-hotel-form');
-            const restForm = document.getElementById('modal-restaurant-form');
-            const titleEl = document.getElementById('entry-modal-title');
-            const saveBtn = document.getElementById('modal-save-btn');
+        <script>
+            // --- Entry Modal (Insert/Update) ---
+            function openEntryModal(type, data = null) {
+                const modal = document.getElementById('entry-modal');
+                const hotelForm = document.getElementById('modal-hotel-form');
+                const restForm = document.getElementById('modal-restaurant-form');
+                const titleEl = document.getElementById('entry-modal-title');
+                const saveBtn = document.getElementById('modal-save-btn');
 
-            modal.style.display = 'block';
-            hotelForm.style.display = 'none';
-            restForm.style.display = 'none';
+                modal.style.display = 'block';
+                hotelForm.style.display = 'none';
+                restForm.style.display = 'none';
 
-            if (type === 'hotel') {
-                hotelForm.style.display = 'block';
-                titleEl.innerHTML = '<i class="fas fa-hotel" style="color:#3b82f6;"></i> ' + (data ? 'Update Guest Info' : 'Guest Registration');
-                saveBtn.textContent = data ? 'Save Changes' : 'Complete Registration';
-                if (data) {
-                    hotelForm.action.value = 'update';
-                    hotelForm.entry_id.value = data.id;
-                    hotelForm.full_name.value = data.name;
-                    hotelForm.room_number.value = data.room;
-                } else {
-                    hotelForm.reset();
-                    hotelForm.action.value = 'insert';
-                }
-            } else if (type === 'restaurant') {
-                restForm.style.display = 'block';
-                titleEl.innerHTML = '<i class="fas fa-utensils" style="color:#3b82f6;"></i> ' + (data ? 'Update Diner Info' : 'Diner Information');
-                saveBtn.textContent = data ? 'Save Changes' : 'Register Table';
-                if (data) {
-                    restForm.action.value = 'update';
-                    restForm.entry_id.value = data.id;
-                    restForm.elements['visitor-name'].value = data.name;
-                    restForm.elements['party-size'].value = data.party;
-                    restForm.elements['table-number'].value = data.table;
-                } else {
-                    restForm.reset();
-                    restForm.action.value = 'insert';
-                }
-            }
-        }
-
-        function closeEntryModal() {
-            document.getElementById('entry-modal').style.display = 'none';
-        }
-
-        function saveModalEntry() {
-            // Placeholder for AJAX logic or form submission
-            const hotelForm = document.getElementById('modal-hotel-form');
-            const restForm = document.getElementById('modal-restaurant-form');
-            const type = hotelForm.style.display === 'block' ? 'hotel' : 'restaurant';
-            
-            // Logic would go here to communicate with Visitor.js or backend
-            console.log('Saving ' + type + ' entry...');
-            
-            alert('Entry has been processed successfully!');
-            closeEntryModal();
-            // Refresh tables if Visitor.js function exists
-            if (typeof loadCurrentVisitors === 'function') loadCurrentVisitors();
-        }
-
-        // Modal Helper Functions
-
-        // --- Details Modal ---
-        function showDetailsModal(title, content) {
-            document.getElementById('details-modal-title').innerText = title;
-            document.getElementById('details-modal-body').innerHTML = content;
-            document.getElementById('details-modal').style.display = 'block';
-        }
-
-        function closeDetailsModal() {
-            document.getElementById('details-modal').style.display = 'none';
-        }
-
-        // Modal Helper Functions
-        function showConfirmationModal(message, callback) {
-            document.getElementById('confirmation-message').innerText = message;
-            const modal = document.getElementById('confirmation-modal');
-            modal.style.display = 'block';
-
-            const confirmBtn = document.getElementById('confirm-btn');
-            // Remove existing event listeners to prevent multiple firings
-            const newBtn = confirmBtn.cloneNode(true);
-            confirmBtn.parentNode.replaceChild(newBtn, confirmBtn);
-
-            newBtn.onclick = function () {
-                callback();
-                closeConfirmationModal();
-            };
-        }
-
-        function closeConfirmationModal() {
-            document.getElementById('confirmation-modal').style.display = 'none';
-        }
-
-        // Close modal when clicking outside
-        window.onclick = function (event) {
-            const confirmModal = document.getElementById('confirmation-modal');
-            const detailsModal = document.getElementById('details-modal');
-
-            if (event.target == confirmModal) {
-                closeConfirmationModal();
-            }
-            if (event.target == detailsModal) {
-                closeDetailsModal();
-            }
-        }
-
-        // SHOW/HIDE PAGES from sidebar / top nav
-        function showPage(pageId) {
-            // hide all pages
-            document.querySelectorAll('.page').forEach(function (p) { p.classList.remove('active'); });
-            // show requested page
-            const page = document.getElementById(pageId);
-            if (page) page.classList.add('active');
-
-            // Update top nav items
-            document.querySelectorAll('.module-header .top-nav span, .module-header .top-nav a').forEach(function (el) {
-                if (el.getAttribute('data-page') === pageId) {
-                    el.className = 'nav-pill';
-                } else if (el.className === 'nav-pill') {
-                    el.className = 'nav-item-top';
-                }
-            });
-
-            // Update sidebar items
-            document.querySelectorAll('.module-sidebar .sidebar-item').forEach(function (item) {
-                if (item.getAttribute('data-sidebar') === pageId) {
-                    item.classList.add('active');
-                } else {
-                    item.classList.remove('active');
-                }
-            });
-        }
-
-        // Activate inner tab (tabName e.g. "hotel-checkin" => content id "hotel-checkin-tab")
-        function activateTab(tabName) {
-            document.querySelectorAll('.tabs .tab').forEach(function (t) { t.classList.remove('active'); });
-            document.querySelectorAll('.tab-content').forEach(function (tc) { tc.classList.remove('active'); });
-            const tab = document.querySelector('.tabs .tab[data-tab="' + tabName + '"]');
-            if (tab) tab.classList.add('active');
-            const tc = document.getElementById(tabName + '-tab');
-            if (tc) tc.classList.add('active');
-
-            // If Visitor.js is loaded, trigger data refresh
-            if (typeof loadCurrentVisitors === 'function' && tabName.includes('visitors')) {
-                loadCurrentVisitors();
-            }
-        }
-
-        document.addEventListener('DOMContentLoaded', function () {
-            // Real-time Header Clock
-            function updateModuleClock() {
-                const now = new Date();
-                const clockEl = document.getElementById('module-clock');
-                const dateEl = document.getElementById('module-date');
-                if (clockEl) clockEl.textContent = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-                if (dateEl) dateEl.textContent = now.toLocaleDateString([], { month: 'short', day: 'numeric', year: 'numeric' });
-            }
-            setInterval(updateModuleClock, 1000);
-            updateModuleClock();
-
-            // Sidebar / nav click handling — attach only to elements that have data-page
-            document.querySelectorAll('a[data-page]').forEach(function (el) {
-                el.addEventListener('click', function (e) {
-                    const requested = this.getAttribute('data-page');
-                    if (!requested) return; // do nothing if no data-page
-                    e.preventDefault(); // only prevent when we handle SPA navigation
-
-                    // If data-page is compound like "hotel-checkin" show main page 'hotel' and activate tab
-                    if (requested.indexOf('-') !== -1) {
-                        const parts = requested.split('-');
-                        const main = parts[0]; // 'hotel' or 'restaurant'
-                        showPage(main);
-                        activateTab(requested);
+                if (type === 'hotel') {
+                    hotelForm.style.display = 'block';
+                    titleEl.innerHTML = '<i class="fas fa-hotel" style="color:#3b82f6;"></i> ' + (data ? 'Update Guest Info' : 'Guest Registration');
+                    saveBtn.textContent = data ? 'Save Changes' : 'Complete Registration';
+                    if (data) {
+                        hotelForm.action.value = 'update';
+                        hotelForm.entry_id.value = data.id;
+                        hotelForm.full_name.value = data.name;
+                        hotelForm.room_number.value = data.room;
                     } else {
-                        // direct page id matches page div ids (dashboard, hotel, restaurant, reports, settings)
-                        showPage(requested);
+                        hotelForm.reset();
+                        hotelForm.action.value = 'insert';
                     }
-                });
-            });
-
-            // Tabs click handling inside pages
-            document.querySelectorAll('.tabs .tab').forEach(function (tab) {
-                tab.addEventListener('click', function () {
-                    activateTab(this.getAttribute('data-tab'));
-                });
-            });
-
-            // On load: trigger display based on existing sidebar active, otherwise default to dashboard
-            var starter = document.querySelector('.sidebar-link.active') || document.querySelector('.nav-link.active');
-            if (starter && starter.getAttribute('data-page')) {
-                var p = starter.getAttribute('data-page');
-                // reuse click logic to ensure inner tabs show
-                starter.click();
-            } else {
-                showPage('dashboard');
+                } else if (type === 'restaurant') {
+                    restForm.style.display = 'block';
+                    titleEl.innerHTML = '<i class="fas fa-utensils" style="color:#3b82f6;"></i> ' + (data ? 'Update Diner Info' : 'Diner Information');
+                    saveBtn.textContent = data ? 'Save Changes' : 'Register Table';
+                    if (data) {
+                        restForm.action.value = 'update';
+                        restForm.entry_id.value = data.id;
+                        restForm.elements['visitor-name'].value = data.name;
+                        restForm.elements['party-size'].value = data.party;
+                        restForm.elements['table-number'].value = data.table;
+                    } else {
+                        restForm.reset();
+                        restForm.action.value = 'insert';
+                    }
+                }
             }
 
-            // REPORT read-panel helpers (moved inside DOM ready to avoid null errors)
-            function showReportRead(data) {
-                var results = document.getElementById('report-results');
-                if (results) results.style.display = 'none';
-                var panel = document.getElementById('report-read-panel');
-                if (!panel) return;
-                panel.style.display = 'block';
-                panel.setAttribute('aria-hidden', 'false');
-                document.getElementById('rp-name').textContent = data.name || '-';
-                document.getElementById('rp-venue').textContent = data.venue || '-';
-                document.getElementById('rp-checkin').textContent = data.checkin || '-';
-                document.getElementById('rp-checkout').textContent = data.checkout || '-';
-                document.getElementById('rp-notes').textContent = data.notes || '-';
+            function closeEntryModal() {
+                document.getElementById('entry-modal').style.display = 'none';
             }
 
-            var backBtn = document.getElementById('rp-back-btn');
-            if (backBtn) {
-                backBtn.addEventListener('click', function () {
-                    var panel = document.getElementById('report-read-panel');
-                    if (panel) {
-                        panel.style.display = 'none';
-                        panel.setAttribute('aria-hidden', 'true');
+            function saveModalEntry() {
+                // Placeholder for AJAX logic or form submission
+                const hotelForm = document.getElementById('modal-hotel-form');
+                const restForm = document.getElementById('modal-restaurant-form');
+                const type = hotelForm.style.display === 'block' ? 'hotel' : 'restaurant';
+
+                // Logic would go here to communicate with Visitor.js or backend
+                console.log('Saving ' + type + ' entry...');
+
+                alert('Entry has been processed successfully!');
+                closeEntryModal();
+                // Refresh tables if Visitor.js function exists
+                if (typeof loadCurrentVisitors === 'function') loadCurrentVisitors();
+            }
+
+            // Modal Helper Functions
+
+            // --- Details Modal ---
+            function showDetailsModal(title, content) {
+                document.getElementById('details-modal-title').innerText = title;
+                document.getElementById('details-modal-body').innerHTML = content;
+                document.getElementById('details-modal').style.display = 'block';
+            }
+
+            function closeDetailsModal() {
+                document.getElementById('details-modal').style.display = 'none';
+            }
+
+            // Modal Helper Functions
+            function showConfirmationModal(message, callback) {
+                document.getElementById('confirmation-message').innerText = message;
+                const modal = document.getElementById('confirmation-modal');
+                modal.style.display = 'block';
+
+                const confirmBtn = document.getElementById('confirm-btn');
+                // Remove existing event listeners to prevent multiple firings
+                const newBtn = confirmBtn.cloneNode(true);
+                confirmBtn.parentNode.replaceChild(newBtn, confirmBtn);
+
+                newBtn.onclick = function () {
+                    callback();
+                    closeConfirmationModal();
+                };
+            }
+
+            function closeConfirmationModal() {
+                document.getElementById('confirmation-modal').style.display = 'none';
+            }
+
+            // Close modal when clicking outside
+            window.onclick = function (event) {
+                const confirmModal = document.getElementById('confirmation-modal');
+                const detailsModal = document.getElementById('details-modal');
+
+                if (event.target == confirmModal) {
+                    closeConfirmationModal();
+                }
+                if (event.target == detailsModal) {
+                    closeDetailsModal();
+                }
+            }
+
+            // SHOW/HIDE PAGES from sidebar / top nav
+            function showPage(pageId) {
+                // hide all pages
+                document.querySelectorAll('.page').forEach(function (p) { p.classList.remove('active'); });
+                // show requested page
+                const page = document.getElementById(pageId);
+                if (page) page.classList.add('active');
+
+                // Update top nav items
+                document.querySelectorAll('.module-header .top-nav span, .module-header .top-nav a').forEach(function (el) {
+                    if (el.getAttribute('data-page') === pageId) {
+                        el.className = 'nav-pill';
+                    } else if (el.className === 'nav-pill') {
+                        el.className = 'nav-item-top';
                     }
+                });
+
+                // Update sidebar items
+                document.querySelectorAll('.module-sidebar .sidebar-item').forEach(function (item) {
+                    if (item.getAttribute('data-sidebar') === pageId) {
+                        item.classList.add('active');
+                    } else {
+                        item.classList.remove('active');
+                    }
+                });
+            }
+
+            // Activate inner tab (tabName e.g. "hotel-checkin" => content id "hotel-checkin-tab")
+            function activateTab(tabName) {
+                document.querySelectorAll('.tabs .tab').forEach(function (t) { t.classList.remove('active'); });
+                document.querySelectorAll('.tab-content').forEach(function (tc) { tc.classList.remove('active'); });
+                const tab = document.querySelector('.tabs .tab[data-tab="' + tabName + '"]');
+                if (tab) tab.classList.add('active');
+                const tc = document.getElementById(tabName + '-tab');
+                if (tc) tc.classList.add('active');
+
+                // If Visitor.js is loaded, trigger data refresh
+                if (typeof loadCurrentVisitors === 'function' && tabName.includes('visitors')) {
+                    loadCurrentVisitors();
+                }
+            }
+
+            document.addEventListener('DOMContentLoaded', function () {
+                // Real-time Header Clock
+                function updateModuleClock() {
+                    const now = new Date();
+                    const clockEl = document.getElementById('module-clock');
+                    const dateEl = document.getElementById('module-date');
+                    if (clockEl) clockEl.textContent = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+                    if (dateEl) dateEl.textContent = now.toLocaleDateString([], { month: 'short', day: 'numeric', year: 'numeric' });
+                }
+                setInterval(updateModuleClock, 1000);
+                updateModuleClock();
+
+                // Sidebar / nav click handling — attach only to elements that have data-page
+                document.querySelectorAll('a[data-page]').forEach(function (el) {
+                    el.addEventListener('click', function (e) {
+                        const requested = this.getAttribute('data-page');
+                        if (!requested) return; // do nothing if no data-page
+                        e.preventDefault(); // only prevent when we handle SPA navigation
+
+                        // If data-page is compound like "hotel-checkin" show main page 'hotel' and activate tab
+                        if (requested.indexOf('-') !== -1) {
+                            const parts = requested.split('-');
+                            const main = parts[0]; // 'hotel' or 'restaurant'
+                            showPage(main);
+                            activateTab(requested);
+                        } else {
+                            // direct page id matches page div ids (dashboard, hotel, restaurant, reports, settings)
+                            showPage(requested);
+                        }
+                    });
+                });
+
+                // Tabs click handling inside pages
+                document.querySelectorAll('.tabs .tab').forEach(function (tab) {
+                    tab.addEventListener('click', function () {
+                        activateTab(this.getAttribute('data-tab'));
+                    });
+                });
+
+                // On load: trigger display based on existing sidebar active, otherwise default to dashboard
+                var starter = document.querySelector('.sidebar-link.active') || document.querySelector('.nav-link.active');
+                if (starter && starter.getAttribute('data-page')) {
+                    var p = starter.getAttribute('data-page');
+                    // reuse click logic to ensure inner tabs show
+                    starter.click();
+                } else {
+                    showPage('dashboard');
+                }
+
+                // REPORT read-panel helpers (moved inside DOM ready to avoid null errors)
+                function showReportRead(data) {
                     var results = document.getElementById('report-results');
-                    if (results) results.style.display = '';
-                });
-            }
+                    if (results) results.style.display = 'none';
+                    var panel = document.getElementById('report-read-panel');
+                    if (!panel) return;
+                    panel.style.display = 'block';
+                    panel.setAttribute('aria-hidden', 'false');
+                    document.getElementById('rp-name').textContent = data.name || '-';
+                    document.getElementById('rp-venue').textContent = data.venue || '-';
+                    document.getElementById('rp-checkin').textContent = data.checkin || '-';
+                    document.getElementById('rp-checkout').textContent = data.checkout || '-';
+                    document.getElementById('rp-notes').textContent = data.notes || '-';
+                }
 
-            var reportData = document.getElementById('report-data');
-            if (reportData) {
-                reportData.addEventListener('click', function (e) {
-                    var target = e.target;
-                    if (target.classList && target.classList.contains('view-btn')) {
-                        var row = target.closest('[data-item]');
-                        var payload = row ? JSON.parse(row.getAttribute('data-item')) : {};
-                        showReportRead(payload);
-                    }
-                });
-            }
-        });
-    </script>
-</body>
+                var backBtn = document.getElementById('rp-back-btn');
+                if (backBtn) {
+                    backBtn.addEventListener('click', function () {
+                        var panel = document.getElementById('report-read-panel');
+                        if (panel) {
+                            panel.style.display = 'none';
+                            panel.setAttribute('aria-hidden', 'true');
+                        }
+                        var results = document.getElementById('report-results');
+                        if (results) results.style.display = '';
+                    });
+                }
+
+                var reportData = document.getElementById('report-data');
+                if (reportData) {
+                    reportData.addEventListener('click', function (e) {
+                        var target = e.target;
+                        if (target.classList && target.classList.contains('view-btn')) {
+                            var row = target.closest('[data-item]');
+                            var payload = row ? JSON.parse(row.getAttribute('data-item')) : {};
+                            showReportRead(payload);
+                        }
+                    });
+                }
+            });
+        </script>
+    </body>
 
 </html>

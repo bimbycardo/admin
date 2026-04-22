@@ -58,8 +58,24 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['username']) && isset(
       if ($user) {
         // Verify password
         $stored_password = $user['password_hash'];
-        $is_hash = str_starts_with($stored_password, '$2y$') || str_starts_with($stored_password, '$argon2');
+        $info = password_get_info($stored_password);
+        $is_hash = ($info['algo'] !== 0); 
         $valid = $is_hash ? password_verify($password, $stored_password) : hash_equals($stored_password, $password);
+
+        // Debug logging (temporary)
+        error_log("--- Login Debug ---");
+        error_log("User ID: " . $user['id'] . " | Username: " . $user['username']);
+        error_log("Is Hashed in DB: " . ($is_hash ? 'Yes' : 'No') . " (Algo: " . $info['algoName'] . ")");
+        error_log("Password Valid: " . ($valid ? 'Yes' : 'No'));
+        error_log("Input Pwd Length: " . strlen($password));
+        error_log("Stored Pwd Length: " . strlen($stored_password));
+        if (!$valid && $is_hash) {
+            // Check if the hash looks truncated (BCRYPT should be 60 chars)
+            if (strlen($stored_password) < 60 && $info['algoName'] === 'bcrypt') {
+                error_log("WARNING: Stored hash looks truncated! Length: " . strlen($stored_password));
+            }
+        }
+        error_log("-------------------");
 
         if ($valid) {
           // Password is correct - show verification modal for all users
