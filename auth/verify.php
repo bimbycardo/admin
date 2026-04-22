@@ -58,7 +58,7 @@ try {
         $stmt = $pdo->prepare('INSERT INTO email_verifications (user_id, code, expires_at) VALUES (?,?,?)');
         $stmt->execute([$userId, $code, $expires]);
 
-        $res = sendEmail($email, $name, "Verification Code: $code", "<h2>Code: $code</h2>");
+        $res = send_email($email, $name, $code);
         if ($res === true) {
             json_out(['ok' => true, 'message' => 'New code sent to ' . $email]);
         } else {
