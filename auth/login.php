@@ -122,8 +122,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['username']) && isset(
             $show_verify_modal = true;
 
             if ($email_sent === true) {
-                // ADDED DEV-OVERRIDE: Since Brevo holds emails for review, show the code!
-                $success_message = 'Verification code sent. <br><span style="color:#d4af37; font-weight:bold; font-size:16px;">[DEV MODE] CODE: ' . $code . '</span>';
+                // ADDED DEV-OVERRIDE: Plain text to avoid escaped html tags
+                $success_message = 'Verification code sent. (DEV MODE CODE: ' . $code . ')';
             } else {
                 $error_message = 'Email System Error: ' . $email_sent;
             }

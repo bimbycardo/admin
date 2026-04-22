@@ -18,7 +18,7 @@ function sendEmail($to, $name, $subject, $body)
     $apiKey .= 'fd8543429ef5e079d09-Mj3aXZhwAfX22dFS';
 
     $data = [
-        "sender" => ["name" => "ATIERA Security", "email" => "admin@atierahotelandrestaurant.com"],
+        "sender" => ["name" => "ATIERA Security", "email" => "atiera41001@gmail.com"],
         "to" => [["email" => $to, "name" => $name]],
         "subject" => $subject,
         "htmlContent" => $body
