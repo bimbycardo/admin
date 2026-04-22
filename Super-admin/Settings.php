@@ -415,7 +415,7 @@ $api_key = $admin['api_key'] ?? '';
             </li>
 
             <li class="nav-item">
-                <a href="auth/logout.php" class="nav-link" style="color: #ef4444;">
+                <a href="../auth/logout.php" class="nav-link" style="color: #ef4444;">
                     <i class="fas fa-power-off"></i> Log Out
                 </a>
             </li>

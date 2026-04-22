@@ -976,15 +976,21 @@ $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
                         </span>
                     </div>
 
-                    <div class="user-info" style="display: flex; align-items: center; gap: 12px; font-weight: 600;">
-                        <div style="text-align: right; margin-right: 5px;">
-                            <div style="font-size: 0.85rem; color: #1e293b;">Admin</div>
-                            <div style="font-size: 0.75rem; color: #64748b; font-weight: 400;">Administrator</div>
+                    <div class="user-info" style="display: flex; flex-direction: column; align-items: flex-end; gap: 4px; font-weight: 600;">
+                        <div style="display: flex; align-items: center; gap: 12px;">
+                            <div style="text-align: right; margin-right: 5px;">
+                                <div style="font-size: 0.85rem; color: #1e293b;">Admin</div>
+                                <div style="font-size: 0.75rem; color: #64748b; font-weight: 400;">Administrator</div>
+                            </div>
+                            <div
+                                style="width: 40px; height: 40px; background: linear-gradient(135deg, #3b82f6, #2563eb); border-radius: 12px; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 6px rgba(37, 99, 235, 0.2);">
+                                <i class="fas fa-user" style="font-size: 1.1rem; color: white;"></i>
+                            </div>
                         </div>
-                        <div
-                            style="width: 40px; height: 40px; background: linear-gradient(135deg, #3b82f6, #2563eb); border-radius: 12px; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 6px rgba(37, 99, 235, 0.2);">
-                            <i class="fas fa-user" style="font-size: 1.1rem; color: white;"></i>
-                        </div>
+                        <!-- Logout Button Added Below the Picture -->
+                        <a href="../auth/logout.php" style="font-size: 0.75rem; color: #ef4444; text-decoration: none; display: flex; align-items: center; gap: 5px; padding-right: 5px;">
+                            <i class="fas fa-power-off"></i> Log Out
+                        </a>
                     </div>
                 </div>
             </header>
