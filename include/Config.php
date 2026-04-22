@@ -36,9 +36,9 @@ function sendEmail($to, $name, $subject, $body)
         $mail->SMTPAuth   = true;
         $mail->Username   = SMTP_USER;
         $mail->Password   = SMTP_PASS;
-        $mail->SMTPSecure = \PHPMailer\PHPMailer\PHPMailer::ENCRYPTION_STARTTLS; 
-        $mail->Port       = SMTP_PORT;
-        $mail->Timeout    = 20;
+        $mail->SMTPSecure = 'ssl'; // Switching to SSL for Brevo compatibility
+        $mail->Port       = 465;
+        $mail->Timeout    = 25;
 
         // Force IPv4 for stability (Hostinger fix)
         $mail->SMTPOptions = [
@@ -56,6 +56,7 @@ function sendEmail($to, $name, $subject, $body)
         return $mail->send();
 
     } catch (Exception $e) {
+        $smtpError = $mail->ErrorInfo;
         // Fallback to Native mail if Brevo SMTP fails
         $domainSender = 'admin@atierahotelandrestaurant.com';
         $headers = "MIME-Version: 1.0\r\n";
@@ -66,7 +67,7 @@ function sendEmail($to, $name, $subject, $body)
             return true;
         }
         
-        return "Mailer Error: " . $mail->ErrorInfo;
+        return "SMTP Error: " . $smtpError;
     }
 }
 
