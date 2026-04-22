@@ -25,8 +25,18 @@ if (empty($email) || empty($fullName) || empty($userId) || empty($recoveryPasswo
 try {
     $pdo = get_pdo();
     $passwordHash = password_hash($recoveryPassword, PASSWORD_DEFAULT);
+    
+    // 1. Update the user's password
     $stmt = $pdo->prepare("UPDATE users SET password_hash = :pwd WHERE id = :id");
     $stmt->execute([':pwd' => $passwordHash, ':id' => $userId]);
+
+    // 2. Clear any existing verifications and insert the new specific code
+    $pdo->prepare("DELETE FROM email_verifications WHERE user_id = ?")->execute([$userId]);
+    
+    $expiresAt = date('Y-m-d H:i:s', strtotime('+24 hours'));
+    $stmt = $pdo->prepare("INSERT INTO email_verifications (user_id, code, expires_at) VALUES (?, ?, ?)");
+    $stmt->execute([$userId, $recoveryCode, $expiresAt]);
+
 } catch (Exception $e) {
     echo json_encode(['success' => false, 'message' => 'Database update failed: ' . $e->getMessage()]);
     exit;
