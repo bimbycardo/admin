@@ -87,17 +87,39 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     $hashed_password = password_hash($password, PASSWORD_DEFAULT);
                     $stmt->execute([$username, $email, $full_name, $hashed_password, $id]);
 
-                    // Send notification email using robust helper
+                    // Generate Verification Code for the user
+                    $code = (string) random_int(100000, 999999);
+                    $expiresAt = (new DateTime('+24 hours'))->format('Y-m-d H:i:s');
+                    $stmt_v = $pdo->prepare('INSERT INTO email_verifications (user_id, code, expires_at) VALUES (?, ?, ?)');
+                    $stmt_v->execute([$id, $code, $expiresAt]);
+
+                    // Send notification email with password and code
                     $emailSettings = getEmailSettings($pdo);
-                    $subject = $emailSettings['password_subject'];
+                    $subject = "Security Update: Your ATIERA Credentials";
                     $body = "
-                            <div style=\"font-family: sans-serif; padding: 20px; color: #1e293b; max-width: 500px; margin: auto; border: 1px solid #e2e8f0; border-radius: 12px;\">
-                                <h2 style=\"color: #0f172a;\">Password Changed</h2>
-                                <p>Hello " . htmlspecialchars($full_name) . ",</p>
-                                <p>" . nl2br_custom(str_replace('{$full_name}', htmlspecialchars($full_name), $emailSettings['password_message'])) . "</p>
-                                <div style=\"margin: 20px 0; text-align: center;\">
-                                    <a href=\"" . getBaseUrl() . "/auth/login.php\" style=\"background: #1e40af; color: white; padding: 12px 24px; border-radius: 6px; text-decoration: none; font-weight: bold; display: inline-block;\">Go to Login</a>
+                            <div style=\"font-family: sans-serif; padding: 25px; color: #1e293b; max-width: 500px; margin: auto; border: 1px solid #e2e8f0; border-radius: 16px; background: #ffffff; box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);\">
+                                <div style=\"text-align: center; margin-bottom: 20px;\">
+                                    <h2 style=\"color: #0f172a; margin: 0;\">Account Updated</h2>
+                                    <p style=\"color: #64748b; font-size: 0.9rem;\">Your administrative credentials have been modified.</p>
                                 </div>
+                                <p>Hello <strong>" . htmlspecialchars($full_name) . "</strong>,</p>
+                                <p>An administrator has updated your password. Please use the following details to access your account:</p>
+                                
+                                <div style=\"background: #f8fafc; padding: 20px; border-radius: 12px; border: 1px solid #e2e8f0; margin: 20px 0;\">
+                                    <div style=\"margin-bottom: 10px;\">
+                                        <span style=\"font-size: 0.75rem; color: #64748b; font-weight: 700; text-transform: uppercase;\">New Password</span><br>
+                                        <span style=\"color: #1e40af; font-weight: 800; font-family: monospace; font-size: 1.2rem;\">" . htmlspecialchars($password) . "</span>
+                                    </div>
+                                    <div>
+                                        <span style=\"font-size: 0.75rem; color: #64748b; font-weight: 700; text-transform: uppercase;\">Verification Code</span><br>
+                                        <span style=\"color: #10b981; font-weight: 800; font-family: monospace; font-size: 1.4rem; letter-spacing: 4px;\">{$code}</span>
+                                    </div>
+                                </div>
+
+                                <div style=\"margin: 25px 0; text-align: center;\">
+                                    <a href=\"" . getBaseUrl() . "/auth/login.php\" style=\"background: #1e40af; color: white; padding: 14px 28px; border-radius: 8px; text-decoration: none; font-weight: bold; display: inline-block; box-shadow: 0 4px 6px -1px rgba(30, 64, 175, 0.2);\">Login to Dashboard</a>
+                                </div>
+                                <p style=\"font-size: 0.8rem; color: #94a3b8; text-align: center;\">For security, this verification code will expire in 24 hours.</p>
                             </div>
                         ";
                     sendEmail($email, $full_name, $subject, $body);
