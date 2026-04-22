@@ -169,67 +169,373 @@ function getLastInsertId()
 </head>
 
 <body>
-    <div class="container" style="padding-top: 40px; padding-bottom: 40px;">
-        <header style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px;">
-            <div style="display: flex; align-items: center; gap: 15px;">
-                  <img src="../assets/image/logo2.png" alt="Ateria Logo" style="height: 50px;">
-                  <h1 style="margin: 0; font-size: 2rem;">Visitor Management System</h1>
-            </div>
-            <a href="dashboard.php" class="btn-primary-action" style="padding: 10px 20px; font-size: 0.9rem;">
-                <i class="fas fa-arrow-left"></i> Back to Dashboard
-            </a>
-        </header>
+    <style>
+        body {
+            background-color: #f0f4f8;
+            margin: 0;
+            padding: 0;
+            overflow: hidden; /* Header and sidebar take care of layout */
+        }
 
-        <!-- Main Horizontal Navigation Tabs -->
-        <div class="tabs" style="margin-bottom: 30px;">
-            <div class="tab active" data-target="dashboard" onclick="showPage('dashboard')"><i class="fas fa-chart-line"></i> Dashboard</div>
-            <div class="tab" data-target="hotel" onclick="showPage('hotel')"><i class="fas fa-hotel"></i> Hotel Management</div>
-            <div class="tab" data-target="restaurant" onclick="showPage('restaurant')"><i class="fas fa-utensils"></i> Restaurant</div>
-            <div class="tab" data-target="reports" onclick="showPage('reports')"><i class="fas fa-file-invoice"></i> Reports</div>
-            <div class="tab" data-target="maintenance" onclick="showPage('maintenance')"><i class="fas fa-tools"></i> Maintenance</div>
+        /* Top Header */
+        .module-header {
+            background: #1e293b;
+            color: white;
+            padding: 15px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .module-header h2 {
+            margin: 0;
+            font-size: 1.5rem;
+            font-weight: 700;
+        }
+
+        .top-nav {
+            display: flex;
+            gap: 20px;
+            align-items: center;
+        }
+
+        .top-nav a, .top-nav span {
+            color: rgba(255, 255, 255, 0.8);
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .top-nav a:hover {
+            color: white;
+        }
+
+        .top-nav .nav-pill {
+            padding: 8px 18px;
+            background: #3b82f6;
+            color: white !important;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(59, 130, 246, 0.3);
+        }
+
+        /* Module Body Layout */
+        .module-body {
+            display: flex;
+            padding: 30px 40px;
+            gap: 30px;
+            height: calc(100vh - 65px);
+            box-sizing: border-box;
+        }
+
+        /* Left Sidebar Nav */
+        .module-sidebar {
+            width: 280px;
+            background: white;
+            border-radius: 20px;
+            padding: 30px 20px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.05);
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            height: fit-content;
+        }
+
+        .sidebar-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 14px 20px;
+            text-decoration: none;
+            color: #64748b;
+            font-weight: 600;
+            border-radius: 12px;
+            transition: all 0.2s;
+            cursor: pointer;
+        }
+
+        .sidebar-item i {
+            font-size: 1.1rem;
+            width: 20px;
+            text-align: center;
+        }
+
+        .sidebar-item:hover {
+            background: #f8fafc;
+            color: #1e293b;
+        }
+
+        .sidebar-item.active {
+            background: #1e293b;
+            color: white;
+            box-shadow: 0 8px 20px rgba(30, 41, 59, 0.25);
+        }
+
+        /* Main Content Card */
+        .module-main-content {
+            flex: 1;
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.05);
+            overflow-y: auto;
+            position: relative;
+        }
+
+        .btn-time-in-large {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            background: #10b981;
+            color: white;
+            width: 100%;
+            padding: 16px;
+            border-radius: 12px;
+            text-decoration: none;
+            font-weight: 700;
+            margin-bottom: 30px;
+            border: none;
+            cursor: pointer;
+            transition: all 0.2s;
+            box-shadow: 0 5px 15px rgba(16, 185, 129, 0.2);
+        }
+
+        .btn-time-in-large:hover {
+            background: #059669;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(16, 185, 129, 0.3);
+        }
+
+        .content-header-row {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+
+        .content-header-row i {
+            font-size: 1.6rem;
+            color: #1e293b;
+        }
+
+        .content-header-row h3 {
+            margin: 0;
+            font-size: 1.5rem;
+            color: #1e293b;
+            font-weight: 700;
+        }
+
+        /* Redesigning the tables to match screenshot */
+        .custom-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .custom-table th {
+            text-align: left;
+            padding: 15px 20px;
+            background: #f8fafc;
+            color: #94a3b8;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            font-weight: 800;
+            letter-spacing: 0.1em;
+            border-bottom: 1px solid #f1f5f9;
+        }
+
+        .custom-table td {
+            padding: 20px;
+            border-bottom: 1px solid #f8fafc;
+            font-size: 0.95rem;
+            color: #1e293b;
+            font-weight: 500;
+        }
+
+        .btn-action-view-small {
+            background: #3b82f6;
+            color: white;
+            padding: 8px 16px;
+            border-radius: 8px;
+            border: none;
+            font-weight: 600;
+            font-size: 0.85rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn-action-view-small:hover {
+            background: #2563eb;
+        }
+
+        .btn-action-timeout-small {
+            background: #f59e0b;
+            color: white;
+            padding: 8px 16px;
+            border-radius: 8px;
+            border: none;
+            font-weight: 600;
+            font-size: 0.85rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn-action-timeout-small:hover {
+            background: #d97706;
+        }
+
+        /* Re-style old stats container to not clash */
+        .stats-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        @media (max-width: 1024px) {
+            .module-body { flex-direction: column; overflow-y: auto; }
+            .module-sidebar { width: 100%; }
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Top Header Navigation -->
+    <div class="module-header">
+        <h2>Hotel & Restaurant Visitor Management</h2>
+        <div class="top-nav">
+            <span onclick="showPage('dashboard')" class="nav-item-top" data-page="dashboard">Dashboard</span>
+            <span onclick="showPage('hotel')" class="nav-pill" data-page="hotel">Hotel</span>
+            <span onclick="showPage('restaurant')" class="nav-item-top" data-page="restaurant">Restaurant</span>
+            <span onclick="showPage('reports')" class="nav-item-top" data-page="reports">Reports</span>
+            <a href="dashboard.php" class="nav-item-top">Back</a>
+        </div>
+    </div>
+
+    <!-- Main Module Layout -->
+    <div class="module-body">
+        <!-- Sidebar Navigation -->
+        <div class="module-sidebar">
+            <div class="sidebar-item active" onclick="showPage('dashboard')" data-sidebar="dashboard">
+                <i class="fas fa-chart-line"></i> Dashboard
+            </div>
+            <div class="sidebar-item" onclick="showPage('hotel')" data-sidebar="hotel">
+                <i class="fas fa-hotel"></i> Hotel Management
+            </div>
+            <div class="sidebar-item" onclick="showPage('restaurant')" data-sidebar="restaurant">
+                <i class="fas fa-utensils"></i> Restaurant Management
+            </div>
+            <div class="sidebar-item" onclick="showPage('reports')" data-sidebar="reports">
+                <i class="fas fa-file-invoice"></i> Reports
+            </div>
+            <div class="sidebar-item" onclick="alert('Settings coming soon!')">
+                <i class="fas fa-cog"></i> Settings
+            </div>
         </div>
 
-                <!-- Dashboard Page -->
-                <div id="dashboard" class="page active">
-                    <div class="stats-container">
-                        <div class="stat-card">
-                            <i class="fas fa-concierge-bell"></i>
-                            <div class="stat-number" id="hotel-today">0</div>
-                            <div class="stat-label">Hotel Today</div>
-                        </div>
-                        <div class="stat-card">
-                            <i class="fas fa-utensils"></i>
-                            <div class="stat-number" id="restaurant-today">0</div>
-                            <div class="stat-label">Restaurant Today</div>
-                        </div>
-                        <div class="stat-card">
-                            <i class="fas fa-user-clock"></i>
-                            <div class="stat-number" id="hotel-current">0</div>
-                            <div class="stat-label">CHECKED IN Hotel</div>
-                        </div>
-                        <div class="stat-card">
-                            <i class="fas fa-chair"></i>
-                            <div class="stat-number" id="restaurant-current">0</div>
-                            <div class="stat-label">CHECKED IN Restaurant</div>
-                        </div>
+        <!-- Main Content Area -->
+        <div class="module-main-content">
+            
+            <!-- Dashboard Page -->
+            <div id="dashboard" class="page active">
+                <div class="content-header-row">
+                    <i class="fas fa-chart-pie"></i>
+                    <h3>Visitor Overview</h3>
+                </div>
+                <div class="stats-container">
+                    <div class="stat-card">
+                        <i class="fas fa-concierge-bell"></i>
+                        <div class="stat-number" id="hotel-today">0</div>
+                        <div class="stat-label">Hotel Today</div>
                     </div>
-
-                    <div class="card">
-                        <h2>Recent Activity</h2>
-                        <div id="recent-activity">
-                            <!-- Activity will be populated by JavaScript -->
-                        </div>
+                    <div class="stat-card">
+                        <i class="fas fa-utensils"></i>
+                        <div class="stat-number" id="restaurant-today">0</div>
+                        <div class="stat-label">Restaurant Today</div>
+                    </div>
+                    <div class="stat-card">
+                        <i class="fas fa-user-clock"></i>
+                        <div class="stat-number" id="hotel-current">0</div>
+                        <div class="stat-label">Checked In Hotel</div>
+                    </div>
+                    <div class="stat-card">
+                        <i class="fas fa-chair"></i>
+                        <div class="stat-number" id="restaurant-current">0</div>
+                        <div class="stat-label">Checked In Restaurant</div>
                     </div>
                 </div>
 
-                <!-- Hotel Management Page -->
-                <div id="hotel" class="page">
-                    <h1>Hotel Management</h1>
-                    <div class="tabs">
-                        <div class="tab active" data-tab="hotel-visitors">Current Visitors</div>
-                        <div class="tab" data-tab="hotel-checkin">Time-in</div>
-                        <div class="tab" data-tab="hotel-history">Visitor History</div>
+                <div class="card">
+                    <h2>Recent Activity</h2>
+                    <div id="recent-activity">
+                        <!-- Activity populated by JS -->
                     </div>
+                </div>
+            </div>
+
+            <!-- Hotel Management Page -->
+            <div id="hotel" class="page">
+                <button class="btn-time-in-large" onclick="activateTab('hotel-checkin')">
+                    <i class="fas fa-plus-circle"></i> Time-in Guest
+                </button>
+
+                <div class="content-header-row">
+                    <i class="fas fa-users-viewfinder"></i>
+                    <h3>Current Guests</h3>
+                </div>
+
+                <div class="tabs" style="display: none;"> <!-- Hidden but logic preserved -->
+                    <div class="tab active" data-tab="hotel-visitors">Visitors</div>
+                </div>
+
+                <div class="tab-content active" id="hotel-visitors-tab">
+                    <div class="table-container">
+                        <table class="custom-table" id="hotel-current-table">
+                            <thead>
+                                <tr>
+                                    <th>NAME</th>
+                                    <th>ROOM</th>
+                                    <th>CHECK-IN</th>
+                                    <th>CHECK-OUT</th>
+                                    <th>ACTIONS</th>
+                                </tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
+                </div>
+                
+                <!-- Registration Form (Tab-based logic) -->
+                <div class="tab-content" id="hotel-checkin-tab">
+                    <div class="card">
+                        <h2>Register New Guest</h2>
+                        <form id="hotel-checkin-form" method="post">
+                             <div class="form-grid">
+                                <div class="form-group">
+                                    <label>Full Name</label>
+                                    <input type="text" name="full_name" required>
+                                </div>
+                                <div class="form-group">
+                                    <label>Facilities/Room</label>
+                                    <input type="text" name="room_number" required>
+                                </div>
+                             </div>
+                             <div style="display: flex; gap: 10px; margin-top: 20px;">
+                                <button type="submit" class="btn-submit-premium">Complete Registration</button>
+                                <button type="button" class="btn-secondary" onclick="activateTab('hotel-visitors')">Cancel</button>
+                             </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
 
                     <div class="card">
                         <!-- Hotel Time-in Tab -->
@@ -330,141 +636,94 @@ function getLastInsertId()
                     </div>
                 </div>
 
-                <!-- Restaurant Management Page -->
-                <div id="restaurant" class="page">
-                    <h1>Restaurant Management</h1>
-                    <div class="tabs">
-                        <div class="tab active" data-tab="restaurant-visitors">Current Visitors</div>
-                        <div class="tab" data-tab="restaurant-checkin">Time-in</div>
-                        <div class="tab" data-tab="restaurant-history">Visitor History</div>
-                    </div>
+            <!-- Restaurant Management Page -->
+            <div id="restaurant" class="page">
+                <button class="btn-time-in-large" onclick="activateTab('restaurant-checkin')" style="background: #3b82f6;">
+                    <i class="fas fa-plus-circle"></i> New Restaurant Entry
+                </button>
 
-                    <div class="card">
-                        <!-- Restaurant Time-in Tab -->
-                        <div class="tab-content" id="restaurant-checkin-tab">
-                            <h2><i class="fas fa-utensils"></i> Visitor Registration Form</h2>
-                            <form id="restaurant-checkin-form">
-                                <div class="form-grid">
-                                    <div class="form-group">
-                                        <label for="visitor-name">Full Name</label>
-                                        <input type="text" id="visitor-name" name="visitor-name" required>
-                                    </div>
-                                    <div class="form-group">
-                                        <label for="visitor-phone">Phone</label>
-                                        <input type="tel" id="visitor-phone" name="visitor-phone">
-                                    </div>
-                                    <div class="form-group">
-                                        <label for="party-size">Party Size</label>
-                                        <input type="number" id="party-size" name="party-size" min="1" required>
-                                    </div>
-                                    <div class="form-group">
-                                        <label for="table-number">Table Number</label>
-                                        <input type="text" id="table-number" name="table-number" required>
-                                    </div>
-                                    <div class="form-group">
-                                        <label for="restaurant-host">Host / Waiter</label>
-                                        <select id="restaurant-host" name="restaurant-host" class="form-control">
-                                            <option value="">Select Employee...</option>
-                                        </select>
-                                    </div>
-                                </div>
-                                <div class="form-group">
-                                    <label for="restaurant-notes">Notes</label>
-                                    <textarea id="restaurant-notes" name="restaurant-notes" rows="3"></textarea>
-                                </div>
-                                <div class="form-group" style="margin-top: 1rem; margin-bottom: 2rem;">
-                                    <button type="submit" class="btn-submit-premium">
-                                        <i class="fas fa-check-circle"></i> Time-in Visitor
-                                    </button>
-                                </div>
-                            </form>
-                        </div>
+                <div class="content-header-row">
+                    <i class="fas fa-utensils"></i>
+                    <h3>Current Diners</h3>
+                </div>
 
-                        <!-- Restaurant Current Visitors Tab -->
-                        <div class="tab-content active" id="restaurant-visitors-tab">
-                            <div style="margin-bottom: 25px;">
-                                <button class="btn-primary-action" onclick="activateTab('restaurant-checkin')">
-                                    <i class="fas fa-plus-circle"></i> Time-in Visitor
-                                </button>
-                            </div>
-                            <h2><i class="fas fa-users-rays"></i> Current Visitors</h2>
-                            <div class="table-container">
-                                <table id="restaurant-current-table">
-                                    <thead>
-                                        <tr>
-                                            <th>Name</th>
-                                            <th>Party Size</th>
-                                            <th>Table</th>
-                                            <th>Check-in Time</th>
-                                            <th>Actions</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody></tbody>
-                                </table>
-                            </div>
-                        </div>
-
-                        <!-- Restaurant History Tab -->
-                        <div class="tab-content" id="restaurant-history-tab">
-                            <h2><i class="fas fa-clock-rotate-left"></i> Visitor History</h2>
-                            <div class="form-group" style="max-width: 300px; margin-bottom: 20px;">
-                                <label for="restaurant-history-date">Filter by Date</label>
-                                <input type="date" id="restaurant-history-date" class="form-control">
-                            </div>
-                            <div class="table-container">
-                                <table id="restaurant-history-table">
-                                    <thead>
-                                        <tr>
-                                            <th>Name</th>
-                                            <th>Party Size</th>
-                                            <th>Table</th>
-                                            <th>Check-in</th>
-                                            <th>Check-out</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody></tbody>
-                                </table>
-                            </div>
-                        </div>
+                <div class="tab-content active" id="restaurant-visitors-tab">
+                    <div class="table-container">
+                        <table class="custom-table" id="restaurant-current-table">
+                            <thead>
+                                <tr>
+                                    <th>NAME</th>
+                                    <th>PARTY SIZE</th>
+                                    <th>TABLE</th>
+                                    <th>CHECK-IN</th>
+                                    <th>ACTIONS</th>
+                                </tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
                     </div>
                 </div>
 
-                <!-- Reports Page -->
-                <div id="reports" class="page">
-                    <h1>Reports</h1>
+                <div class="tab-content" id="restaurant-checkin-tab">
                     <div class="card">
-                        <h2>Generate Reports</h2>
-                        <form id="report-form">
+                        <h2>Restaurant Entrance Form</h2>
+                        <form id="restaurant-checkin-form">
+                            <div class="form-grid">
+                                <div class="form-group">
+                                    <label>Visitor Name</label>
+                                    <input type="text" name="visitor-name" required>
+                                </div>
+                                <div class="form-group">
+                                    <label>Party Size</label>
+                                    <input type="number" name="party-size" required>
+                                </div>
+                                <div class="form-group">
+                                    <label>Table Number</label>
+                                    <input type="text" name="table-number" required>
+                                </div>
+                            </div>
+                            <div style="display: flex; gap: 10px; margin-top: 20px;">
+                                <button type="submit" class="btn-submit-premium">Register Table</button>
+                                <button type="button" class="btn-secondary" onclick="activateTab('restaurant-visitors')">Cancel</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Reports Page -->
+            <div id="reports" class="page">
+                <div class="content-header-row">
+                    <i class="fas fa-file-invoice"></i>
+                    <h3>Analytics & Reports</h3>
+                </div>
+                <div class="card">
+                    <form id="report-form">
+                        <div class="form-grid">
                             <div class="form-group">
-                                <label for="report-type">Report Type</label>
+                                <label>Report Type</label>
                                 <select id="report-type" name="report-type">
                                     <option value="daily">Daily Report</option>
                                     <option value="weekly">Weekly Report</option>
                                     <option value="monthly">Monthly Report</option>
-                                    <option value="custom">Custom Date Range</option>
+                                    <option value="custom">Custom Range</option>
                                 </select>
-                            </div>
-                            <div class="form-group" id="custom-date-range" style="display: none;">
-                                <label for="start-date">Start Date</label>
-                                <input type="date" id="start-date" name="start-date">
-                                <label for="end-date">End Date</label>
-                                <input type="date" id="end-date" name="end-date">
                             </div>
                             <div class="form-group">
-                                <label for="report-venue">Venue</label>
+                                <label>Venue</label>
                                 <select id="report-venue" name="report-venue">
                                     <option value="all">All Venues</option>
-                                    <option value="hotel">Hotel Only</option>
-                                    <option value="restaurant">Restaurant Only</option>
+                                    <option value="hotel">Hotel</option>
+                                    <option value="restaurant">Restaurant</option>
                                 </select>
                             </div>
-                            <div class="form-group" style="margin-top: 1.5rem;">
-                                <button type="submit" class="btn-submit-premium">
-                                    <i class="fas fa-file-pdf"></i> Generate Report
-                                </button>
-                            </div>
-                        </form>
-                    </div>
+                        </div>
+                        <button type="submit" class="btn-submit-premium" style="width: auto; padding: 12px 25px;">
+                            <i class="fas fa-download"></i> Generate PDF Report
+                        </button>
+                    </form>
+                </div>
+            </div>
 
                     <div class="card" id="report-results" style="display: none;">
                         <h2>Report Results</h2>
@@ -506,14 +765,14 @@ function getLastInsertId()
 
 
 
-                <!-- Maintenance Page -->
-                <div id="maintenance" class="page">
-                    <div style="display: flex; align-items: center; gap: 15px; margin-bottom: 2rem;">
-                        <img src="../assets/image/logo2.png" alt="Logo" style="height: 50px; width: auto;">
-                        <h1 style="margin-bottom: 0;">Maintenance Management</h1>
-                    </div>
-                    
-                    <div class="card" style="padding: 1.5rem;">
+            <!-- Maintenance Page -->
+            <div id="maintenance" class="page">
+                <div class="content-header-row">
+                    <i class="fas fa-screwdriver-wrench"></i>
+                    <h3>Service & Maintenance</h3>
+                </div>
+                
+                <div class="card" style="padding: 1.5rem;">
                         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem; padding-bottom: 1rem; border-bottom: 1px solid var(--gray-100);">
                             <div style="display: flex; align-items: center; gap: 12px;">
                                 <div style="width: 40px; height: 40px; background: rgba(59, 130, 246, 0.1); border-radius: 10px; display: flex; align-items: center; justify-content: center; color: var(--secondary);">
@@ -754,12 +1013,21 @@ function getLastInsertId()
             const page = document.getElementById(pageId);
             if (page) page.classList.add('active');
 
-            // update active state for the nav buttons
-            document.querySelectorAll('.nav-btn').forEach(function (btn) {
-                if (btn.getAttribute('data-target') === pageId) {
-                    btn.classList.add('active');
+            // Update top nav items
+            document.querySelectorAll('.module-header .top-nav span, .module-header .top-nav a').forEach(function (el) {
+                if (el.getAttribute('data-page') === pageId) {
+                    el.className = 'nav-pill';
+                } else if (el.className === 'nav-pill') {
+                    el.className = 'nav-item-top';
+                }
+            });
+
+            // Update sidebar items
+            document.querySelectorAll('.module-sidebar .sidebar-item').forEach(function (item) {
+                if (item.getAttribute('data-sidebar') === pageId) {
+                    item.classList.add('active');
                 } else {
-                    btn.classList.remove('active');
+                    item.classList.remove('active');
                 }
             });
         }
