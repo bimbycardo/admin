@@ -30,10 +30,12 @@ function get_nav_link($tab, $is_dashboard, $isSuperAdmin)
                         <img src="<?= $projRoot ?>/assets/image/logo.png?v=2" alt="Atiéra Logo" class="full-logo"
                             style="height:60px; width:auto; display:block; transition: all 0.3s; filter: drop-shadow(0 4px 6px rgba(0,0,0,0.1));">
                         
-                        <!-- Dashboard Title with Border Box below Logo -->
+                        <!-- Dynamic Subtitle with Border Box below Logo -->
                         <div style="display: flex; flex-direction: column; align-items: center; gap: 5px;">
                             <div style="border: 1px solid rgba(212, 175, 55, 0.4); padding: 3px 12px; border-radius: 6px; background: rgba(212, 175, 55, 0.05); display: flex; align-items: center; justify-content: center;">
-                                <span style="color: #d4af37; font-family: 'Cinzel', serif; font-size: 0.75rem; font-weight: 700; letter-spacing: 2px; text-transform: uppercase;">DASHBOARD</span>
+                                <span style="color: #d4af37; font-family: 'Cinzel', serif; font-size: 0.7rem; font-weight: 700; letter-spacing: 2px; text-transform: uppercase;">
+                                    <?= ($current_page == 'Settings.php') ? 'ACCOUNT SETTINGS' : 'DASHBOARD' ?>
+                                </span>
                             </div>
                             <?php if ($isSuperAdmin): ?>
                                 <span style="color: #64748b; font-size: 8px; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; opacity: 0.7;">Administrative Access</span>
