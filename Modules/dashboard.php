@@ -846,10 +846,12 @@ $r_rows = [];
         @media (min-width: 769px) {
             .sidebar {
                 transition: width 0.3s ease;
+                width: 280px !important;
             }
 
             .main-content {
                 transition: margin-left 0.3s ease;
+                margin-left: 280px !important;
             }
 
             body.collapsed-sidebar .sidebar {
