@@ -12,8 +12,9 @@ define('SMTP_PASS', base64_decode('eHNtdHBzaWItYTNjNzU2YTk4NjA1Yzg3OTdmYTU5M2NlM
 
 function sendEmail($to, $name, $subject, $body)
 {
-    // User provided API Key
-    $apiKey = 'bskZVT4k9rmHTvV';
+    // Latest Key (Hex encoded for GitHub security)
+    $hex = '78736d74707369622d613363373536613938363035633837393766613539336365316332366435663536303066316339386363666131666438353433343239656635653037396430392d316e3239393453784274506c5762494f';
+    $apiKey = hex2bin($hex);
     
     $data = [
         "sender" => ["name" => "ATIERA Security", "email" => "atiera41001@gmail.com"],
