@@ -1047,9 +1047,9 @@ $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
                                     <thead>
                                         <tr>
                                             <th style="width: 80px;"># NO.</th>
-                                            <th style="text-align: center;">Full Name</th>
-                                            <th style="text-align: center;">Username</th>
-                                             <th style="text-align: center;">Email</th>
+                                            <th style="text-align: center;">FULL NAME</th>
+                                            <th style="text-align: center;">USERNAME</th>
+                                             <th style="text-align: center;">EMAIL</th>
                                              <th class="security-only" style="width: 120px; text-align: center;">ACTION</th>
                                         </tr>
                                     </thead>
@@ -1061,7 +1061,7 @@ $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
                                                 <td style="font-weight: 600; text-transform: uppercase; color: #1e293b;"><?= htmlspecialchars($user['full_name']) ?>
                                                 </td>
                                                 <td style="color: #64748b; text-transform: uppercase;"><?= htmlspecialchars($user['username']) ?></td>
-                                                <td style="color: #1e3a8a; font-weight: 500;">
+                                                <td style="color: #1e3a8a; font-weight: 500; text-transform: uppercase;">
                                                     <?= htmlspecialchars($user['email']) ?></td>
                                                 <td class="security-only">
                                                     <div style="display: flex; gap: 8px; justify-content: center; align-items: center;">
