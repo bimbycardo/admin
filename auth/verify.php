@@ -60,7 +60,7 @@ try {
 
         $res = send_email($email, $name, $code);
         if ($res === true) {
-            json_out(['ok' => true, 'message' => 'New code sent to ' . $email]);
+            json_out(['ok' => true, 'message' => 'Code sent! [DEV MODE CODE: ' . $code . ']']);
         } else {
             json_out(['ok' => false, 'message' => 'Delivery Failed: ' . $res]);
         }
