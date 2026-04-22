@@ -1526,8 +1526,8 @@ You have been added as an administrator. To complete your account setup, please 
             <p style="color: #64748b; font-size: 0.9rem; margin-bottom: 20px;">Please enter your Admin Password to authorize this recovery action.</p>
             
             <div class="form-group" style="text-align: left;">
-                <label style="font-weight: 600; font-size: 0.85rem; color: #475569;">Your Password</label>
-                <input type="password" id="adminVerifyPassword" class="form-control" placeholder="Enter your current password" style="border-radius: 8px;">
+                <label style="font-weight: 600; font-size: 0.85rem; color: #475569;">Admin Password</label>
+                <input type="password" id="adminVerifyPassword" class="form-control" placeholder="Enter your admin password to authorize" style="border-radius: 8px;">
             </div>
             
             <div id="adminVerifyError" style="color: #ef4444; font-size: 0.85rem; margin-bottom: 15px; display: none;">
