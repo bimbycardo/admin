@@ -104,44 +104,56 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['username']) && isset(
             // Table might already exist, ignore
           }
 
-          // Generate and send verification code
+          // Check for an existing valid verification code first
           try {
-            $code = (string) random_int(100000, 999999);
-            $expiresAt = (new DateTime('+15 minutes'))->format('Y-m-d H:i:s');
-            $stmt = $pdo->prepare('INSERT INTO email_verifications (user_id, code, expires_at) VALUES (:user_id, :code, :expires_at)');
-            $stmt->execute([':user_id' => $user['id'], ':code' => $code, ':expires_at' => $expiresAt]);
+            $stmt_check = $pdo->prepare('SELECT code FROM email_verifications WHERE user_id = :user_id AND expires_at > NOW() ORDER BY created_at DESC LIMIT 1');
+            $stmt_check->execute([':user_id' => $user['id']]);
+            $existing_code = $stmt_check->fetchColumn();
 
-            // Official Premium Template
-            $subject = "Your ATIERA Verification Code";
-            $message = "
-                <div style='font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; border: 1px solid #d4af37; border-radius: 12px; background-color: #0b1538; padding: 30px; color: #ffffff;'>
-                    <div style='text-align: center; padding-bottom: 20px;'>
-                         <h2 style='color: #d4af37; margin: 0; font-size: 28px; letter-spacing: 1px;'>ATIERA</h2>
-                         <p style='color: #94a3b8; font-size: 14px;'>Secure Dashboard Verification</p>
-                    </div>
-                    <div style='background-color: #15265e; border-radius: 10px; padding: 30px; text-align: center; border: 1px solid #2342a6;'>
-                         <p style='font-size: 14px; color: #cbd5e1; margin-bottom: 15px;'>Your verification code is:</p>
-                         <div style='font-size: 42px; font-weight: 800; color: #d4af37; letter-spacing: 12px; background: #0f1c49; border: 2px solid #d4af37; border-radius: 8px; display: inline-block; padding: 15px 35px; box-shadow: 0 4px 15px rgba(212, 175, 55, 0.15);'>
-                             $code
-                         </div>
-                         <p style='font-size: 12px; color: #f87171; margin-top: 25px;'>This code expires in 15 minutes.</p>
-                    </div>
-                    <div style='text-align: center; margin-top: 25px; color: #64748b; font-size: 12px;'>
-                        If you did not request this, please secure your account immediately.
-                    </div>
-                </div>";
+            if ($existing_code) {
+                // Reuse the existing code and skip sending a new email
+                $code = $existing_code;
+                $show_verify_modal = true;
+                $success_message = 'A verification code is already active. Please use the code sent to your email.';
+            } else {
+                // No valid code found, generate and send a new one
+                $code = (string) random_int(100000, 999999);
+                $expiresAt = (new DateTime('+24 hours'))->format('Y-m-d H:i:s');
+                $stmt = $pdo->prepare('INSERT INTO email_verifications (user_id, code, expires_at) VALUES (:user_id, :code, :expires_at)');
+                $stmt->execute([':user_id' => $user['id'], ':code' => $code, ':expires_at' => $expiresAt]);
 
-            $email_sent = sendEmail($user['email'], $user['full_name'], $subject, $message);
+                // Official Premium Template
+                $subject = "Your ATIERA Verification Code";
+                $message = "
+                    <div style='font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; border: 1px solid #d4af37; border-radius: 12px; background-color: #0b1538; padding: 30px; color: #ffffff;'>
+                        <div style='text-align: center; padding-bottom: 20px;'>
+                             <h2 style='color: #d4af37; margin: 0; font-size: 28px; letter-spacing: 1px;'>ATIERA</h2>
+                             <p style='color: #94a3b8; font-size: 14px;'>Secure Dashboard Verification</p>
+                        </div>
+                        <div style='background-color: #15265e; border-radius: 10px; padding: 30px; text-align: center; border: 1px solid #2342a6;'>
+                             <p style='font-size: 14px; color: #cbd5e1; margin-bottom: 15px;'>Your verification code is:</p>
+                             <div style='font-size: 42px; font-weight: 800; color: #d4af37; letter-spacing: 12px; background: #0f1c49; border: 2px solid #d4af37; border-radius: 8px; display: inline-block; padding: 15px 35px; box-shadow: 0 4px 15px rgba(212, 175, 55, 0.15);'>
+                                 $code
+                             </div>
+                             <p style='font-size: 12px; color: #f87171; margin-top: 25px;'>This code expires in 24 hours.</p>
+                        </div>
+                        <div style='text-align: center; margin-top: 25px; color: #64748b; font-size: 12px;'>
+                            If you did not request this, please secure your account immediately.
+                        </div>
+                    </div>";
+
+                $email_sent = sendEmail($user['email'], $user['full_name'], $subject, $message);
+                
+                if ($email_sent === true) {
+                    $success_message = 'Verification code sent to your email. Please check your Inbox.';
+                } else {
+                    $error_message = 'Email System Error: ' . $email_sent;
+                }
+            }
 
             // --- ALWAYS TRIGGER MODAL ---
             $prefill_email = $user['email'];
             $show_verify_modal = true;
-
-            if ($email_sent === true) {
-                $success_message = 'Verification code sent to your email. Please check your Inbox.';
-            } else {
-                $error_message = 'Email System Error: ' . $email_sent;
-            }
 
           } catch (\Exception $e) {
             $error_message = "An error occurred. Please try again.";
