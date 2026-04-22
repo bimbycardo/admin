@@ -22,7 +22,9 @@ curl_setopt($ch, CURLOPT_HTTPHEADER, [
 
 $r = curl_exec($ch);
 $code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-if(curl_errno($ch)) { echo "CURL ERROR: " . curl_error($ch) . "\n"; }
+if (curl_errno($ch)) {
+    echo "CURL ERROR: " . curl_error($ch) . "\n";
+}
 curl_close($ch);
 
 echo "HTTP $code\n";
