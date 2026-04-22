@@ -4,28 +4,56 @@
  * Uses the advanced bindto socket parameter to force IPv4 WITHOUT changing the hostname.
  */
 
-// User's requested Gmail configuration
-define('SMTP_HOST', 'smtp.gmail.com');
-define('SMTP_PORT', 587);
-define('SMTP_USER', 'atiera41001@gmail.com');
-define('SMTP_PASS', 'dxis mokl icnb iemt');
+// User's requested Gmail configuration has been moved directly inside the sendEmail function below for a cleaner, encapsulated setup.
 
 function sendEmail($to, $name, $subject, $body)
 {
-    // Native PHP Mail Implementation
-    $domainSender = 'atiera41001@gmail.com';
-    $headers = "MIME-Version: 1.0\r\n";
-    $headers .= "Content-type:text/html;charset=UTF-8\r\n";
-    $headers .= "From: ATIERA Security <$domainSender>\r\n";
-    $headers .= "Reply-To: $domainSender\r\n";
-    $headers .= "X-Mailer: PHP/" . phpversion() . "\r\n";
-
-    // Call native mail function
-    if (@mail($to, $subject, $body, $headers, "-f$domainSender")) {
-        return true;
+    $root = dirname(__DIR__);
+    // Search for PHPMailer in common locations
+    $paths = [$root . '/PHPMailer/src/', $root . '/phpmailer/src/'];
+    $src = '';
+    foreach ($paths as $p) {
+        if (file_exists($p . 'PHPMailer.php')) {
+            $src = $p;
+            break;
+        }
     }
 
-    return "Native PHP mail() failed to send the email.";
+    // Fallback if not found
+    if (empty($src)) {
+        return "PHPMailer library not found.";
+    }
+
+    require_once $src . 'Exception.php';
+    require_once $src . 'PHPMailer.php';
+    require_once $src . 'SMTP.php';
+
+    $mail = new \PHPMailer\PHPMailer\PHPMailer(true);
+
+    try {
+        // Server settings
+        $mail->isSMTP();
+        $mail->Host       = 'smtp.gmail.com';
+        $mail->SMTPAuth   = true;
+        $mail->Username   = 'atiera41001@gmail.com';
+        $mail->Password   = 'dxis mokl icnb iemt'; // App password
+        $mail->SMTPSecure = \PHPMailer\PHPMailer\PHPMailer::ENCRYPTION_STARTTLS;
+        $mail->Port       = 587;
+
+        // Recipients
+        $mail->setFrom('atiera41001@gmail.com', 'ATIERA Security');
+        $mail->addAddress($to, $name);
+
+        // Content
+        $mail->isHTML(true);
+        $mail->Subject = $subject;
+        $mail->Body    = $body;
+
+        $mail->send();
+        return true;
+    } catch (\Exception $e) {
+        return "Message could not be sent. Mailer Error: {$mail->ErrorInfo}";
+    }
 }
 
 function getBaseUrl()
