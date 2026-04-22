@@ -36,8 +36,8 @@ function sendEmail($to, $name, $subject, $body)
         $mail->SMTPAuth   = true;
         $mail->Username   = SMTP_USER;
         $mail->Password   = SMTP_PASS;
-        $mail->SMTPSecure = 'ssl'; // Switching to SSL for Brevo compatibility
-        $mail->Port       = 465;
+        $mail->SMTPSecure = \PHPMailer\PHPMailer\PHPMailer::ENCRYPTION_STARTTLS; 
+        $mail->Port       = 587;
         $mail->Timeout    = 25;
 
         // Force IPv4 for stability (Hostinger fix)
@@ -46,28 +46,32 @@ function sendEmail($to, $name, $subject, $body)
             'ssl' => ['verify_peer' => false, 'verify_peer_name' => false, 'allow_self_signed' => true]
         ];
 
-        // Brevo requires a verified sender. Using the Brevo login email.
         $mail->setFrom(SMTP_USER, 'ATIERA Security');
         $mail->addAddress($to, $name);
         $mail->isHTML(true);
         $mail->Subject = $subject;
         $mail->Body    = $body;
 
-        return $mail->send();
+        if ($mail->send()) {
+            return true;
+        }
 
     } catch (Exception $e) {
         $smtpError = $mail->ErrorInfo;
-        // Fallback to Native mail if Brevo SMTP fails
-        $domainSender = 'admin@atierahotelandrestaurant.com';
+        
+        // --- NATIVE FALLBACK ---
+        $domainSender = 'admin@atierahotelandrestaurant.com'; // Try using a domain email
         $headers = "MIME-Version: 1.0\r\n";
         $headers .= "Content-type:text/html;charset=UTF-8\r\n";
         $headers .= "From: ATIERA Security <$domainSender>\r\n";
         
         if (@mail($to, $subject, $body, $headers, "-f$domainSender")) {
-            return true;
+            // If native mail returns true, we return a warning instead of just 'true' 
+            // so the user knows SMTP failed.
+            return "SMTP Failed ($smtpError) but Server Mail sent. Check spam.";
         }
         
-        return "SMTP Error: " . $smtpError;
+        return "Critical Error. SMTP: $smtpError";
     }
 }
 
