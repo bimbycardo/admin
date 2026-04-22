@@ -417,9 +417,9 @@ function getLastInsertId()
         </div>
         <div class="top-nav">
             <!-- Real-time Clock -->
-            <div style="margin-right: 25px; text-align: right; display: flex; flex-direction: column; justify-content: center;">
-                <div id="module-clock" style="color: #fff; font-weight: 800; font-size: 1rem; line-height: 1;"></div>
-                <div id="module-date" style="color: rgba(255,255,255,0.5); font-size: 0.7rem; font-weight: 600; text-transform: uppercase; margin-top: 4px; letter-spacing: 0.5px;"></div>
+            <div style="margin-right: 30px; display: flex; align-items: center; gap: 15px; border-right: 1px solid rgba(255,255,255,0.1); padding-right: 25px;">
+                <div id="module-clock" style="color: #fff; font-weight: 800; font-size: 1rem;"></div>
+                <div id="module-date" style="color: rgba(255,255,255,0.5); font-size: 0.8rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px;"></div>
             </div>
 
             <!-- Notification Trigger -->
@@ -1069,8 +1069,8 @@ function getLastInsertId()
                 const now = new Date();
                 const clockEl = document.getElementById('module-clock');
                 const dateEl = document.getElementById('module-date');
-                if (clockEl) clockEl.textContent = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
-                if (dateEl) dateEl.textContent = now.toLocaleDateString([], { weekday: 'short', month: 'short', day: 'numeric', year: 'numeric' });
+                if (clockEl) clockEl.textContent = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+                if (dateEl) dateEl.textContent = now.toLocaleDateString([], { month: 'short', day: 'numeric', year: 'numeric' });
             }
             setInterval(updateModuleClock, 1000);
             updateModuleClock();
