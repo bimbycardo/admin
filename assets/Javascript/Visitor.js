@@ -343,19 +343,20 @@ function updateDashboard() {
 
     const hotelCurrent = hotelVisitors.filter(guest => guest.status === 'timed-in').length;
 
-    // Restaurant statistics
-    const restaurantToday = restaurantVisitors.filter(visitor => {
-        const checkinDate = new Date(visitor.checkinTime).toDateString();
-        return checkinDate === today;
-    }).length;
+    // Restaurant statistics (Sum of party sizes for total guest count)
+    const restaurantTodayGuests = restaurantVisitors
+        .filter(visitor => new Date(visitor.checkinTime).toDateString() === today)
+        .reduce((sum, v) => sum + (parseInt(v.partySize) || 0), 0);
 
-    const restaurantCurrent = restaurantVisitors.filter(visitor => visitor.status === 'timed-in').length;
+    const restaurantCurrentGuests = restaurantVisitors
+        .filter(visitor => visitor.status === 'timed-in')
+        .reduce((sum, v) => sum + (parseInt(v.partySize) || 0), 0);
 
     // Update DOM
     document.getElementById('hotel-today').textContent = hotelToday;
     document.getElementById('hotel-current').textContent = hotelCurrent;
-    document.getElementById('restaurant-today').textContent = restaurantToday;
-    document.getElementById('restaurant-current').textContent = restaurantCurrent;
+    document.getElementById('restaurant-today').textContent = restaurantTodayGuests;
+    document.getElementById('restaurant-current').textContent = restaurantCurrentGuests;
 
     // Update recent activity
     updateRecentActivity();
@@ -536,9 +537,14 @@ function loadCurrentVisitors() {
                                 <td style="font-weight: 600; color: #3b82f6;">${visitor.table}</td>
                                 <td style="color: #64748b;">${formatTime(visitor.checkinTime)}</td>
                                 <td style="text-align: center;">
-                                    <button class="btn-action-timeout" onclick="timeOutRestaurantVisitor('${visitor.id}')" title="Time-out Visitor">
-                                        <i class="fas fa-sign-out-alt"></i>
-                                    </button>
+                                    <div style="display: flex; gap: 8px; justify-content: center;">
+                                        <button class="btn-action-view" onclick="viewVisitorDetails('${visitor.id}')" title="View Details">
+                                            <i class="fas fa-eye"></i>
+                                        </button>
+                                        <button class="btn-action-timeout" onclick="timeOutRestaurantVisitor('${visitor.id}')" title="Time-out Visitor">
+                                            <i class="fas fa-sign-out-alt"></i>
+                                        </button>
+                                    </div>
                                 </td>
                             `;
                             restaurantTbody.appendChild(row);
@@ -646,18 +652,72 @@ function viewVisitorDetails(guestId) {
             if (data.status === 'success' && data.data) {
                 const guest = data.data.find(g => String(g.id) === String(guestId));
                 if (guest) {
-                    const detailsHtml = `
-                    <div style="text-align: left; line-height: 1.6;">
-                        <p><strong>Name:</strong> ${guest.full_name}</p>
-                        <p><strong>Room:</strong> ${guest.room_number || 'N/A'}</p>
-                        <p><strong>Email:</strong> ${guest.email || 'N/A'}</p>
-                        <p><strong>Phone:</strong> ${guest.phone_number || 'N/A'}</p>
-                        <p><strong>Check-in:</strong> ${guest.checkin_date}</p>
-                        <p><strong>Status:</strong> ${guest.status}</p>
-                        <p><strong>Notes:</strong> ${guest.notes || 'None'}</p>
+                    const venue = guest.venue || 'hotel';
+                    let detailsHtml = `
+                    <div style="text-align: left; line-height: 1.6; color: #1e293b;">
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 20px;">
+                            <div>
+                                <p style="margin: 0; font-size: 0.8rem; color: #64748b; text-transform: uppercase; font-weight: 700;">Name</p>
+                                <p style="margin: 0; font-weight: 600;">${guest.full_name}</p>
+                            </div>
+                            <div>
+                                <p style="margin: 0; font-size: 0.8rem; color: #64748b; text-transform: uppercase; font-weight: 700;">Venue</p>
+                                <p style="margin: 0; font-weight: 600; text-transform: capitalize;">${venue}</p>
+                            </div>
+                            <div>
+                                <p style="margin: 0; font-size: 0.8rem; color: #64748b; text-transform: uppercase; font-weight: 700;">Phone</p>
+                                <p style="margin: 0; font-weight: 600;">${guest.phone_number || 'N/A'}</p>
+                            </div>
+                            <div>
+                                <p style="margin: 0; font-size: 0.8rem; color: #64748b; text-transform: uppercase; font-weight: 700;">Email</p>
+                                <p style="margin: 0; font-weight: 600;">${guest.email || 'N/A'}</p>
+                            </div>
+                    `;
+
+                    if (venue === 'hotel') {
+                        detailsHtml += `
+                            <div>
+                                <p style="margin: 0; font-size: 0.8rem; color: #64748b; text-transform: uppercase; font-weight: 700;">Room</p>
+                                <p style="margin: 0; font-weight: 600;">${guest.room_number || 'N/A'}</p>
+                            </div>
+                        `;
+                    } else {
+                        detailsHtml += `
+                            <div>
+                                <p style="margin: 0; font-size: 0.8rem; color: #64748b; text-transform: uppercase; font-weight: 700;">Party Size</p>
+                                <p style="margin: 0; font-weight: 600;">${guest.party_size || '1'}</p>
+                            </div>
+                            <div>
+                                <p style="margin: 0; font-size: 0.8rem; color: #64748b; text-transform: uppercase; font-weight: 700;">Table</p>
+                                <p style="margin: 0; font-weight: 600;">${guest.table_number || 'N/A'}</p>
+                            </div>
+                        `;
+                    }
+
+                    detailsHtml += `
+                            <div>
+                                <p style="margin: 0; font-size: 0.8rem; color: #64748b; text-transform: uppercase; font-weight: 700;">Check-in</p>
+                                <p style="margin: 0; font-weight: 600;">${formatDate(guest.checkin_date)}</p>
+                            </div>
+                            <div>
+                                <p style="margin: 0; font-size: 0.8rem; color: #64748b; text-transform: uppercase; font-weight: 700;">Status</p>
+                                <p style="margin: 0; font-weight: 600; text-transform: uppercase;">${guest.status}</p>
+                            </div>
+                        </div>
+                        <div style="margin-bottom: 20px;">
+                            <p style="margin: 0; font-size: 0.8rem; color: #64748b; text-transform: uppercase; font-weight: 700;">Host / Server</p>
+                            <p style="margin: 0; font-weight: 600;">${guest.host_id || 'N/A'}</p>
+                        </div>
+                        <div style="margin-bottom: 25px;">
+                            <p style="margin: 0; font-size: 0.8rem; color: #64748b; text-transform: uppercase; font-weight: 700;">Notes</p>
+                            <p style="margin: 0; font-weight: 600;">${guest.notes || 'No notes provided.'}</p>
+                        </div>
+                        <button onclick="closeDetailsModal(); openEntryModal('${venue}', {id: '${guest.id}', name: '${guest.full_name.replace(/'/g, "\\'")}', email: '${guest.email || ''}', phone: '${guest.phone_number || ''}', room: '${guest.room_number || ''}', host: '${guest.host_id || ''}', notes: '${(guest.notes || '').replace(/'/g, "\\'").replace(/\n/g, "\\n")}', partySize: '${guest.party_size || ''}', table: '${guest.table_number || ''}'})" 
+                                style="width: 100%; padding: 12px; background: #3b82f6; color: white; border: none; border-radius: 10px; font-weight: 700; cursor: pointer; transition: all 0.2s;">
+                            <i class="fas fa-edit"></i> Edit Entry
+                        </button>
                     </div>
                 `;
-                    // Use the custom details modal function we will create
                     if (typeof showDetailsModal === 'function') {
                         showDetailsModal('Visitor Details', detailsHtml);
                     } else {

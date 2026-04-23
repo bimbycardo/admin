@@ -86,6 +86,9 @@ try {
         }
         // --- END CHECKOUT LOGIC ---
 
+        $action = $input['action'] ?? 'insert';
+        $entryId = $input['entry_id'] ?? null;
+
         $fullName = $input['full_name'] ?? $input['visitor-name'] ?? null;
         $email = $input['email'] ?? null;
         $phone = $input['phone'] ?? $input['visitor-phone'] ?? null;
@@ -102,20 +105,38 @@ try {
             exit;
         }
 
-        $sql = "INSERT INTO direct_checkins (full_name, email, phone_number, room_number, host_id, checkin_date, notes, status, venue, party_size, table_number) VALUES (?, ?, ?, ?, ?, ?, ?, 'active', ?, ?, ?)";
-
-        if ($db instanceof mysqli) {
-            $stmt = $db->prepare($sql);
-            $stmt->bind_param("ssssssssis", $fullName, $email, $phone, $roomNumber, $hostId, $checkinDate, $notes, $venue, $partySize, $tableNumber);
-            if ($stmt->execute()) {
-                echo json_encode(['status' => 'success', 'message' => 'Check-in recorded successfully.']);
-            } else {
-                throw new Exception($stmt->error);
+        if ($action === 'update' && $entryId) {
+            $sql = "UPDATE direct_checkins SET full_name=?, email=?, phone_number=?, room_number=?, host_id=?, notes=?, venue=?, party_size=?, table_number=? WHERE id=?";
+            if ($db instanceof mysqli) {
+                $stmt = $db->prepare($sql);
+                // Types: sssssssisi (7 strings, 1 int, 1 string, 1 int)
+                $stmt->bind_param("sssssssisi", $fullName, $email, $phone, $roomNumber, $hostId, $notes, $venue, $partySize, $tableNumber, $entryId);
+                if ($stmt->execute()) {
+                    echo json_encode(['status' => 'success', 'message' => 'Entry updated successfully.']);
+                } else {
+                    throw new Exception($stmt->error);
+                }
+            } elseif ($db instanceof PDO) {
+                $stmt = $db->prepare($sql);
+                $stmt->execute([$fullName, $email, $phone, $roomNumber, $hostId, $notes, $venue, $partySize, $tableNumber, $entryId]);
+                echo json_encode(['status' => 'success', 'message' => 'Entry updated successfully.']);
             }
-        } elseif ($db instanceof PDO) {
-            $stmt = $db->prepare($sql);
-            $stmt->execute([$fullName, $email, $phone, $roomNumber, $hostId, $checkinDate, $notes, $venue, $partySize, $tableNumber]);
-            echo json_encode(['status' => 'success', 'message' => 'Check-in recorded successfully.']);
+        } else {
+            $sql = "INSERT INTO direct_checkins (full_name, email, phone_number, room_number, host_id, checkin_date, notes, status, venue, party_size, table_number) VALUES (?, ?, ?, ?, ?, ?, ?, 'active', ?, ?, ?)";
+
+            if ($db instanceof mysqli) {
+                $stmt = $db->prepare($sql);
+                $stmt->bind_param("ssssssssis", $fullName, $email, $phone, $roomNumber, $hostId, $checkinDate, $notes, $venue, $partySize, $tableNumber);
+                if ($stmt->execute()) {
+                    echo json_encode(['status' => 'success', 'message' => 'Check-in recorded successfully.']);
+                } else {
+                    throw new Exception($stmt->error);
+                }
+            } elseif ($db instanceof PDO) {
+                $stmt = $db->prepare($sql);
+                $stmt->execute([$fullName, $email, $phone, $roomNumber, $hostId, $checkinDate, $notes, $venue, $partySize, $tableNumber]);
+                echo json_encode(['status' => 'success', 'message' => 'Check-in recorded successfully.']);
+            }
         }
 
         exit;

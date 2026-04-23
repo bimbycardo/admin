@@ -910,8 +910,24 @@ function getLastInsertId()
                                 <input type="text" name="full_name" required placeholder="John Doe">
                             </div>
                             <div class="form-group">
+                                <label>Email Address</label>
+                                <input type="email" name="email" placeholder="john@example.com">
+                            </div>
+                            <div class="form-group">
+                                <label>Phone Number</label>
+                                <input type="text" name="phone" placeholder="09123456789">
+                            </div>
+                            <div class="form-group">
                                 <label>Room / Suite</label>
                                 <input type="text" name="room_number" required placeholder="101">
+                            </div>
+                            <div class="form-group">
+                                <label>Host / Contact Person</label>
+                                <input type="text" name="host_id" placeholder="Staff Name">
+                            </div>
+                            <div class="form-group" style="grid-column: span 2;">
+                                <label>Notes</label>
+                                <textarea name="notes" placeholder="Additional details..." style="width: 100%; padding: 10px; border-radius: 8px; border: 1px solid #e2e8f0; height: 60px;"></textarea>
                             </div>
                         </div>
                     </form>
@@ -920,18 +936,30 @@ function getLastInsertId()
                     <form id="modal-restaurant-form" style="display: none;">
                         <input type="hidden" name="action" value="insert">
                         <input type="hidden" name="entry_id" value="">
-                        <div class="form-grid" style="grid-template-columns: 1fr 1fr 1fr;">
+                        <div class="form-grid">
                             <div class="form-group">
                                 <label>Diner Name</label>
                                 <input type="text" name="visitor-name" required placeholder="Jane Doe">
                             </div>
                             <div class="form-group">
-                                <label>Party Size</label>
-                                <input type="number" name="party-size" required placeholder="2">
+                                <label>Phone Number</label>
+                                <input type="text" name="visitor-phone" placeholder="09123456789">
                             </div>
                             <div class="form-group">
-                                <label>Table</label>
+                                <label>Party Size</label>
+                                <input type="number" name="party-size" required placeholder="2" min="1">
+                            </div>
+                            <div class="form-group">
+                                <label>Table Number</label>
                                 <input type="text" name="table-number" required placeholder="T-12">
+                            </div>
+                            <div class="form-group">
+                                <label>Host / Server</label>
+                                <input type="text" name="restaurant-host" placeholder="Waiter Name">
+                            </div>
+                            <div class="form-group" style="grid-column: span 2;">
+                                <label>Notes / Special Requests</label>
+                                <textarea name="restaurant-notes" placeholder="Allergies, seating preference, etc..." style="width: 100%; padding: 10px; border-radius: 8px; border: 1px solid #e2e8f0; height: 60px;"></textarea>
                             </div>
                         </div>
                     </form>
@@ -970,8 +998,12 @@ function getLastInsertId()
                     if (data) {
                         hotelForm.action.value = 'update';
                         hotelForm.entry_id.value = data.id;
-                        hotelForm.full_name.value = data.name;
-                        hotelForm.room_number.value = data.room;
+                        hotelForm.full_name.value = data.name || '';
+                        hotelForm.email.value = data.email || '';
+                        hotelForm.phone.value = data.phone || '';
+                        hotelForm.room_number.value = data.room || '';
+                        hotelForm.host_id.value = data.host || '';
+                        hotelForm.notes.value = data.notes || '';
                     } else {
                         hotelForm.reset();
                         hotelForm.action.value = 'insert';
@@ -983,9 +1015,12 @@ function getLastInsertId()
                     if (data) {
                         restForm.action.value = 'update';
                         restForm.entry_id.value = data.id;
-                        restForm.elements['visitor-name'].value = data.name;
-                        restForm.elements['party-size'].value = data.party;
-                        restForm.elements['table-number'].value = data.table;
+                        restForm.elements['visitor-name'].value = data.name || '';
+                        restForm.elements['visitor-phone'].value = data.phone || '';
+                        restForm.elements['party-size'].value = data.partySize || data.party || '';
+                        restForm.elements['table-number'].value = data.table || '';
+                        restForm.elements['restaurant-host'].value = data.host || '';
+                        restForm.elements['restaurant-notes'].value = data.notes || '';
                     } else {
                         restForm.reset();
                         restForm.action.value = 'insert';
