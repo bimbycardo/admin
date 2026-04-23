@@ -97,7 +97,8 @@ try {
         $checkinDate = $input['time_in'] ?? date('Y-m-d H:i:s');
         $notes = $input['notes'] ?? $input['restaurant-notes'] ?? null;
         $venue = $input['venue'] ?? 'hotel';
-        $partySize = $input['party_size'] ?? $input['party-size'] ?? 1;
+        $partySize = (!empty($input['party_size'])) ? (int)$input['party_size'] : 
+                     ((!empty($input['party-size'])) ? (int)$input['party-size'] : 1);
         $tableNumber = $input['table_number'] ?? $input['table-number'] ?? null;
 
         if (!$fullName) {
