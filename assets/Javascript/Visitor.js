@@ -593,13 +593,12 @@ function timeOutRestaurantVisitor(visitorId) {
 
 // Load visitor history into tables
 function loadHistory() {
-    // 1. Hotel History (Mock/Local for now, or you can fetch all from API)
+    // 1. Hotel History
     const hotelHistoryTable = document.getElementById('hotel-history-table');
     if (hotelHistoryTable) {
         const tbody = hotelHistoryTable.querySelector('tbody');
         tbody.innerHTML = '';
 
-        // For demonstration, let's use the local array which might be empty if using only API
         if (hotelVisitors.length === 0) {
             tbody.innerHTML = '<tr><td colspan="5" style="text-align: center;">No history records</td></tr>';
         } else {
@@ -608,10 +607,10 @@ function loadHistory() {
                 const statusLabel = guest.status === 'timed-in' ? 'CHECKED IN' : guest.status;
                 const statusClass = guest.status === 'timed-in' ? 'status-timed-in' : 'status-timed-out';
                 row.innerHTML = `
-                    <td>${guest.name}</td>
-                    <td>${guest.room || 'N/A'}</td>
-                    <td>${formatDate(guest.checkinTime)}</td>
-                    <td>${guest.checkoutTime ? formatDate(guest.checkoutTime) : 'N/A'}</td>
+                    <td style="font-weight: 700;">${guest.name}</td>
+                    <td style="font-weight: 600; color: #64748b;">${guest.room || 'N/A'}</td>
+                    <td style="color: #64748b;">${formatDate(guest.checkinTime)}</td>
+                    <td style="color: #64748b;">${guest.checkoutTime ? formatDate(guest.checkoutTime) : 'N/A'}</td>
                     <td><span class="status-badge ${statusClass}">${statusLabel}</span></td>
                 `;
                 tbody.appendChild(row);
@@ -632,16 +631,109 @@ function loadHistory() {
                 const row = document.createElement('tr');
                 const checkOutTime = visitor.checkoutTime ? formatTime(visitor.checkoutTime) : 'N/A';
                 row.innerHTML = `
-                    <td>${visitor.name}</td>
-                    <td>${visitor.partySize}</td>
-                    <td>${visitor.table}</td>
-                    <td>${formatTime(visitor.checkinTime)}</td>
-                    <td>${checkOutTime}</td>
+                    <td style="font-weight: 700;">${visitor.name}</td>
+                    <td style="font-weight: 600; color: #64748b; text-align: center;">${visitor.partySize}</td>
+                    <td style="font-weight: 600; color: #3b82f6;">${visitor.table}</td>
+                    <td style="color: #64748b;">${formatTime(visitor.checkinTime)}</td>
+                    <td style="color: #64748b;">${checkOutTime}</td>
                 `;
                 tbody.appendChild(row);
             });
         }
     }
+
+    // Also update analytics cards if on reports page
+    generateAnalytics();
+}
+
+// Analytics and Reporting Functions
+function generateAnalytics() {
+    const totalVisitors = hotelVisitors.length + restaurantVisitors.length;
+    const hotelCount = hotelVisitors.length;
+    const restaurantCount = restaurantVisitors.reduce((sum, v) => sum + (parseInt(v.partySize) || 1), 0);
+
+    const totalEl = document.getElementById('analytics-total-visitors');
+    const hotelEl = document.getElementById('analytics-hotel-guests');
+    const restEl = document.getElementById('analytics-restaurant-diners');
+
+    if (totalEl) totalEl.textContent = hotelCount + restaurantVisitors.length;
+    if (hotelEl) hotelEl.textContent = hotelCount;
+    if (restEl) restEl.textContent = restaurantCount;
+}
+
+function handleReportGeneration(event) {
+    event.preventDefault();
+    const type = document.getElementById('report-type').value;
+    const venue = document.getElementById('report-venue').value;
+    const format = document.getElementById('report-format').value;
+
+    showAlert(`Generating ${type} report for ${venue} in ${format.toUpperCase()} format...`, 'success');
+
+    // Simulate file download
+    setTimeout(() => {
+        showAlert('Report generated successfully! Download starting...', 'success');
+    }, 1500);
+}
+
+function previewReport() {
+    const type = document.getElementById('report-type').value;
+    const venue = document.getElementById('report-venue').value;
+    
+    const resultsContainer = document.getElementById('report-results');
+    const dataContainer = document.getElementById('report-data');
+    
+    if (!resultsContainer || !dataContainer) return;
+
+    resultsContainer.style.display = 'block';
+    resultsContainer.scrollIntoView({ behavior: 'smooth' });
+
+    let filteredData = [];
+    if (venue === 'all' || venue === 'hotel') filteredData = [...filteredData, ...hotelVisitors];
+    if (venue === 'all' || venue === 'restaurant') filteredData = [...filteredData, ...restaurantVisitors];
+
+    let html = `
+        <div style="padding: 20px; background: #f8fafc; border-radius: 12px; border: 1px solid #e2e8f0;">
+            <h3 style="margin-top: 0;">Preview: ${type.toUpperCase()} Report</h3>
+            <p style="color: #64748b;">Showing data for ${venue === 'all' ? 'All Venues' : venue.charAt(0).toUpperCase() + venue.slice(1)}</p>
+            <table class="custom-table" style="margin-top: 20px;">
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Venue</th>
+                        <th>Check-in</th>
+                        <th>Check-out</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+    `;
+
+    if (filteredData.length === 0) {
+        html += '<tr><td colspan="5" style="text-align: center;">No data found for selected filters</td></tr>';
+    } else {
+        filteredData.slice(0, 10).forEach(item => {
+            html += `
+                <tr>
+                    <td>${item.name}</td>
+                    <td style="text-transform: capitalize;">${item.venue || 'Hotel'}</td>
+                    <td>${formatDate(item.checkinTime)}</td>
+                    <td>${item.checkoutTime ? formatDate(item.checkoutTime) : '-'}</td>
+                    <td>${item.status}</td>
+                </tr>
+            `;
+        });
+        if (filteredData.length > 10) {
+            html += `<tr><td colspan="5" style="text-align: center; color: #64748b; font-style: italic;">...and ${filteredData.length - 10} more records</td></tr>`;
+        }
+    }
+
+    html += `
+                </tbody>
+            </table>
+        </div>
+    `;
+
+    dataContainer.innerHTML = html;
 }
 
 // Function to view visitor details in a modal

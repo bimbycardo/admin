@@ -625,34 +625,80 @@ function getLastInsertId()
 
                 <!-- Reports Page -->
                 <div id="reports" class="page">
-                    <div class="content-header-row">
-                        <i class="fas fa-file-invoice"></i>
-                        <h3>Analytics & Reports</h3>
+                    <div class="content-header-row" style="display: flex; justify-content: space-between; align-items: center;">
+                        <div style="display: flex; align-items: center; gap: 15px;">
+                            <i class="fas fa-file-invoice"></i>
+                            <h3>Analytics & Reports</h3>
+                        </div>
+                        <button class="btn-primary-action" onclick="generateAnalytics()" style="width: auto; padding: 10px 20px; background: #6366f1;">
+                            <i class="fas fa-sync-alt"></i> Refresh Analytics
+                        </button>
                     </div>
+
+                    <!-- Analytics Dashboard Overview -->
+                    <div class="stats-container" style="grid-template-columns: repeat(4, 1fr); margin-bottom: 30px;">
+                        <div class="stat-card" style="background: linear-gradient(135deg, #6366f1, #4f46e5); color: white;">
+                            <i class="fas fa-users" style="background: rgba(255,255,255,0.2); color: white;"></i>
+                            <div class="stat-number" id="analytics-total-visitors">0</div>
+                            <div class="stat-label" style="color: rgba(255,255,255,0.8);">Total Visitors</div>
+                        </div>
+                        <div class="stat-card" style="background: linear-gradient(135deg, #10b981, #059669); color: white;">
+                            <i class="fas fa-hotel" style="background: rgba(255,255,255,0.2); color: white;"></i>
+                            <div class="stat-number" id="analytics-hotel-guests">0</div>
+                            <div class="stat-label" style="color: rgba(255,255,255,0.8);">Hotel Guests</div>
+                        </div>
+                        <div class="stat-card" style="background: linear-gradient(135deg, #3b82f6, #2563eb); color: white;">
+                            <i class="fas fa-utensils" style="background: rgba(255,255,255,0.2); color: white;"></i>
+                            <div class="stat-number" id="analytics-restaurant-diners">0</div>
+                            <div class="stat-label" style="color: rgba(255,255,255,0.8);">Restaurant Diners</div>
+                        </div>
+                        <div class="stat-card" style="background: linear-gradient(135deg, #f59e0b, #d97706); color: white;">
+                            <i class="fas fa-clock" style="background: rgba(255,255,255,0.2); color: white;"></i>
+                            <div class="stat-number" id="analytics-avg-stay">1.5h</div>
+                            <div class="stat-label" style="color: rgba(255,255,255,0.8);">Avg. Visit Time</div>
+                        </div>
+                    </div>
+
                     <div class="card">
-                        <form id="report-form">
-                            <div class="form-grid">
+                        <div style="border-bottom: 1px solid #f1f5f9; padding-bottom: 15px; margin-bottom: 20px;">
+                            <h4 style="margin: 0; color: #1e293b; font-size: 1.1rem;"><i class="fas fa-filter" style="margin-right: 8px; color: #64748b;"></i> Report Configuration</h4>
+                        </div>
+                        <form id="report-form" onsubmit="handleReportGeneration(event)">
+                            <div class="form-grid" style="grid-template-columns: repeat(3, 1fr);">
                                 <div class="form-group">
                                     <label>Report Type</label>
-                                    <select id="report-type" name="report-type">
-                                        <option value="daily">Daily Report</option>
-                                        <option value="weekly">Weekly Report</option>
-                                        <option value="monthly">Monthly Report</option>
-                                        <option value="custom">Custom Range</option>
+                                    <select id="report-type" name="report-type" class="premium-select" style="width: 100%; padding: 12px; border-radius: 10px; border: 1px solid #e2e8f0;">
+                                        <option value="daily">Daily Log</option>
+                                        <option value="weekly">Weekly Summary</option>
+                                        <option value="monthly">Monthly Overview</option>
+                                        <option value="analytics">Full Analytics Report</option>
                                     </select>
                                 </div>
                                 <div class="form-group">
-                                    <label>Venue</label>
-                                    <select id="report-venue" name="report-venue">
+                                    <label>Venue Category</label>
+                                    <select id="report-venue" name="report-venue" class="premium-select" style="width: 100%; padding: 12px; border-radius: 10px; border: 1px solid #e2e8f0;">
                                         <option value="all">All Venues</option>
-                                        <option value="hotel">Hotel</option>
-                                        <option value="restaurant">Restaurant</option>
+                                        <option value="hotel">Hotel Guest Log</option>
+                                        <option value="restaurant">Restaurant Diner Log</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label>Output Format</label>
+                                    <select id="report-format" name="report-format" class="premium-select" style="width: 100%; padding: 12px; border-radius: 10px; border: 1px solid #e2e8f0;">
+                                        <option value="pdf">PDF Document</option>
+                                        <option value="csv">Excel / CSV Spreadsheet</option>
+                                        <option value="print">Direct Print</option>
                                     </select>
                                 </div>
                             </div>
-                            <button type="submit" class="btn-submit-premium" style="width: auto; padding: 12px 25px;">
-                                <i class="fas fa-download"></i> Generate PDF Report
-                            </button>
+                            <div style="margin-top: 25px; display: flex; gap: 15px;">
+                                <button type="submit" class="btn-submit-premium" style="width: auto; padding: 12px 30px; background: #1e293b;">
+                                    <i class="fas fa-file-export"></i> Generate & Export Report
+                                </button>
+                                <button type="button" class="btn-secondary" onclick="previewReport()" style="width: auto; padding: 12px 30px;">
+                                    <i class="fas fa-eye"></i> Preview on Screen
+                                </button>
+                            </div>
                         </form>
                     </div>
                 </div>
