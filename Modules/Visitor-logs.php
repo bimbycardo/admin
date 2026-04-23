@@ -997,19 +997,47 @@ function getLastInsertId()
                 document.getElementById('entry-modal').style.display = 'none';
             }
 
-            function saveModalEntry() {
-                // Placeholder for AJAX logic or form submission
+            async function saveModalEntry() {
                 const hotelForm = document.getElementById('modal-hotel-form');
                 const restForm = document.getElementById('modal-restaurant-form');
                 const type = hotelForm.style.display === 'block' ? 'hotel' : 'restaurant';
+                const activeForm = type === 'hotel' ? hotelForm : restForm;
 
-                // Logic would go here to communicate with Visitor.js or backend
-                console.log('Saving ' + type + ' entry...');
+                const formData = new FormData(activeForm);
+                const data = {};
+                formData.forEach((value, key) => data[key] = value);
+                data['venue'] = type;
 
-                alert('Entry has been processed successfully!');
-                closeEntryModal();
-                // Refresh tables if Visitor.js function exists
-                if (typeof loadCurrentVisitors === 'function') loadCurrentVisitors();
+                // Simple validation
+                const nameField = type === 'hotel' ? 'full_name' : 'visitor-name';
+                if (!data[nameField]) {
+                    alert('Please enter a name.');
+                    return;
+                }
+
+                try {
+                    const response = await fetch('../integ/Vistor.php', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify(data)
+                    });
+
+                    const result = await response.json();
+
+                    if (result.status === 'success') {
+                        alert(result.message || 'Entry has been processed successfully!');
+                        closeEntryModal();
+                        // Refresh tables if Visitor.js function exists
+                        if (typeof loadCurrentVisitors === 'function') loadCurrentVisitors();
+                    } else {
+                        alert('Error: ' + (result.message || 'Unknown error'));
+                    }
+                } catch (error) {
+                    console.error('Error saving entry:', error);
+                    alert('An error occurred while saving the entry.');
+                }
             }
 
             // Modal Helper Functions

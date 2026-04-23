@@ -36,6 +36,15 @@ try {
         if (!in_array('notes', $cols)) {
             $db->exec("ALTER TABLE direct_checkins ADD COLUMN notes TEXT DEFAULT NULL");
         }
+        if (!in_array('venue', $cols)) {
+            $db->exec("ALTER TABLE direct_checkins ADD COLUMN venue VARCHAR(20) DEFAULT 'hotel'");
+        }
+        if (!in_array('party_size', $cols)) {
+            $db->exec("ALTER TABLE direct_checkins ADD COLUMN party_size INT DEFAULT 1");
+        }
+        if (!in_array('table_number', $cols)) {
+            $db->exec("ALTER TABLE direct_checkins ADD COLUMN table_number VARCHAR(50) DEFAULT NULL");
+        }
     }
 
     // ✅ Handle POST request for inserting new records (LOCAL DB)
@@ -55,22 +64,20 @@ try {
             }
 
             // 2. Update Local Record
-            $sql = "UPDATE direct_checkins SET status = 'checked_out', checkout_date = ? WHERE id = ?"; // Removed 'checkin_time' from update
+            $sql = "UPDATE direct_checkins SET status = 'checked_out', checkout_date = ? WHERE id = ?";
 
-            // Adjust query based on DB driver
             if ($db instanceof mysqli) {
                 $stmt = $db->prepare($sql);
-                // 'si' -> string (date), integer (id)
                 $stmt->bind_param("si", $checkoutDate, $id);
                 if ($stmt->execute()) {
-                    echo json_encode(['status' => 'success', 'message' => 'Guest checked out successfully.']);
+                    echo json_encode(['status' => 'success', 'message' => 'Checked out successfully.']);
                 } else {
                     echo json_encode(['status' => 'error', 'message' => 'Database error: ' . $stmt->error]);
                 }
             } elseif ($db instanceof PDO) {
                 $stmt = $db->prepare($sql);
                 if ($stmt->execute([$checkoutDate, $id])) {
-                    echo json_encode(['status' => 'success', 'message' => 'Guest checked out successfully.']);
+                    echo json_encode(['status' => 'success', 'message' => 'Checked out successfully.']);
                 } else {
                     echo json_encode(['status' => 'error', 'message' => 'Database error: Failed to update record.']);
                 }
@@ -79,26 +86,27 @@ try {
         }
         // --- END CHECKOUT LOGIC ---
 
-        // ... (Keep existing INSERT logic) ...
-
-        $fullName = $input['full_name'] ?? null;
+        $fullName = $input['full_name'] ?? $input['visitor-name'] ?? null;
         $email = $input['email'] ?? null;
-        $phone = $input['phone'] ?? null;
+        $phone = $input['phone'] ?? $input['visitor-phone'] ?? null;
         $roomNumber = $input['room_number'] ?? null;
-        $hostId = $input['host_id'] ?? null;
+        $hostId = $input['host_id'] ?? $input['restaurant-host'] ?? null;
         $checkinDate = $input['time_in'] ?? date('Y-m-d H:i:s');
-        $notes = $input['notes'] ?? null;
+        $notes = $input['notes'] ?? $input['restaurant-notes'] ?? null;
+        $venue = $input['venue'] ?? 'hotel';
+        $partySize = $input['party_size'] ?? $input['party-size'] ?? 1;
+        $tableNumber = $input['table_number'] ?? $input['table-number'] ?? null;
 
         if (!$fullName) {
-            echo json_encode(['status' => 'error', 'message' => 'Full Name is required.']);
+            echo json_encode(['status' => 'error', 'message' => 'Name is required.']);
             exit;
         }
 
-        $sql = "INSERT INTO direct_checkins (full_name, email, phone_number, room_number, host_id, checkin_date, notes, status) VALUES (?, ?, ?, ?, ?, ?, ?, 'active')";
+        $sql = "INSERT INTO direct_checkins (full_name, email, phone_number, room_number, host_id, checkin_date, notes, status, venue, party_size, table_number) VALUES (?, ?, ?, ?, ?, ?, ?, 'active', ?, ?, ?)";
 
         if ($db instanceof mysqli) {
             $stmt = $db->prepare($sql);
-            $stmt->bind_param("sssssss", $fullName, $email, $phone, $roomNumber, $hostId, $checkinDate, $notes);
+            $stmt->bind_param("ssssssssis", $fullName, $email, $phone, $roomNumber, $hostId, $checkinDate, $notes, $venue, $partySize, $tableNumber);
             if ($stmt->execute()) {
                 echo json_encode(['status' => 'success', 'message' => 'Check-in recorded successfully.']);
             } else {
@@ -106,11 +114,11 @@ try {
             }
         } elseif ($db instanceof PDO) {
             $stmt = $db->prepare($sql);
-            $stmt->execute([$fullName, $email, $phone, $roomNumber, $hostId, $checkinDate, $notes]);
+            $stmt->execute([$fullName, $email, $phone, $roomNumber, $hostId, $checkinDate, $notes, $venue, $partySize, $tableNumber]);
             echo json_encode(['status' => 'success', 'message' => 'Check-in recorded successfully.']);
         }
 
-        exit; // Stop further execution
+        exit;
     }
 
     // ✅ Handle GET request: Fetch from EXTERNAL API + LOCAL DB (Combined)

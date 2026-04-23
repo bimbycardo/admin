@@ -452,44 +452,58 @@ function updateRecentActivity() {
     });
 }
 
-// Load current visitors into tables
+// Load current visitors into table
 function loadCurrentVisitors() {
-    // 1. Hotel current visitors (from API)
     const hotelCurrentTable = document.getElementById('hotel-current-table');
-    const tbody = hotelCurrentTable ? hotelCurrentTable.querySelector('tbody') : null;
+    const hotelTbody = hotelCurrentTable ? hotelCurrentTable.querySelector('tbody') : null;
+    const restaurantCurrentTable = document.getElementById('restaurant-current-table');
+    const restaurantTbody = restaurantCurrentTable ? restaurantCurrentTable.querySelector('tbody') : null;
 
     return fetch(API_BASE_URL)
         .then(response => response.json())
         .then(data => {
             if (data.status === 'success' && data.data) {
-                // Update global hotelVisitors array
-                hotelVisitors = data.data.map(guest => ({
-                    id: guest.id,
-                    name: guest.full_name,
-                    room: guest.room_number,
-                    checkinTime: guest.checkin_date,
-                    checkoutTime: guest.checkout_date,
-                    status: guest.status === 'active' ? 'timed-in' : (guest.status || 'unknown'),
-                    email: guest.email,
-                    phone: guest.phone_number,
-                    notes: guest.notes,
-                    source: guest.source
-                }));
+                // Clear global arrays
+                hotelVisitors = [];
+                restaurantVisitors = [];
 
-                if (tbody) {
-                    tbody.innerHTML = '';
-                    if (data.data.length > 0) {
-                        data.data.forEach(guest => {
+                data.data.forEach(item => {
+                    const mappedItem = {
+                        id: item.id,
+                        name: item.full_name,
+                        room: item.room_number,
+                        checkinTime: item.checkin_date,
+                        checkoutTime: item.checkout_date,
+                        status: item.status === 'active' ? 'timed-in' : (item.status || 'unknown'),
+                        email: item.email,
+                        phone: item.phone_number,
+                        notes: item.notes,
+                        source: item.source,
+                        venue: item.venue || 'hotel',
+                        partySize: item.party_size || 1,
+                        table: item.table_number || 'N/A'
+                    };
+
+                    if (mappedItem.venue === 'restaurant') {
+                        restaurantVisitors.push(mappedItem);
+                    } else {
+                        hotelVisitors.push(mappedItem);
+                    }
+                });
+
+                // Update Hotel Table
+                if (hotelTbody) {
+                    hotelTbody.innerHTML = '';
+                    const activeHotel = hotelVisitors.filter(v => v.status === 'timed-in');
+                    if (activeHotel.length > 0) {
+                        activeHotel.forEach(guest => {
                             const row = document.createElement('tr');
-                            const statusLabel = guest.status === 'active' ? 'CHECKED IN' : guest.status;
-                            const statusClass = guest.status === 'active' ? 'status-active' : 'status-completed';
-                            
                             row.innerHTML = `
-                                <td style="font-weight: 700; color: #1e293b;">${guest.full_name || 'N/A'}</td>
-                                <td style="font-weight: 600; color: #64748b;">${guest.room_number || 'N/A'}</td>
-                                <td style="color: #64748b;">${formatDate(guest.checkin_date)}</td>
+                                <td style="font-weight: 700; color: #1e293b;">${guest.name || 'N/A'}</td>
+                                <td style="font-weight: 600; color: #64748b;">${guest.room || 'N/A'}</td>
+                                <td style="color: #64748b;">${formatDate(guest.checkinTime)}</td>
                                 <td>
-                                    <span class="status-badge ${statusClass}">${statusLabel}</span>
+                                    <span class="status-badge status-active">CHECKED IN</span>
                                 </td>
                                 <td style="white-space: nowrap;">
                                     <div style="display: flex; gap: 8px;">
@@ -502,49 +516,73 @@ function loadCurrentVisitors() {
                                     </div>
                                 </td>
                             `;
-                            tbody.appendChild(row);
+                            hotelTbody.appendChild(row);
                         });
                     } else {
-                        tbody.innerHTML = '<tr><td colspan="5" style="text-align: center;">No current guests</td></tr>';
+                        hotelTbody.innerHTML = '<tr><td colspan="5" style="text-align: center;">No current guests</td></tr>';
                     }
                 }
-            } else if (tbody) {
-                tbody.innerHTML = '<tr><td colspan="5" style="text-align: center;">Error loading data</td></tr>';
+
+                // Update Restaurant Table
+                if (restaurantTbody) {
+                    restaurantTbody.innerHTML = '';
+                    const activeRest = restaurantVisitors.filter(v => v.status === 'timed-in');
+                    if (activeRest.length > 0) {
+                        activeRest.forEach(visitor => {
+                            const row = document.createElement('tr');
+                            row.innerHTML = `
+                                <td style="font-weight: 700; color: #1e293b;">${visitor.name}</td>
+                                <td style="font-weight: 600; color: #64748b; text-align: center;">${visitor.partySize}</td>
+                                <td style="font-weight: 600; color: #3b82f6;">${visitor.table}</td>
+                                <td style="color: #64748b;">${formatTime(visitor.checkinTime)}</td>
+                                <td style="text-align: center;">
+                                    <button class="btn-action-timeout" onclick="timeOutRestaurantVisitor('${visitor.id}')" title="Time-out Visitor">
+                                        <i class="fas fa-sign-out-alt"></i>
+                                    </button>
+                                </td>
+                            `;
+                            restaurantTbody.appendChild(row);
+                        });
+                    } else {
+                        restaurantTbody.innerHTML = '<tr><td colspan="5" style="text-align: center;">No current visitors</td></tr>';
+                    }
+                }
+                
+                // Update dashboard since we have fresh data
+                updateDashboard();
             }
         })
         .catch(error => {
             console.error('Error fetching visitors:', error);
-            if (tbody) {
-                tbody.innerHTML = '<tr><td colspan="5" style="text-align: center;">Error loading data</td></tr>';
-            }
         });
-    // 2. Restaurant current visitors (from localStorage)
-    const restaurantCurrentTable = document.getElementById('restaurant-current-table');
-    if (restaurantCurrentTable) {
-        const tbody = restaurantCurrentTable.querySelector('tbody');
-        tbody.innerHTML = '';
-        const currentVisitors = restaurantVisitors.filter(visitor => visitor.status === 'timed-in');
+}
 
-        if (currentVisitors.length === 0) {
-            tbody.innerHTML = '<tr><td colspan="5" style="text-align: center;">No current visitors</td></tr>';
-        } else {
-            currentVisitors.forEach(visitor => {
-                const row = document.createElement('tr');
-                row.innerHTML = `
-                    <td style="font-weight: 700; color: #1e293b;">${visitor.name}</td>
-                    <td style="font-weight: 600; color: #64748b; text-align: center;">${visitor.partySize}</td>
-                    <td style="font-weight: 600; color: #3b82f6;">${visitor.table}</td>
-                    <td style="color: #64748b;">${formatTime(visitor.checkinTime)}</td>
-                    <td style="text-align: center;">
-                        <button class="btn-action-timeout" onclick="timeOutRestaurantVisitor(${visitor.id})" title="Time-out Visitor">
-                            <i class="fas fa-sign-out-alt"></i>
-                        </button>
-                    </td>
-                `;
-                tbody.appendChild(row);
-            });
-        }
-    }
+function timeOutRestaurantVisitor(visitorId) {
+    showConfirmationModal('Are you sure you want to time-out this visitor?', function () {
+        fetch(API_BASE_URL, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                action: 'checkout',
+                id: visitorId
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.status === 'success') {
+                showAlert('Visitor time-out recorded successfully!', 'success');
+                loadCurrentVisitors();
+            } else {
+                showAlert('Error: ' + data.message, 'error');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            showAlert('An error occurred during time-out.', 'error');
+        });
+    });
 }
 
 // Load visitor history into tables
