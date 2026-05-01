@@ -1531,9 +1531,14 @@ $r_rows = [];
                     style="margin-top: -25px;">
                     <div class="d-flex justify-between align-center mb-1">
                         <h2><span class="icon-img-placeholder">📅</span> Reservation Management</h2>
-                        <button class="btn btn-primary btn-sm" onclick="openModal('reservation-modal')">
-                            <span class="icon-img-placeholder">➕</span> New Reservation
-                        </button>
+                        <div style="display: flex; align-items: center; gap: 15px;">
+                            <div style="background: #e0e7ff; color: #4338ca; padding: 5px 15px; border-radius: 20px; font-weight: 700; font-size: 0.9rem;">
+                                Total: <?= count($dashboard_data['reservations'] ?? []) ?>
+                            </div>
+                            <button class="btn btn-primary btn-sm" onclick="openModal('reservation-modal')">
+                                <span class="icon-img-placeholder">➕</span> New Reservation
+                            </button>
+                        </div>
                     </div>
 
                     <div class="table-container">

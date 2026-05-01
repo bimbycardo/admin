@@ -20,6 +20,9 @@
         // 3. Archived Documents
         $total_documents = $db->query("SELECT COUNT(*) FROM documents WHERE is_deleted = 0")->fetchColumn() ?? 0;
 
+        // 3.5. Total Reservations
+        $total_reservations = $db->query("SELECT COUNT(*) FROM reservations")->fetchColumn() ?? 0;
+
         // 4. Employee Count from HR4 API
         require_once __DIR__ . '/../integ/hr4_api.php';
         $employees_data = fetchAllEmployees();
@@ -167,6 +170,28 @@
                 <div style="width: 15%; background: #7c3aed; height: 40%; border-radius: 2px;"></div>
                 <div style="width: 15%; background: #7c3aed; height: 90%; border-radius: 2px;"></div>
                 <div style="width: 15%; background: #7c3aed; height: 60%; border-radius: 2px;"></div>
+            </div>
+        </div>
+
+        <!-- Reservations Card -->
+        <div
+            style="background: white; padding: 20px; border-radius: 16px; border: 1px solid #e2e8f0; display: flex; flex-direction: column; justify-content: space-between;">
+            <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 10px;">
+                <div
+                    style="width: 45px; height: 45px; background: #e0e7ff; border-radius: 10px; display: flex; align-items: center; justify-content: center; color: #4338ca;">
+                    <i class="fa-solid fa-calendar-check" style="font-size: 1.2rem;"></i>
+                </div>
+            </div>
+            <div>
+                <h3 style="font-size: 1.15rem; font-weight: 700; color: #1e293b; margin: 0;"><?= $total_reservations ?? 0 ?></h3>
+                <p style="color: #64748b; font-size: 0.75rem; margin: 5px 0 0;">Total Reservations</p>
+            </div>
+            <div style="height: 40px; margin-top: 10px; display: flex; align-items: flex-end; gap: 3px; opacity: 0.5;">
+                <div style="width: 15%; background: #4338ca; height: 45%; border-radius: 2px;"></div>
+                <div style="width: 15%; background: #4338ca; height: 70%; border-radius: 2px;"></div>
+                <div style="width: 15%; background: #4338ca; height: 50%; border-radius: 2px;"></div>
+                <div style="width: 15%; background: #4338ca; height: 90%; border-radius: 2px;"></div>
+                <div style="width: 15%; background: #4338ca; height: 60%; border-radius: 2px;"></div>
             </div>
         </div>
     </div>
