@@ -1460,7 +1460,6 @@ $r_rows = [];
                                 <thead>
                                     <tr>
                                         <th style="text-align: center; color: #000000;">No.</th>
-                                        <th style="text-align: left; color: #000000;">Date Added</th>
                                         <th style="text-align: left; color: #000000;">reserve name</th>
                                         <th style="text-align: left; color: #000000;">Facility Name</th>
                                         <th style="color: #000000;">Type</th>
@@ -1477,9 +1476,6 @@ $r_rows = [];
                                     <?php foreach ($dashboard_data['facilities'] as $f): ?>
                                         <tr>
                                             <td style="text-align: center; font-weight: 700; color: #000000 !important;">#<?= $facCounter++ ?></td>
-                                            <td style="text-align: left; color: #000000 !important;">
-                                                <?= !empty($f['created_at']) ? date('M d, Y', strtotime($f['created_at'])) : 'N/A' ?>
-                                            </td>
                                             <td style="text-align: left; color: #475569;">
                                                 <?= htmlspecialchars($f['next_reserve_name'] ?? 'Available') ?>
                                             </td>
