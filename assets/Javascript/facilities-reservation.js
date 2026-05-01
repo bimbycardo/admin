@@ -377,6 +377,10 @@ window.viewFacilityDetails = function (facility) {
                     <h4 style="font-size: 0.75rem; color: #94a3b8; text-transform: uppercase; margin-bottom: 5px;">Reserve Name</h4>
                     <p style="margin: 0; font-weight: 600;">${facility.reserve_name || 'N/A'}</p>
                 </div>
+                <div style="background: white; padding: 12px; border-radius: 8px; border: 1px solid #edf2f7;">
+                    <h4 style="font-size: 0.75rem; color: #94a3b8; text-transform: uppercase; margin-bottom: 5px;">Date Added</h4>
+                    <p style="margin: 0; font-weight: 600;">${facility.created_at ? new Date(facility.created_at).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }) : 'N/A'}</p>
+                </div>
             </div>
 
             <div style="background: #fdf2f2; padding: 15px; border-radius: 10px; border-left: 4px solid #ef4444;">
