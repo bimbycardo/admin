@@ -124,6 +124,7 @@ class ReservationSystem
             $this->pdo->exec("ALTER TABLE facilities ADD COLUMN IF NOT EXISTS status ENUM('active', 'maintenance', 'closed') DEFAULT 'active'");
             $this->pdo->exec("ALTER TABLE facilities ADD COLUMN IF NOT EXISTS assigned_user VARCHAR(255) DEFAULT 'Not Assigned'");
             $this->pdo->exec("ALTER TABLE facilities ADD COLUMN IF NOT EXISTS reserve_name VARCHAR(255) DEFAULT ''");
+            $this->pdo->exec("ALTER TABLE facilities ADD COLUMN IF NOT EXISTS created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP");
         } catch (Exception $e) {
         }
     }
@@ -1458,22 +1459,27 @@ $r_rows = [];
                             <table class="table">
                                 <thead>
                                     <tr>
-                                        <th style="text-align: center;">ID</th>
-                                        <th style="text-align: left;">reserve name</th>
-                                        <th style="text-align: left;">Facility Name</th>
-                                        <th>Type</th>
-                                        <th style="text-align: center;">Capacity</th>
-                                        <th style="text-align: left;">Location</th>
-                                        <th>Rate</th>
-                                        <th style="text-align: center;">Status</th>
-                                        <th style="text-align: center;">Assigned User</th>
-                                        <th style="text-align: center;">Actions</th>
+                                        <th style="text-align: center; color: #000000;">No.</th>
+                                        <th style="text-align: left; color: #000000;">Date Added</th>
+                                        <th style="text-align: left; color: #000000;">reserve name</th>
+                                        <th style="text-align: left; color: #000000;">Facility Name</th>
+                                        <th style="color: #000000;">Type</th>
+                                        <th style="text-align: center; color: #000000;">Capacity</th>
+                                        <th style="text-align: left; color: #000000;">Location</th>
+                                        <th style="color: #000000;">Rate</th>
+                                        <th style="text-align: center; color: #000000;">Status</th>
+                                        <th style="text-align: center; color: #000000;">Assigned User</th>
+                                        <th style="text-align: center; color: #000000;">Actions</th>
                                     </tr>
                                 </thead>
                                 <tbody>
+                                    <?php $facCounter = 1; ?>
                                     <?php foreach ($dashboard_data['facilities'] as $f): ?>
                                         <tr>
-                                            <td style="text-align: center;">#<?= $f['id'] ?></td>
+                                            <td style="text-align: center; font-weight: 700; color: #000000 !important;">#<?= $facCounter++ ?></td>
+                                            <td style="text-align: left; color: #000000 !important;">
+                                                <?= !empty($f['created_at']) ? date('M d, Y', strtotime($f['created_at'])) : 'N/A' ?>
+                                            </td>
                                             <td style="text-align: left; color: #475569;">
                                                 <?= htmlspecialchars($f['next_reserve_name'] ?? 'Available') ?>
                                             </td>
