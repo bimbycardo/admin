@@ -436,6 +436,11 @@ function get_nav_link($tab, $is_dashboard, $isSuperAdmin)
     .mobile-close-sidebar-btn {
         display: flex !important;
     }
+    .sidebar.sidebar-open {
+        left: 0 !important;
+        visibility: visible !important;
+        opacity: 1 !important;
+    }
 }
 
 .mobile-bottom-nav a {
