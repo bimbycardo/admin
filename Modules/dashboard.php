@@ -3842,7 +3842,7 @@ $r_rows = [];
                         // Mobile: Toggle active state
                         const sidebar = document.querySelector('.sidebar');
                         const overlay = document.querySelector('.mobile-menu-overlay');
-                        if (sidebar) sidebar.classList.toggle('active');
+                        if (sidebar) sidebar.classList.toggle('sidebar-open');
                         if (overlay) overlay.classList.toggle('active');
                     }
                 };
@@ -3850,7 +3850,7 @@ $r_rows = [];
                 window.closeSidebar = function () {
                     const sidebar = document.querySelector('.sidebar');
                     const overlay = document.querySelector('.mobile-menu-overlay');
-                    if (sidebar) sidebar.classList.remove('active');
+                    if (sidebar) sidebar.classList.remove('sidebar-open');
                     if (overlay) overlay.classList.remove('active');
                 };
 

@@ -2131,7 +2131,7 @@ You have been added as an administrator. To complete your account setup, please 
                 // Mobile: Toggle active state
                 const sidebar = document.querySelector('.sidebar');
                 const overlay = document.querySelector('.mobile-menu-overlay');
-                if (sidebar) sidebar.classList.toggle('active');
+                if (sidebar) sidebar.classList.toggle('sidebar-open');
                 if (overlay) overlay.classList.toggle('active');
             }
         };
@@ -2139,7 +2139,7 @@ You have been added as an administrator. To complete your account setup, please 
         window.closeSidebar = function () {
             const sidebar = document.querySelector('.sidebar');
             const overlay = document.querySelector('.mobile-menu-overlay');
-            if (sidebar) sidebar.classList.remove('active');
+            if (sidebar) sidebar.classList.remove('sidebar-open');
             if (overlay) overlay.classList.remove('active');
         };
 
