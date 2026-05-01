@@ -14,8 +14,12 @@ function get_nav_link($tab, $is_dashboard, $isSuperAdmin)
     return "../Modules/dashboard.php?tab=" . urlencode($tab);
 }
 ?>
-<nav class="sidebar" style="position: fixed !important; left: 0 !important; top: 0 !important; height: 100vh !important; z-index: 1000 !important; background: #0f172a !important; display: flex !important; flex-direction: column !important; visibility: visible !important; opacity: 1 !important;">
+<nav class="sidebar" style="position: fixed !important; top: 0 !important; height: 100vh !important; z-index: 1000 !important; background: #0f172a !important; display: flex !important; flex-direction: column !important;">
     <div class="sidebar-header" style="border-bottom: 1px solid rgba(255, 255, 255, 0.05); padding: 25px 0 20px 0; margin-bottom: 10px; position: relative;">
+        <!-- Mobile close button -->
+        <button class="mobile-close-sidebar-btn" onclick="closeSidebar()" style="position: absolute; top: 10px; right: 10px; background: rgba(255,255,255,0.1); border: none; color: white; width: 30px; height: 30px; border-radius: 5px; cursor: pointer; display: none; align-items: center; justify-content: center; z-index: 10;">
+            <i class="fa-solid fa-xmark"></i>
+        </button>
         <a href="<?= $isSuperAdmin ? '../Super-admin/Dashboard.php?tab=dashboard' : '../Modules/dashboard.php?tab=dashboard' ?>" class="logo-link"
             title="Go to Dashboard">
                 <div class="logo-area" style="text-align: center;">
@@ -428,6 +432,9 @@ function get_nav_link($tab, $is_dashboard, $isSuperAdmin)
 @media (max-width: 768px) {
     .mobile-bottom-nav {
         display: flex;
+    }
+    .mobile-close-sidebar-btn {
+        display: flex !important;
     }
 }
 
