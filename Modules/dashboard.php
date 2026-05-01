@@ -1530,7 +1530,18 @@ $r_rows = [];
                     class="tab-content <?= (isset($_GET['tab']) && $_GET['tab'] == 'reservations') ? 'active' : '' ?>"
                     style="margin-top: -25px;">
                     <div class="d-flex justify-between align-center mb-1">
-                        <h2><span class="icon-img-placeholder">📅</span> Reservation Management</h2>
+                        <div style="display: flex; align-items: center; gap: 15px;">
+                            <h2><span class="icon-img-placeholder">📅</span> Reservation Management</h2>
+                            <!-- View Toggles -->
+                            <div class="btn-group" style="display: flex; background: #f1f5f9; padding: 4px; border-radius: 8px;">
+                                <button class="btn btn-sm" id="btn-view-dashboard" style="background: transparent; border: none; border-radius: 6px; padding: 4px 12px; font-weight: 600; color: #64748b; transition: all 0.2s;" onclick="toggleResView('dashboard')">
+                                    <i class="fa-solid fa-chart-pie"></i> Dashboard
+                                </button>
+                                <button class="btn btn-sm active" id="btn-view-table" style="background: white; border: none; box-shadow: 0 1px 3px rgba(0,0,0,0.1); border-radius: 6px; padding: 4px 12px; font-weight: 600; color: #1e293b; transition: all 0.2s;" onclick="toggleResView('table')">
+                                    <i class="fa-solid fa-table"></i> Table
+                                </button>
+                            </div>
+                        </div>
                         <div style="display: flex; align-items: center; gap: 15px;">
                             <div style="background: #e0e7ff; color: #4338ca; padding: 5px 15px; border-radius: 20px; font-weight: 700; font-size: 0.9rem;">
                                 Total: <?= count($dashboard_data['reservations'] ?? []) ?>
@@ -1541,7 +1552,91 @@ $r_rows = [];
                         </div>
                     </div>
 
-                    <div class="table-container">
+                    <!-- Dashboard View for Reservations -->
+                    <div id="res-dashboard-view" style="display: none; margin-top: 15px;">
+                        <?php
+                            $res_pending = 0;
+                            $res_confirmed = 0;
+                            $res_completed = 0;
+                            foreach ($dashboard_data['reservations'] ?? [] as $r) {
+                                if (strtolower($r['status']) == 'pending') $res_pending++;
+                                elseif (strtolower($r['status']) == 'confirmed') $res_confirmed++;
+                                elseif (strtolower($r['status']) == 'completed') $res_completed++;
+                            }
+                        ?>
+                        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-bottom: 20px;">
+                            <!-- Pending -->
+                            <div style="background: #fffbeb; border: 1px solid #fef3c7; padding: 20px; border-radius: 12px; display: flex; align-items: center; gap: 15px;">
+                                <div style="width: 50px; height: 50px; background: #fef08a; color: #ca8a04; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 1.5rem;">
+                                    <i class="fa-solid fa-hourglass-half"></i>
+                                </div>
+                                <div>
+                                    <h3 style="margin: 0; font-size: 1.5rem; color: #854d0e;"><?= $res_pending ?></h3>
+                                    <p style="margin: 0; color: #a16207; font-size: 0.85rem; font-weight: 600;">Pending Reservations</p>
+                                </div>
+                            </div>
+                            <!-- Confirmed -->
+                            <div style="background: #f0fdf4; border: 1px solid #dcfce7; padding: 20px; border-radius: 12px; display: flex; align-items: center; gap: 15px;">
+                                <div style="width: 50px; height: 50px; background: #bbf7d0; color: #16a34a; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 1.5rem;">
+                                    <i class="fa-solid fa-calendar-check"></i>
+                                </div>
+                                <div>
+                                    <h3 style="margin: 0; font-size: 1.5rem; color: #166534;"><?= $res_confirmed ?></h3>
+                                    <p style="margin: 0; color: #15803d; font-size: 0.85rem; font-weight: 600;">Confirmed Bookings</p>
+                                </div>
+                            </div>
+                            <!-- Completed -->
+                            <div style="background: #eff6ff; border: 1px solid #dbeafe; padding: 20px; border-radius: 12px; display: flex; align-items: center; gap: 15px;">
+                                <div style="width: 50px; height: 50px; background: #bfdbfe; color: #2563eb; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 1.5rem;">
+                                    <i class="fa-solid fa-clipboard-check"></i>
+                                </div>
+                                <div>
+                                    <h3 style="margin: 0; font-size: 1.5rem; color: #1e3a8a;"><?= $res_completed ?></h3>
+                                    <p style="margin: 0; color: #1d4ed8; font-size: 0.85rem; font-weight: 600;">Completed Events</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <script>
+                        function toggleResView(view) {
+                            const dashView = document.getElementById('res-dashboard-view');
+                            const tableView = document.getElementById('res-table-view');
+                            const btnDash = document.getElementById('btn-view-dashboard');
+                            const btnTable = document.getElementById('btn-view-table');
+
+                            if (view === 'dashboard') {
+                                dashView.style.display = 'block';
+                                tableView.style.display = 'none';
+                                
+                                btnDash.style.background = 'white';
+                                btnDash.style.boxShadow = '0 1px 3px rgba(0,0,0,0.1)';
+                                btnDash.style.color = '#1e293b';
+                                btnDash.classList.add('active');
+                                
+                                btnTable.style.background = 'transparent';
+                                btnTable.style.boxShadow = 'none';
+                                btnTable.style.color = '#64748b';
+                                btnTable.classList.remove('active');
+                            } else {
+                                dashView.style.display = 'none';
+                                tableView.style.display = 'block';
+                                
+                                btnTable.style.background = 'white';
+                                btnTable.style.boxShadow = '0 1px 3px rgba(0,0,0,0.1)';
+                                btnTable.style.color = '#1e293b';
+                                btnTable.classList.add('active');
+                                
+                                btnDash.style.background = 'transparent';
+                                btnDash.style.boxShadow = 'none';
+                                btnDash.style.color = '#64748b';
+                                btnDash.classList.remove('active');
+                            }
+                        }
+                    </script>
+
+                    <!-- Table View for Reservations -->
+                    <div id="res-table-view" class="table-container">
                         <table class="table">
                             <thead>
                                 <tr>
