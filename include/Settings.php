@@ -1172,20 +1172,18 @@ try {
                         </a>
                     </nav>
 
-                    <div class="header-actions" style="display: flex; align-items: center; gap: 10px;">
-                        <div class="icon-box-btn">
-                            <div class="profile-info-text desktop-only" style="display: none; flex-direction: column; text-align: right; margin-right: 10px;">
-                                <span
-                                    style="font-size: 0.7rem; color: #64748b; font-weight: 700; text-transform: uppercase;"><?= htmlspecialchars($_SESSION['name'] ?? 'Admin') ?></span>
-                                <span
-                                    style="font-size: 0.8rem; color: #1e293b; font-weight: 600;"><?= htmlspecialchars($_SESSION['email'] ?? 'No Email') ?></span>
+                    <div class="header-actions" style="display: flex; align-items: center; gap: 15px;">
+                        <div style="display: flex; align-items: center; gap: 10px; padding: 5px; background: #f8fafc; border: 1px solid #f1f5f9; border-radius: 12px; padding-left: 15px;">
+                            <div class="profile-info-text desktop-only" style="display: none; flex-direction: column; text-align: right;">
+                                <span style="font-size: 0.7rem; color: #64748b; font-weight: 700; text-transform: uppercase;"><?= htmlspecialchars($_SESSION['name'] ?? 'Admin') ?></span>
+                                <span style="font-size: 0.8rem; color: #1e293b; font-weight: 600;"><?= htmlspecialchars($_SESSION['email'] ?? 'No Email') ?></span>
                             </div>
-                            <i class="fas fa-user-tie" style="font-size: 1.1rem; color: #1e293b;"></i>
+                            <div style="width: 32px; height: 32px; background: #e2e8f0; border-radius: 10px; display: flex; align-items: center; justify-content: center; color: #1e293b;">
+                                <i class="fas fa-user-tie" style="font-size: 0.9rem;"></i>
+                            </div>
                         </div>
 
-                        <a href="../auth/logout.php" id="headerLogoutBtn" class="icon-box-btn"
-                            style="color: #ef4444; text-decoration: none;"
-                            title="Log Out">
+                        <a href="../auth/logout.php" id="headerLogoutBtn" style="display: flex; align-items: center; justify-content: center; width: 40px; height: 40px; border-radius: 12px; background: #fff1f2; border: 1px solid #fee2e2; color: #ef4444; text-decoration: none; transition: all 0.2s;" title="Log Out">
                             <i class="fas fa-power-off" style="font-size: 1.1rem;"></i>
                         </a>
                     </div>
