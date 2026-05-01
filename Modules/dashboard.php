@@ -1251,15 +1251,15 @@ $r_rows = [];
                         ?>
 
                         <div style="display: flex; align-items: center; gap: 15px;">
-                            <div style="display: flex; align-items: center; gap: 10px; padding: 5px; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px;">
-                                <div class="desktop-only" style="display: none; flex-direction: column; text-align: right;">
-                                    <span style="font-size: 0.7rem; color: #64748b; font-weight: 700; text-transform: uppercase;"><?= htmlspecialchars($_SESSION['name'] ?? 'Admin') ?></span>
-                                    <span style="font-size: 0.8rem; color: #1e293b; font-weight: 600;"><?= htmlspecialchars($_SESSION['email'] ?? 'No Email') ?></span>
-                                </div>
-                                <div style="width: 32px; height: 32px; background: #e2e8f0; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: #1e293b;">
-                                    <i class="fas fa-user-tie" style="font-size: 0.9rem;"></i>
-                                </div>
+                        <div onclick="openAccountModal()" style="display: flex; align-items: center; gap: 10px; padding: 5px; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px; cursor: pointer;" title="Account Settings">
+                            <div class="desktop-only" style="display: none; flex-direction: column; text-align: right;">
+                                <span style="font-size: 0.7rem; color: #64748b; font-weight: 700; text-transform: uppercase;"><?= htmlspecialchars($_SESSION['name'] ?? 'Admin') ?></span>
+                                <span style="font-size: 0.8rem; color: #1e293b; font-weight: 600;"><?= htmlspecialchars($_SESSION['email'] ?? 'No Email') ?></span>
                             </div>
+                            <div style="width: 32px; height: 32px; background: #e2e8f0; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: #1e293b;">
+                                <i class="fas fa-user-tie" style="font-size: 0.9rem;"></i>
+                            </div>
+                        </div>
 
                             <div class="desktop-only date-time-display"
                                 style="display: none; align-items: center; background: white; padding: 8px 15px; border-radius: 12px; border: 1px solid #e2e8f0; box-shadow: 0 2px 4px rgba(0,0,0,0.02);">
@@ -3808,6 +3808,41 @@ $r_rows = [];
         </div>
     </div>
 
+    <!-- Account Settings Modal -->
+    <div id="account-modal" class="modal">
+        <div class="modal-content" style="max-width: 450px;">
+            <div class="modal-header">
+                <h3><i class="fa-solid fa-user-gear"></i> Account Settings</h3>
+                <span class="close" onclick="closeModal('account-modal')">&times;</span>
+            </div>
+            <div style="text-align: center; margin-bottom: 25px;">
+                <div style="width: 70px; height: 70px; background: #f1f5f9; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 15px; color: #1e293b;">
+                    <i class="fas fa-user-tie" style="font-size: 2rem;"></i>
+                </div>
+                <h4 style="margin: 0; font-size: 1.1rem; color: #0f172a;"><?= htmlspecialchars($_SESSION['name'] ?? 'Administrator') ?></h4>
+                <p style="margin: 5px 0; color: #64748b; font-size: 0.9rem;"><?= htmlspecialchars($_SESSION['email'] ?? '') ?></p>
+                <span style="background: #eff6ff; color: #3b82f6; padding: 4px 12px; border-radius: 20px; font-size: 0.75rem; font-weight: 700; text-transform: uppercase; display: inline-block; margin-top: 5px;">
+                    Role: <?= htmlspecialchars($_SESSION['role'] ?? 'Admin') ?>
+                </span>
+            </div>
+
+            <div style="display: grid; grid-template-columns: 1fr; gap: 12px;">
+                <a href="../include/Settings.php" class="btn btn-outline" style="justify-content: center; gap: 10px; padding: 12px;">
+                    <i class="fa-solid fa-user-pen"></i> Update Profile Details
+                </a>
+                <a href="../include/Settings.php?tab=security" class="btn btn-outline" style="justify-content: center; gap: 10px; padding: 12px;">
+                    <i class="fa-solid fa-lock"></i> Change Password
+                </a>
+                <a href="../include/Settings.php?tab=security" class="btn btn-outline" style="justify-content: center; gap: 10px; padding: 12px;">
+                    <i class="fa-solid fa-key"></i> Manage Security PIN
+                </a>
+                <button class="btn btn-danger" onclick="openLogoutModal(); closeModal('account-modal');" style="justify-content: center; gap: 10px; padding: 12px; margin-top: 10px;">
+                    <i class="fa-solid fa-right-from-bracket"></i> Logout Account
+                </button>
+            </div>
+        </div>
+    </div>
+
 
     <script src="../assets/Javascript/facilities-reservation.js?v=<?= time() ?>"></script>
 
@@ -3832,6 +3867,16 @@ $r_rows = [];
             if (loader) {
                 loader.style.display = 'block';
                 loader.style.opacity = '1';
+                window.openAccountModal = function () {
+                    const modal = document.getElementById('account-modal');
+                    if (modal) modal.style.display = 'block';
+                };
+
+                window.openLogoutModal = function () {
+                    const modal = document.getElementById('logout-modal');
+                    if (modal) modal.style.display = 'block';
+                };
+
                 // Sidebar Toggle Functions
                 window.toggleSidebar = function () {
                     const width = window.innerWidth;
