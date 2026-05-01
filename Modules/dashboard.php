@@ -1667,9 +1667,10 @@ $r_rows = [];
                                         </td>
                                     </tr>
                                 <?php else: ?>
+                                    <?php $resCounter = 1; ?>
                                     <?php foreach ($dashboard_data['reservations'] as $reservation): ?>
                                         <tr>
-                                            <td style="font-weight: 700; color: #000000 !important;">#<?= $reservation['id'] ?>
+                                            <td style="font-weight: 700; color: #000000 !important;">#<?= $resCounter++ ?>
                                             </td>
                                             <td style="text-align: left;">
                                                 <div style="font-weight: 600; color: #000000 !important;">
@@ -2217,11 +2218,12 @@ $r_rows = [];
                                         </td>
                                     </tr>
                                 <?php else: ?>
+                                    <?php $reportCounter = 1; ?>
                                     <?php foreach ($r_rows as $rr): ?>
                                         <tr style="border-bottom: 1px solid #edf2f7;">
                                             <?php if ($r_module === 'reservations'): ?>
                                                 <td style="font-weight: 700; font-size: 13px; color: #1e293b;">
-                                                    #BK-<?= $rr['id'] ?></td>
+                                                    #BK-<?= $reportCounter++ ?></td>
                                                 <td style="font-size: 13px; color: #64748b;">
                                                     <?= date('m/d/Y', strtotime($rr['event_date'] ?? 'now')) ?>
                                                 </td>
