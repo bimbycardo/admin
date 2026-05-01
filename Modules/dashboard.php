@@ -30,6 +30,7 @@ if (isset($_SESSION['role']) && $_SESSION['role'] === 'super_admin' && !isset($_
 
 // Load shared DB helper (keeps filename safe and centralized)
 require_once __DIR__ . '/../db/db.php';
+require_once __DIR__ . '/../include/Config.php';
 $db_notif = get_pdo();
 
 // Handle Notification AJAX Actions
@@ -182,7 +183,35 @@ class ReservationSystem
             ]);
 
             $pdo->commit();
-            return ['success' => true, 'message' => "Reservation request submitted successfully! We will contact you shortly to confirm."];
+
+            // Send confirmation email to the customer
+            $customer_email = filter_var($data['customer_email'], FILTER_VALIDATE_EMAIL);
+            if ($customer_email) {
+                $subject = "Reservation Request Received - ATIERA";
+                $body = "
+                    <div style='font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; border: 1px solid #e2e8f0; border-radius: 12px; overflow: hidden;'>
+                        <div style='background: #1e293b; padding: 20px; text-align: center; color: white;'>
+                            <h2 style='margin: 0;'>Reservation Received</h2>
+                        </div>
+                        <div style='padding: 30px; background: #ffffff; color: #1e293b;'>
+                            <p style='font-size: 16px;'>Hello <strong>" . htmlspecialchars($data['customer_name']) . "</strong>,</p>
+                            <p style='font-size: 16px;'>We have received your reservation request for the <strong>" . htmlspecialchars($facility['name']) . "</strong>.</p>
+                            <div style='background: #f8fafc; padding: 15px; border-radius: 8px; margin: 20px 0;'>
+                                <p style='margin: 5px 0;'><strong>Event Type:</strong> " . htmlspecialchars($data['event_type']) . "</p>
+                                <p style='margin: 5px 0;'><strong>Date:</strong> " . date('F d, Y', strtotime($data['event_date'])) . "</p>
+                                <p style='margin: 5px 0;'><strong>Time:</strong> " . date('h:i A', strtotime($data['start_time'])) . " to " . date('h:i A', strtotime($data['end_time'])) . "</p>
+                                <p style='margin: 5px 0;'><strong>Guests:</strong> " . intval($data['guests_count']) . "</p>
+                                <p style='margin: 5px 0; color: #059669;'><strong>Total Estimated Cost:</strong> ₱" . number_format($total_amount, 2) . "</p>
+                            </div>
+                            <p style='font-size: 16px;'>Our staff will review your request and contact you shortly to confirm your booking.</p>
+                            <p style='font-size: 14px; color: #64748b; margin-top: 30px;'>Thank you for choosing ATIERA.</p>
+                        </div>
+                    </div>
+                ";
+                sendEmail($customer_email, $data['customer_name'], $subject, $body);
+            }
+
+            return ['success' => true, 'message' => "Reservation request submitted successfully! A confirmation email has been sent to " . htmlspecialchars($customer_email) . "."];
 
         } catch (Exception $e) {
             $pdo->rollBack();
@@ -3363,13 +3392,13 @@ $r_rows = [];
                 </div>
 
                 <div class="form-group">
-                    <label for="customer_email">Email Address</label>
-                    <input type="email" id="customer_email" name="customer_email" class="form-control" required>
+                    <label for="customer_email">Email Address <small style="color: #64748b; font-weight: normal;">(For reservation updates)</small></label>
+                    <input type="email" id="customer_email" name="customer_email" class="form-control" placeholder="example@email.com" required>
                 </div>
 
                 <div class="form-group">
-                    <label for="customer_phone">Phone Number</label>
-                    <input type="tel" id="customer_phone" name="customer_phone" class="form-control">
+                    <label for="customer_phone">Phone Number <small style="color: #64748b; font-weight: normal;">(11 digits)</small></label>
+                    <input type="tel" id="customer_phone" name="customer_phone" class="form-control" pattern="[0-9]{11}" maxlength="11" minlength="11" placeholder="09xxxxxxxxx" title="Please enter exactly 11 digits (e.g. 09123456789)" required>
                 </div>
 
                 <div class="form-group">
