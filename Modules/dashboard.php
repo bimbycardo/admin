@@ -37,7 +37,8 @@ $db_notif = get_pdo();
 if (isset($_GET['ajax_action']) && $_GET['ajax_action'] === 'mark_all_read') {
     header('Content-Type: application/json');
     try {
-        $db_notif->exec("UPDATE notifications SET is_read = 1 WHERE is_read = 0");
+        $userId = $_SESSION['user_id'] ?? 0;
+        $db_notif->prepare("UPDATE notifications SET is_read = 1 WHERE is_read = 0 AND (user_id = ? OR user_id IS NULL)")->execute([$userId]);
         echo json_encode(['success' => true]);
     } catch (Exception $e) {
         echo json_encode(['success' => false, 'message' => $e->getMessage()]);
@@ -51,10 +52,13 @@ try {
     // Check if table exists first
     $stmt_check = $db_notif->query("SHOW TABLES LIKE 'notifications'");
     if ($stmt_check->rowCount() > 0) {
-        $stmt_n = $db_notif->query("SELECT * FROM notifications ORDER BY created_at DESC LIMIT 20");
+        $userId = $_SESSION['user_id'] ?? 0;
+        $stmt_n = $db_notif->prepare("SELECT * FROM notifications WHERE user_id = ? OR user_id IS NULL ORDER BY created_at DESC LIMIT 20");
+        $stmt_n->execute([$userId]);
         $latest_notifs = $stmt_n->fetchAll();
         
-        $stmt_c = $db_notif->query("SELECT COUNT(*) FROM notifications WHERE is_read = 0");
+        $stmt_c = $db_notif->prepare("SELECT COUNT(*) FROM notifications WHERE is_read = 0 AND (user_id = ? OR user_id IS NULL)");
+        $stmt_c->execute([$userId]);
         $unread_count = $stmt_c->fetchColumn();
     } else {
         $unread_count = 0;
@@ -79,12 +83,19 @@ class ReservationSystem
         try {
             $this->pdo->exec("CREATE TABLE IF NOT EXISTS notifications (
                 id INT AUTO_INCREMENT PRIMARY KEY,
+                user_id INT NULL,
                 title VARCHAR(255) NOT NULL,
                 message TEXT NOT NULL,
                 type VARCHAR(50) DEFAULT 'info',
                 is_read TINYINT(1) DEFAULT 0,
                 created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
             )");
+            
+            // Self-healing: add user_id column if it doesn't exist
+            $cols = $this->pdo->query("SHOW COLUMNS FROM notifications")->fetchAll(PDO::FETCH_COLUMN);
+            if (!in_array('user_id', $cols)) {
+                $this->pdo->exec("ALTER TABLE notifications ADD COLUMN user_id INT NULL AFTER id");
+            }
         } catch (PDOException $e) {
         }
     }
@@ -92,8 +103,9 @@ class ReservationSystem
     public function addNotification($title, $message, $type = 'info')
     {
         try {
-            $stmt = $this->pdo->prepare("INSERT INTO notifications (title, message, type) VALUES (?, ?, ?)");
-            $stmt->execute([$title, $message, $type]);
+            $userId = $_SESSION['user_id'] ?? null;
+            $stmt = $this->pdo->prepare("INSERT INTO notifications (user_id, title, message, type) VALUES (?, ?, ?, ?)");
+            $stmt->execute([$userId, $title, $message, $type]);
             return true;
         } catch (PDOException $e) {
             return false;
