@@ -4461,13 +4461,7 @@ $r_rows = [];
                 });
         }
 
-        document.addEventListener('DOMContentLoaded', function() {
-            const successMsg = document.getElementById('successAlertMsg');
-            if (successMsg) {
-                const msgText = successMsg.getAttribute('data-msg');
-                addNotification('Database Updated', msgText);
-            }
-        });
+        /* Automated notification trigger removed as per request */
         // Force Hide desktop-only elements on mobile
         function forceHideMobile() {
             if (window.innerWidth <= 1200) {
