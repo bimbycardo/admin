@@ -71,6 +71,33 @@ class ReservationSystem
     {
         $this->pdo = get_pdo();
         $this->ensureMaintenanceTableExists();
+        $this->ensureNotificationsTableExists();
+    }
+
+    private function ensureNotificationsTableExists()
+    {
+        try {
+            $this->pdo->exec("CREATE TABLE IF NOT EXISTS notifications (
+                id INT AUTO_INCREMENT PRIMARY KEY,
+                title VARCHAR(255) NOT NULL,
+                message TEXT NOT NULL,
+                type VARCHAR(50) DEFAULT 'info',
+                is_read TINYINT(1) DEFAULT 0,
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            )");
+        } catch (PDOException $e) {
+        }
+    }
+
+    public function addNotification($title, $message, $type = 'info')
+    {
+        try {
+            $stmt = $this->pdo->prepare("INSERT INTO notifications (title, message, type) VALUES (?, ?, ?)");
+            $stmt->execute([$title, $message, $type]);
+            return true;
+        } catch (PDOException $e) {
+            return false;
+        }
     }
 
     private function ensureMaintenanceTableExists()
@@ -185,6 +212,11 @@ class ReservationSystem
 
             $pdo->commit();
 
+            // Add Notification
+            $notifTitle = "New Reservation Request";
+            $notifMessage = "A new reservation was submitted by " . htmlspecialchars($data['customer_name']) . " for " . htmlspecialchars($facility['name']) . ".";
+            $this->addNotification($notifTitle, $notifMessage, 'success');
+
             // Send confirmation email to the customer
             $customer_email = filter_var($data['customer_email'], FILTER_VALIDATE_EMAIL);
             if ($customer_email) {
@@ -226,7 +258,16 @@ class ReservationSystem
 
         try {
             $stmt = $pdo->prepare("UPDATE reservations SET status = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?");
-            $stmt->execute([$status, intval($reservationId)]);
+            $result = $stmt->execute([$status, intval($reservationId)]);
+
+            // Add Notification for Status Update
+            if ($result) {
+                $resData = $pdo->query("SELECT r.customer_name, f.name as facility_name FROM reservations r JOIN facilities f ON r.facility_id = f.id WHERE r.id = " . intval($reservationId))->fetch();
+                $notifTitle = "Reservation " . ucfirst($status);
+                $notifMessage = "Admin " . ($_SESSION['name'] ?? 'System') . " updated reservation for " . ($resData['customer_name'] ?? 'Guest') . " (" . ($resData['facility_name'] ?? 'Unknown Facility') . ") to " . strtoupper($status) . ".";
+                $type = ($status === 'confirmed' || $status === 'completed') ? 'success' : ($status === 'cancelled' ? 'danger' : 'warning');
+                $this->addNotification($notifTitle, $notifMessage, $type);
+            }
 
             return ['success' => true, 'message' => "Reservation status updated successfully!"];
         } catch (PDOException $e) {
@@ -240,7 +281,7 @@ class ReservationSystem
 
         try {
             $stmt = $pdo->prepare("INSERT INTO facilities (reserve_name, name, type, capacity, location, description, hourly_rate, amenities, image_url, status, assigned_user) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
-            $stmt->execute([
+            $result = $stmt->execute([
                 htmlspecialchars($data['reserve_name'] ?? ''),
                 htmlspecialchars($data['name']),
                 htmlspecialchars($data['type']),
@@ -254,6 +295,13 @@ class ReservationSystem
                 htmlspecialchars($data['assigned_user'] ?? 'Not Assigned')
             ]);
 
+            // Add Notification
+            if ($result) {
+                $notifTitle = "New Facility Added";
+                $notifMessage = "Admin " . ($_SESSION['name'] ?? 'System') . " added a new facility: " . htmlspecialchars($data['name']) . ".";
+                $this->addNotification($notifTitle, $notifMessage, 'info');
+            }
+
             return ['success' => true, 'message' => "Facility added successfully!"];
         } catch (PDOException $e) {
             return ['success' => false, 'message' => "Error adding facility: " . $e->getMessage()];
@@ -264,7 +312,17 @@ class ReservationSystem
     {
         try {
             $stmt = $this->pdo->prepare("DELETE FROM facilities WHERE id = ?");
-            $stmt->execute([$id]);
+            // Get facility name before deleting
+            $fData = $this->pdo->query("SELECT name FROM facilities WHERE id = " . intval($id))->fetch();
+            $result = $stmt->execute([$id]);
+
+            // Add Notification
+            if ($result && $fData) {
+                $notifTitle = "Facility Deleted";
+                $notifMessage = "Admin " . ($_SESSION['name'] ?? 'System') . " permanently deleted facility: " . htmlspecialchars($fData['name']) . ".";
+                $this->addNotification($notifTitle, $notifMessage, 'danger');
+            }
+
             return ['success' => true, 'message' => 'Facility deleted successfully.'];
         } catch (PDOException $e) {
             return ['success' => false, 'message' => 'Error deleting facility: ' . $e->getMessage()];
@@ -283,7 +341,7 @@ class ReservationSystem
             }
 
             $stmt = $pdo->prepare("INSERT INTO maintenance_logs (item_name, description, maintenance_date, assigned_staff, contact_number, priority, reported_by, department, duration, status) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
-            $stmt->execute([
+            $result = $stmt->execute([
                 htmlspecialchars($data['item_name']),
                 htmlspecialchars($data['description'] ?? ''),
                 $data['maintenance_date'],
@@ -295,6 +353,14 @@ class ReservationSystem
                 htmlspecialchars($data['duration'] ?? '1 hour'),
                 $data['status'] ?? 'pending'
             ]);
+
+            // Add Notification
+            if ($result) {
+                $notifTitle = "Maintenance Log Added";
+                $notifMessage = "Admin " . ($_SESSION['name'] ?? 'System') . " created a maintenance log for " . htmlspecialchars($data['item_name']) . " (Priority: " . ucfirst($data['priority'] ?? 'low') . ").";
+                $this->addNotification($notifTitle, $notifMessage, 'warning');
+            }
+
             return ['success' => true, 'message' => "Maintenance log added successfully!"];
         } catch (PDOException $e) {
             return ['success' => false, 'message' => "Error adding maintenance log: " . $e->getMessage()];
@@ -319,7 +385,17 @@ class ReservationSystem
     {
         try {
             $stmt = $this->pdo->prepare("UPDATE maintenance_logs SET is_deleted = 1 WHERE id = ?");
-            $stmt->execute([$id]);
+            // Get log info before moving to trash
+            $lData = $this->pdo->query("SELECT item_name FROM maintenance_logs WHERE id = " . intval($id))->fetch();
+            $result = $stmt->execute([$id]);
+
+            // Add Notification
+            if ($result && $lData) {
+                $notifTitle = "Maintenance Log Moved to Trash";
+                $notifMessage = "Admin " . ($_SESSION['name'] ?? 'System') . " moved maintenance log for " . htmlspecialchars($lData['item_name']) . " to trash.";
+                $this->addNotification($notifTitle, $notifMessage, 'warning');
+            }
+
             return ['success' => true, 'message' => 'Maintenance log moved to trash.'];
         } catch (PDOException $e) {
             return ['success' => false, 'message' => 'Error deleting maintenance log: ' . $e->getMessage()];
@@ -330,7 +406,17 @@ class ReservationSystem
     {
         try {
             $stmt = $this->pdo->prepare("UPDATE maintenance_logs SET is_deleted = 0 WHERE id = ?");
-            $stmt->execute([$id]);
+            // Get log info before restoring
+            $lData = $this->pdo->query("SELECT item_name FROM maintenance_logs WHERE id = " . intval($id))->fetch();
+            $result = $stmt->execute([$id]);
+
+            // Add Notification
+            if ($result && $lData) {
+                $notifTitle = "Maintenance Log Restored";
+                $notifMessage = "Admin " . ($_SESSION['name'] ?? 'System') . " restored maintenance log for " . htmlspecialchars($lData['item_name']) . ".";
+                $this->addNotification($notifTitle, $notifMessage, 'info');
+            }
+
             return ['success' => true, 'message' => 'Maintenance log restored successfully.'];
         } catch (PDOException $e) {
             return ['success' => false, 'message' => 'Error restoring maintenance log: ' . $e->getMessage()];
@@ -341,7 +427,17 @@ class ReservationSystem
     {
         try {
             $stmt = $this->pdo->prepare("DELETE FROM maintenance_logs WHERE id = ?");
-            $stmt->execute([$id]);
+            // Get log info before deleting
+            $lData = $this->pdo->query("SELECT item_name FROM maintenance_logs WHERE id = " . intval($id))->fetch();
+            $result = $stmt->execute([$id]);
+
+            // Add Notification
+            if ($result && $lData) {
+                $notifTitle = "Maintenance Log Permanently Deleted";
+                $notifMessage = "Admin " . ($_SESSION['name'] ?? 'System') . " permanently deleted maintenance log for " . htmlspecialchars($lData['item_name']) . ".";
+                $this->addNotification($notifTitle, $notifMessage, 'danger');
+            }
+
             return ['success' => true, 'message' => 'Maintenance log permanently deleted.'];
         } catch (PDOException $e) {
             return ['success' => false, 'message' => 'Error permanently deleting maintenance log: ' . $e->getMessage()];

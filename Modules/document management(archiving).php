@@ -34,6 +34,17 @@ try {
 } catch (PDOException $e) {
 }
 
+// ✅ Notification Helper
+function addNotification($pdo, $title, $message, $type = 'info') {
+    try {
+        $stmt = $pdo->prepare("INSERT INTO notifications (title, message, type) VALUES (?, ?, ?)");
+        $stmt->execute([$title, $message, $type]);
+        return true;
+    } catch (PDOException $e) {
+        return false;
+    }
+}
+
 // Fetch dashboard stats
 $stats = [
     'total' => 0,
@@ -341,6 +352,8 @@ if (isset($_GET['api'])) {
                     $document->upload_date = date('Y-m-d');
 
                     if ($document->create()) {
+                        $adminName = $_SESSION['name'] ?? 'Admin';
+                        addNotification($db, "Document Uploaded", "$adminName uploaded a new document: " . $document->name . ".", 'success');
                         echo json_encode(["message" => "Document uploaded successfully."]);
                     } else {
                         http_response_code(500);
@@ -361,6 +374,8 @@ if (isset($_GET['api'])) {
                 }
                 $document->deleted_date = date('Y-m-d H:i:s');
                 if ($document->moveToTrash()) {
+                    $adminName = $_SESSION['name'] ?? 'Admin';
+                    addNotification($db, "Document Moved to Trash", "$adminName moved a document to trash.", 'warning');
                     echo json_encode(["message" => "Document moved to trash."]);
                 } else {
                     http_response_code(500);
@@ -376,6 +391,8 @@ if (isset($_GET['api'])) {
                     break;
                 }
                 if ($document->restore()) {
+                    $adminName = $_SESSION['name'] ?? 'Admin';
+                    addNotification($db, "Document Restored", "$adminName restored a document from trash.", 'info');
                     echo json_encode(["message" => "Document restored successfully."]);
                 } else {
                     http_response_code(500);
@@ -393,6 +410,8 @@ if (isset($_GET['api'])) {
                 break;
             }
             if ($document->deletePermanent()) {
+                $adminName = $_SESSION['name'] ?? 'Admin';
+                addNotification($db, "Document Permanently Deleted", "$adminName permanently deleted a document.", 'danger');
                 echo json_encode(["message" => "Document permanently deleted."]);
             } else {
                 http_response_code(500);

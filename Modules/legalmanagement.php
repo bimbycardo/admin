@@ -16,6 +16,17 @@ if (session_status() === PHP_SESSION_NONE)
 require_once __DIR__ . '/../db/db.php';
 $db = get_pdo();
 
+// ✅ Notification Helper
+function addNotification($pdo, $title, $message, $type = 'info') {
+    try {
+        $stmt = $pdo->prepare("INSERT INTO notifications (title, message, type) VALUES (?, ?, ?)");
+        $stmt->execute([$title, $message, $type]);
+        return true;
+    } catch (PDOException $e) {
+        return false;
+    }
+}
+
 // Self-healing: Ensure contracts table has 'contract_type' column
 try {
     $db->query("SELECT contract_type FROM contracts LIMIT 1");
@@ -284,6 +295,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $stmt = $db->prepare($query);
 
         if ($stmt->execute([$name, $position, $email, $phone])) {
+            $adminName = $_SESSION['name'] ?? 'Admin';
+            addNotification($db, "New Employee Added (Legal)", "$adminName added $name to the legal contacts.", 'info');
             $success_message = "Employee added successfully!";
         } else {
             $error_message = "Failed to add employee.";
@@ -300,6 +313,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $query = "UPDATE contacts SET name = ?, role = ?, email = ?, phone = ? WHERE id = ?";
             $stmt = $db->prepare($query);
             if ($stmt->execute([$name, $position, $email, $phone, $empId])) {
+                $adminName = $_SESSION['name'] ?? 'Admin';
+                addNotification($db, "Employee Record Updated", "$adminName updated legal contact info for $name.", 'info');
                 $success_message = "Employee updated successfully!";
             } else {
                 $error_message = "Failed to update employee.";
@@ -355,6 +370,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $q = "INSERT INTO documents (name, case_id, file_path, uploaded_at) VALUES (?, ?, ?, NOW())";
         $s = $db->prepare($q);
         if ($s->execute([$doc_name, $doc_case, $file_path])) {
+            $adminName = $_SESSION['name'] ?? 'Admin';
+            addNotification($db, "Document Uploaded (Legal)", "$adminName uploaded document: $doc_name.", 'success');
             $success_message = "Document uploaded successfully!";
         } else {
             $error_message = "Failed to upload document.";
@@ -397,7 +414,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $q = "DELETE FROM contracts WHERE id = ?";
             $s = $db->prepare($q);
             if ($s->execute([$contract_id])) {
-                $success_message = "Contract deleted.";
+            $adminName = $_SESSION['name'] ?? 'Admin';
+            addNotification($db, "Contract Deleted", "$adminName deleted a legal contract record.", 'danger');
+            $success_message = "Contract deleted.";
             } else {
                 $error_message = "Failed to delete contract.";
             }
@@ -535,6 +554,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $riskAnalysis['analysis_summary']
             ])
         ) {
+            $adminName = $_SESSION['name'] ?? 'Admin';
+            addNotification($db, "New Contract Uploaded", "$adminName uploaded contract: $contract_name (Risk Level: " . $riskAnalysis['risk_level'] . ").", 'success');
             $success_message = "Contract uploaded successfully! AI Risk Analysis Completed.";
             if (!empty($image_path)) {
                 try {

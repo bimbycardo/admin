@@ -26,6 +26,24 @@ if (function_exists('get_pdo')) {
     exit;
 }
 
+// ✅ Notification Helper
+function addNotification($db, $title, $message, $type = 'info') {
+    try {
+        $sql = "INSERT INTO notifications (title, message, type) VALUES (?, ?, ?)";
+        if ($db instanceof PDO) {
+            $stmt = $db->prepare($sql);
+            $stmt->execute([$title, $message, $type]);
+        } elseif ($db instanceof mysqli) {
+            $stmt = $db->prepare($sql);
+            $stmt->bind_param("sss", $title, $message, $type);
+            $stmt->execute();
+        }
+        return true;
+    } catch (Exception $e) {
+        return false;
+    }
+}
+
 try {
     // ✅ Auto-update database schema if columns are missing
     if ($db instanceof PDO) {
@@ -70,6 +88,14 @@ try {
                 $stmt = $db->prepare($sql);
                 $stmt->bind_param("si", $checkoutDate, $id);
                 if ($stmt->execute()) {
+                    // Add Notification
+                    $visitorData = $db->query("SELECT full_name, venue FROM direct_checkins WHERE id = " . intval($id))->fetch_assoc();
+                    if ($visitorData) {
+                        $vName = $visitorData['full_name'];
+                        $vVenue = ucfirst($visitorData['venue'] ?? 'Hotel');
+                        $adminName = $_SESSION['name'] ?? 'Admin';
+                        addNotification($db, "Visitor Checked Out", "$adminName processed check-out for $vName ($vVenue).", 'info');
+                    }
                     echo json_encode(['status' => 'success', 'message' => 'Checked out successfully.']);
                 } else {
                     echo json_encode(['status' => 'error', 'message' => 'Database error: ' . $stmt->error]);
@@ -77,6 +103,14 @@ try {
             } elseif ($db instanceof PDO) {
                 $stmt = $db->prepare($sql);
                 if ($stmt->execute([$checkoutDate, $id])) {
+                    // Add Notification
+                    $visitorData = $db->query("SELECT full_name, venue FROM direct_checkins WHERE id = " . intval($id))->fetch(PDO::FETCH_ASSOC);
+                    if ($visitorData) {
+                        $vName = $visitorData['full_name'];
+                        $vVenue = ucfirst($visitorData['venue'] ?? 'Hotel');
+                        $adminName = $_SESSION['name'] ?? 'Admin';
+                        addNotification($db, "Visitor Checked Out", "$adminName processed check-out for $vName ($vVenue).", 'info');
+                    }
                     echo json_encode(['status' => 'success', 'message' => 'Checked out successfully.']);
                 } else {
                     echo json_encode(['status' => 'error', 'message' => 'Database error: Failed to update record.']);
@@ -113,6 +147,8 @@ try {
                 // Types: sssssssisi (7 strings, 1 int, 1 string, 1 int)
                 $stmt->bind_param("sssssssisi", $fullName, $email, $phone, $roomNumber, $hostId, $notes, $venue, $partySize, $tableNumber, $entryId);
                 if ($stmt->execute()) {
+                    $adminName = $_SESSION['name'] ?? 'Admin';
+                    addNotification($db, "Visitor Updated", "$adminName updated visitor record for $fullName.", 'info');
                     echo json_encode(['status' => 'success', 'message' => 'Entry updated successfully.']);
                 } else {
                     throw new Exception($stmt->error);
@@ -120,6 +156,8 @@ try {
             } elseif ($db instanceof PDO) {
                 $stmt = $db->prepare($sql);
                 $stmt->execute([$fullName, $email, $phone, $roomNumber, $hostId, $notes, $venue, $partySize, $tableNumber, $entryId]);
+                $adminName = $_SESSION['name'] ?? 'Admin';
+                addNotification($db, "Visitor Updated", "$adminName updated visitor record for $fullName.", 'info');
                 echo json_encode(['status' => 'success', 'message' => 'Entry updated successfully.']);
             }
         } else {
@@ -129,6 +167,9 @@ try {
                 $stmt = $db->prepare($sql);
                 $stmt->bind_param("ssssssssis", $fullName, $email, $phone, $roomNumber, $hostId, $checkinDate, $notes, $venue, $partySize, $tableNumber);
                 if ($stmt->execute()) {
+                    $adminName = $_SESSION['name'] ?? 'Admin';
+                    $vVenue = ucfirst($venue);
+                    addNotification($db, "New Visitor Check-in", "$adminName recorded a new check-in for $fullName ($vVenue).", 'success');
                     echo json_encode(['status' => 'success', 'message' => 'Check-in recorded successfully.']);
                 } else {
                     throw new Exception($stmt->error);
@@ -136,6 +177,9 @@ try {
             } elseif ($db instanceof PDO) {
                 $stmt = $db->prepare($sql);
                 $stmt->execute([$fullName, $email, $phone, $roomNumber, $hostId, $checkinDate, $notes, $venue, $partySize, $tableNumber]);
+                $adminName = $_SESSION['name'] ?? 'Admin';
+                $vVenue = ucfirst($venue);
+                addNotification($db, "New Visitor Check-in", "$adminName recorded a new check-in for $fullName ($vVenue).", 'success');
                 echo json_encode(['status' => 'success', 'message' => 'Check-in recorded successfully.']);
             }
         }
