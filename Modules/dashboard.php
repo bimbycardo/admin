@@ -225,8 +225,9 @@ class ReservationSystem
             $pdo->commit();
 
             // Add Notification
-            $notifTitle = "New Reservation Request";
-            $notifMessage = "A new reservation was submitted by " . htmlspecialchars($data['customer_name']) . " for " . htmlspecialchars($facility['name']) . ".";
+            $customer_email = filter_var($data['customer_email'], FILTER_VALIDATE_EMAIL);
+            $notifTitle = "Success";
+            $notifMessage = "Reservation request submitted successfully! A confirmation email has been sent to " . htmlspecialchars($customer_email) . ".";
             $this->addNotification($notifTitle, $notifMessage, 'success');
 
             // Send confirmation email to the customer
