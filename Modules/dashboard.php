@@ -184,7 +184,7 @@ class ReservationSystem
             }
 
             // Calculate total amount
-            $facility = $pdo->query("SELECT hourly_rate, capacity FROM facilities WHERE id = " . intval($data['facility_id']))->fetch();
+            $facility = $pdo->query("SELECT name, hourly_rate, capacity FROM facilities WHERE id = " . intval($data['facility_id']))->fetch();
 
             if ($data['guests_count'] > $facility['capacity']) {
                 throw new Exception("Number of guests exceeds facility capacity.");
